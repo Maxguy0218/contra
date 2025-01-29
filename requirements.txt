@@ -5,3 +5,4 @@ pdfplumber
 langchain
 chromadb
 sentence-transformers
+google-generativeai
