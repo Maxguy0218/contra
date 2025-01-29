@@ -1,0 +1,114 @@
+[
+    {
+        "#": "1",
+        "Term Type": "Care Contingency / Patient Care Safeguard",
+        "Sub-Type": "Continuity of Care / Events of Default / Patient Care Protective Term",
+        "Description": "4. Insolvency of MCQ. In the event that MCO should become insolvent,\nHospital agrees to provide Covered Services to each Member of the insolvent entity until the\nsooner of: (I) the expiration of the period for which a Member's premiums have been paid to\nMCO and, in the case of a Member confined as an inpatient in Hospital's facility at the time of\nsuch expiration, until the time of discharge from the facility; or (ii) until the Member becomes\ncovered under another health insurance plan with similar benefits.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 21 of 36 point # 4"
+    },
+    {
+        "#": "2",
+        "Term Type": "Contract Administration / Notices",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": "MCO shall notify Hospital of any material modifications to such policies, or to edit programs or a specific edit, thirty (30) days in advance of their applicability.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 6 of 36"
+    },
+    {
+        "#": "3",
+        "Term Type": "Contract Administration / Notices",
+        "Sub-Type": "Emergency Admission Notification",
+        "Description": "In the event of Emergency admissions, Hospital shall use commercially reasonable best efforts to notify Coventry of the admission within one working day when ID Card is made available to Hospital upon admission or as soon as possible.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 6 of 36 Point #7"
+    },
+    {
+        "#": "4",
+        "Term Type": "Contract Administration / Notices",
+        "Sub-Type": "Changes to Required Documentation",
+        "Description": "MCO shall provide thirty (30) days prior written notice to Hospital of any changes to Exhibit D including those that materially change the type or content of the claim attachments or other documents to be submitted in accordance with this Agreement.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 7 of 36 Point #10"
+    },
+    {
+        "#": "5",
+        "Term Type": "Revenue Cycle Management / Notifications",
+        "Sub-Type": "Requests for Additional Information",
+        "Description": "If after receiving a claim from Hospital, MCO determines it needs an attachment or additional information in accordance with Exhibit D to process the claim, MCO shall: 1) notify the Hospital, in writing or electronically within the claims payment time frame established above of the service that will be reviewed and the specific information needed from Hospital regarding MCO's review of a claim; and 2) upon receipt of the specific information requested, MCO shall complete the review within the time permitted by Kentucky law.",
+        "Business Area": "Financial Risk Management",
+        "Page #": "Page 11 of 36 Point # d"
+    },
+    {
+        "#": "6",
+        "Term Type": "Dispute Resolution Procedures / Notifications",
+        "Sub-Type": "Dispute Resolution; Overpayment Recovery",
+        "Description": "In the event MCO determines that Hospital was overpaid, and such overpayment was not due to an error in the payment rate or method, MCO shall provide written or electronic notice to Hospital of the amount of the overpayment, the Member's name, ID number, date(s) of service to which the overpayment applies, MCO's' reference number for the claim, and the basis for determining that an overpayment exists.\u00a0 MCO will either request a refund from Hospital or indicate on its notice that, within 60 days of the postmark date/electronic delivery date of the notice, if Hospital has not disputed the overpayment recovery request, and has not provided the refund, then the amount of the overpayment will be recouped from future payments through offset. Hospital can send a notice of disagreement with the overpayment recovery request within 60 days from the {W0424753,1} Page 12 of 36 postmark date/electronic delivery date, and submit additional relevant information to MCO.",
+        "Business Area": "Financial Risk Management",
+        "Page #": "Page 12 of 36 Point 15"
+    },
+    {
+        "#": "7",
+        "Term Type": "Revenue Cycle Management / Notifications",
+        "Sub-Type": "Overpayment Reporting and Adjustments",
+        "Description": "Hospital shall notify MCO if Hospital identifies an overpayment by contacting Customer Services and requesting that an adjustment be made to remove the money from future claim payments or by sending a check in the amount of the overpayment with a copy of the remittance advice identifying the claim that was overpaid.",
+        "Business Area": "Financial Risk Management",
+        "Page #": "Page 13 of 36 Point 15"
+    },
+    {
+        "#": "8",
+        "Term Type": "Revenue Cycle Management / Error Correction",
+        "Sub-Type": "Claim Denial Resolution",
+        "Description": "Hospital shall have the opportunity to correct any billing or coding error within twenty four (24) months of denial related to any such claim submission.",
+        "Business Area": "Financial Risk Management",
+        "Page #": "Page 13 of 36 Point 17"
+    },
+    {
+        "#": "9",
+        "Term Type": "Operational Compliance / Notifications",
+        "Sub-Type": "Contract Administration",
+        "Description": "Hospital agrees to notify MCO, in writing, of (i) any change in its business address or ownership or management structure; (ii) change in its licensure or accreditation status action against any of its licenses, accreditation by JCAHO, or certifications including, but not limited to, those under Titles XVIII or XIX of the Social Security Act; (iii) loss or substantial decrease in the limits or change of its medical malpractice policy; (iv) any judgments or settlements decreed or entered into on behalf of Hospital specific to Members; and, (v) any other situation that may materially interfere with Hospital's duties and obligations under the Agreement including, but not limited to such things as: reduction in number of Hospital beds or Hospital services, reductions in numbers of health care providers employed or privileged at the Hospital.\u00a0 Hospital also shall use commercially reasonable best efforts to notify MCO of any complaints it receives from Members regarding Hospital, MCO or Participating Providers. MCO shall notify Hospital of any complaints it receives from Members regarding Hospital.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 17 of 36 Point # H"
+    },
+    {
+        "#": "10",
+        "Term Type": "Contract Termination and Transition - Member Notification",
+        "Sub-Type": "Notice of Termination",
+        "Description": "3. Member Notice. At least thirty (30) days prior to the effective date of termination of this Agreement, MCO will notify all Members in writing.\u00a0 Hospital and MCO shall cooperate on the form and content of the notice to Members.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 20 of 36 Point 3."
+    },
+    {
+        "#": "11",
+        "Term Type": "Billing and Compliance / Prohibited Billing Practices",
+        "Sub-Type": "Medicaid Billing Compliance",
+        "Description": "Hospital shall not bill a Member for Medically Necessary Covered\nServices, with the exception of applicable co-pays or other cost sharing requirements. lf\nHospital knowingly and willfully bills a Member for a Medicaid Covered Service, Hospital shall\nbe guilty of a felony and upon conviction shall be fined as deflned in Section 1128B(d)(1 ), 42\nU.S.C. 1320a-7b of the Social Security Act This provision shall remain in effect even if MCO\nbecomes insolvent.",
+        "Business Area": "Medicaid Compliance",
+        "Page #": "Page 9 of 36 Point 4"
+    },
+    {
+        "#": "12",
+        "Term Type": "Billing and Compliance / Non-Covered Services",
+        "Sub-Type": "Medicaid Billing Compliance",
+        "Description": "Hospltal shall not bill a Member for performance of non-Covered\nServices, unless the Member agrees in advance in writing to pay for the non-Covered Service.\nThe standard release form signed by the Member at the time of services does not relieve the\nHospital from the prohibition against billing a Medicaid Member in the absence of a knowing\nassumption of liability for a Non~Covered Service. The form or other type of\nacknowledgement relevant to the Medicaid Member liability shall specifically state the services\nor procedures that are not covered by Medicaid.",
+        "Business Area": "",
+        "Page #": "Page 9 of 36 Point 6"
+    },
+    {
+        "#": "13",
+        "Term Type": "Billing and Collection - Member Protection",
+        "Sub-Type": "Contractual Compliance - False Claims / Improper billing practices",
+        "Description": "Hospital agrees that in no event, including, but not limited to, nonpayment\nby Coventry or a Payor, Coventry or a Payor insolvency or breach of the Agreement shall\nPhysician bill, charge, collect a deposit from, seek compensation, remuneration or\nreimbursement from, or have any recourse against a Member or persons other than Coventry\n{W0424753.1}\nPage 9 of36\nor a Payor acting on their behalf, for Covered Services rendered under the Agreement. For\npurposes of this section, services rendered under the Agreement include those health care\nservices delivered to Members by any and all health care professionals employed by or\nindependently contracted with the Physician, This section shall not prohibit collection of\ncopayments, coinsurance, or deductibles in accordance with the Member's Member Contract.\n8. Hospital further agrees that: (i) this provision shall survive termination of\nthe Agreement regardless of the cause giving rise to termination and shall be construed to be\nfor the benefit of the Member; and (ii) this provision supersedes any oral or written contrary\nagreement now existing or hereafter entered into between Physician and a Member or a\nperson acting on Member's behalf.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 9 of 36 Point 7 and 8"
+    },
+    {
+        "#": "14",
+        "Term Type": "Billing and Reimbursement / Claims Submission",
+        "Sub-Type": "Claims Timeliness and Accuracy",
+        "Description": "Hospital shall bill for Covered Services in accordance with the following:\na. Hospltal agrees to submit its claims for reimbursement and\nencounter forms, as required by MCO on a UB04 Form or Centers for Medicare\nand Medicaid Services (\"CMS\") 1500 forms, or their successor forms, with\ncurrent CMS coding, current International Classification of Diseases, Ninth\nRevision (\"ICD9\") and Current Procedural Terminology Fourth Edition (\"CPT4\")\ncoding in accordance with the then current Medicare guidelines, whichever MCO\nprefers. Hospital shall submit bills within three hundred and sixty-five (365) days\nof the date of service or as set forth in applicable law, whichever is less, of the\ndate of discharge unless coordination of benefit issues exist. Hospital may not\nbill MCO for inpatient Covered Services prior to the date of discharge and shall\nnot separate bills for Covered Services for purposes of additional payments\nunder the Agreement, except when hospitalizations of Member are greater than\nor equal to thirty (30) days, in which case interim billing may be allowed. Hospital\nunderstands and agrees that failure to submit claims in accordance with the\nrequirements of this section may result in the denial of such claims. Hospital\nunderstands and agrees that all payment corrections shall be submitted within\ntwenty-four (24) months in accordance with KRS 304.17 A~ 708. For appeals that\nare not related to requests for payment corrections, Hospital has one (1) year\nfrom the date that service was rendered to appeal payment by MCO.\nb. In accordance with the law in the Commonwealth of Kentucky,\nwith the exception of claims for organ transplants, which shall be paid within sixty\n(60) days from the date of receipt, payments to Hospital shall be made within\nthirty (30) days of receipt of a Clean Glahn. MCO payments shall be\naccompanied by an explanation of payment. The explanation of payment shall\nbe inclusive of: (a} Member receiving the Covered Services and their\nidentification number; (b) b!lled charge amount, Member responsibility, if any,\ncontractual adjustment amount, and date(s) of service; (c) the applicable tax\nidentification number; and (d) MCO name.\nc. For the purposes of this Agreement, if a dispute exists between\nHospital and MCO as to the day a claim form was received by MCO, both of the\nfollowing apply: (1) If the Hospital submits a claim directly to MCO by mail and\nretains a record of the day the claim was mailed, there exists a rebuttable\npresumption that the claim was received by MCO on the fifth business day after\nthe day the claim was mailed, unless it can be proven otherwise; and (2) If the\n..\n'\nHospital submits a claim directly to MCO electronically, there exists a rebuttable\npresumption that the claim was received by MCO 24 hours after the day the\nclaim was submitted, unless such claim was reported to Hospital as rejected by\nthe claims clearinghouse.\nd. If after receiving a claim from Hospital, MCO determines it needs\nan attachment or additional information in accordance with Exhlbit D to process\nthe claim, MCO shall: 1) notify the Hospital, in writing or electronically within the\nclaims payment time frame established above of the service that will be reviewed\nand the specific information needed from Hospital regarding MCO's review of a\nclaim; and 2) upon r(?ceipt of the specific information requested, MCO shall\ncomplete the review within the time permitted by Kentucky law. Any claim denied\nunder this paragraph may be resubmitted by the Hospital, and any resubmitted\nclaim shall not be denied on the basis of timeliness if the resubmitted claim is\nmade within the timeframe for submitting claims established in this Agreement.",
+        "Business Area": "Financial Risk Management",
+        "Page #": "Page 10 of 36 Point # 9"
+    }
+]

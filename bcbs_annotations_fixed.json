@@ -1,0 +1,114 @@
+[
+    {
+        "#": "1",
+        "Term Type": "Contract Administration / Notices",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": "2.2 Hospital agrees to provide notice to BCBSA and the Local Plan within twenty-four (24) hours of a working business day (or seventy-two (72) hours of a weekend day if the Local Plan does not have twenty-four (24) hour weekend access) of the occurrence of any event that would result in any material change that affects patient care of the information supplied in its response to the most recent Blue Cross and Blue Shield System Blue Quality Centers for Transplant credentialing process including but not limited to the permanent or temporary suspension or cessation of Hospital's transplant program or services.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "7 of 20"
+    },
+    {
+        "#": "2",
+        "Term Type": "Contract Administration / Notices",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": "2.4 Hospital shall ensure that all Participating Physicians and Participating Providers comply with the terms and conditions of this Agreement. Hospital shall have written agreements (or other arrangements acceptable to BCBSA) with Participating Physicians and Participating Providers to provide Transplant Services that shall require Participating Physicians' and Providers' compliance.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "7 of 20"
+    },
+    {
+        "#": "3",
+        "Term Type": "Preauthorization",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": "3.1 Except as provided in Section 3.3, Hospital agrees that it will admit Members for Transplant Services only upon the receipt of written Preauthorization from the Referring Plan. Hospital agrees that it will inform BCBSA that a transplant or retransplant has received Preauthorization within one (1) week of the latter of the Member's admission or the Preauthorization and will inform the Referring Plan case manager of the admission within one (1) working business day via telephone.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "7 of 20"
+    },
+    {
+        "#": "4",
+        "Term Type": "Preauthorization",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": "3.2 Hospital shall perform adult and/or pediatric, cadaveric and/or living donor, human organ and/or tissue transplants or retransplants, as applicable, and provide Transplant Services to Members for whom written Preauthorization has been received from the Member's Referring Plan.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "8 of 20"
+    },
+    {
+        "#": "5",
+        "Term Type": "Preauthorization",
+        "Sub-Type": "Emergency Admission Process",
+        "Description": "3.3 In cases in which emergency admissions are required, Hospital agrees that it will obtain Preauthorization from the Member's Referring Plan prior to admission of a Member, as long as such Preauthorization does not delay necessary treatment. Admissions for Emergency Services may receive Preauthorization by telephone, with written confirmation to follow. If due to the severity of the Emergency Medical Condition, Preauthorization cannot be obtained, Hospital agrees that it will notify Member's Referring Plan as soon as possible, but in no event later than the first business day after admission.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "8 of 20"
+    },
+    {
+        "#": "6",
+        "Term Type": "Preauthorization",
+        "Sub-Type": "Retrospective Denial",
+        "Description": "3.4 Local Plan shall not retrospectively deny claims which have received\nPreauthorization unless Local Plan demonstrates abuse, fraud or concealment of material information not produced by Participating Hospital during the Preauthorization review by Local Plan. For Referring Plans, and where required by state or federal statute or regulation, Member's Referring Plan shall not retrospectively deny claims which have received Preauthorization unless Member's Referring Plan demonstrates abuse, fraud or concealment of material information not produced by Participating Hospital during the\nPreauthorization review by Member's Plan.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "8 of 20"
+    },
+    {
+        "#": "7",
+        "Term Type": "Payment",
+        "Sub-Type": "Payment Rate",
+        "Description": "Referring Plan shall pay Hospital for Transplant Services provided to Members, and Hospital agrees to accept without Surcharges, the amount set forth in Attachment A, \"Hospital Payment\", attached hereto and made a part hereof. Referring Plan's payment is made subject to the benefit maximums, copayment, coinsurance and deductible provisions of the Member Benefit Contract. Hospital is responsible for the provision of and compensation for Transplant Services, including but not limited to, compensation of Participating Physicians and Participating Providers. No Participating Physician or Participating Provider may separately bill a Participating Plan or BCBSA for any Transplant Services.",
+        "Business Area": "Financial Risk Management",
+        "Page #": "8 of 20"
+    },
+    {
+        "#": "8",
+        "Term Type": "Payment",
+        "Sub-Type": "Payment in Full /Coverage",
+        "Description": "4.2 Payment in full: Hospital, for itself and for Participating Physicians and Participating Providers, shall look only to the Referring Plan for compensation for Transplant Services rendered to a Member. Hospital hereby agrees that in no event, including but not limited to non-payment by the Referring Plan, the Referring Plan insolvency or breach of this Agreement, shall Hospital bill, charge, collect a deposit from, seek compensation, remuneration or reimbursement from, or have any recourse against Members or persons other than the Referring Plan for Transplant Services. This provision shall not prohibit collection of any applicable copayments, coinsurance or deductibles billed in accordance with the terms of the Referring Plan's Member Benefit Contract. Hospital further agrees that (i) this provision shall survive the termination of this Agreement regardless of the cause giving rise to such termination and shall be construed to be for the benefit of Members and (ii) this provision supersedes any oral or written agreement to the contrary now existing or hereafter entered into between Hospital and Members or persons acting on the Member's behalf.",
+        "Business Area": "Financial Risk Management",
+        "Page #": "9 of 20"
+    },
+    {
+        "#": "9",
+        "Term Type": "Payment",
+        "Sub-Type": "Non Covered Services",
+        "Description": "4.3 Member Responsibility for Non-Covered Services It is recognized that a Member might request services of Hospital that are not (i) authorized by the Referring Plan or (ii) covered by the Member Benefit Contract, and that are, therefore, the financial responsibility of the Member. In such cases, the Hospital agrees to advise the Member of his or her payment responsibility prior to rendering any such services. Participating Plans and BCBSA shall have no financial responsibility for such services.",
+        "Business Area": "Financial Risk Management",
+        "Page #": "9 of 20"
+    },
+    {
+        "#": "10",
+        "Term Type": "Payment",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": "4.4 Payment Mechanism Hospital shall abide by the administrative policies of the Hospital Procedures Manual as it may be amended hereafter from time to time, incorporated herein by reference. As a condition of payment, Hospital shall certify in writing that it has bundled, all Established Charges.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "9 of 20"
+    },
+    {
+        "#": "11",
+        "Term Type": "Payment",
+        "Sub-Type": "Payment Terms and Interest",
+        "Description": "4.5 Timing\n(a} No later than forty-five (45) days after receiving the complete set of Clean Claims from Hospital, Participating Physicians, and Participating Providers, Referring Plan shall complete its processing of those claims, and pay the Hospital for Transplant Services as provided in this Agreement set forth in Attachment A, or notify the Hospital in writing that the Referring plan requires additional information regarding such claims. (b} If Referring Plan gives Hospital notice as required in Section 4.5(a), that additional information regarding a claim is required, Referring Plan shall complete its processing of the claims and make payment as provided in this Agreement no later than forty-five (45) days after Referring Plan receives the complete additional information as requested. (c) Failure to Make Timely Payments. If Referring Plan fails to make timely payments under this Agreement, Referring Plan shall pay interest at the rate equal to one (1) percent above the Bank One's published prime rate in Cincinnati, Ohio on the full amount due and unpaid subject to Member benefit maximums, coinsurance, deductibles, and copayments. Such interest shall not start until forty-five (45) days after Referring Plan has received the complete set of Clean Claims; or, if additional information is requested, forty-five (45) days after the Referring Plan has received the completed additional information.",
+        "Business Area": "Financial Risk Management",
+        "Page #": "10 of 20"
+    },
+    {
+        "#": "12",
+        "Term Type": "Personal Health Information",
+        "Sub-Type": "Case Audits",
+        "Description": "(e) Case Audits. Hospital shall permit Referring Plan, or BCBSA on behalf of\u00a0 Local Plan or Referring Plan, at reasonable times and upon at least fourteen (14) business days prior written notice, to conduct case audits with respect to any and all Members who have received Transplant Services for the purpose of payment and health care operations as defined in the Privacy Standards. The audits may include, but not be limited to, adherence to patient selection criteria, quality of care, and follow-up care.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "14 of 20"
+    },
+    {
+        "#": "13",
+        "Term Type": "Personal Health Information",
+        "Sub-Type": "Patient Management, discharge, disclosures",
+        "Description": "6.3 Patient Management, Discharge Planning and Case Management (a) Hospital Duty to Member. For each Member receiving Transplant Services, Hospital shall provide to Referring Plan, or BCBSA on behalf of Referring Plan, a written protocol for discharge planning and follow-up care subsequent to the transplant. This protocol must be approved in writing by the case management staff of the Referring Plan or BCBSA, on behalf of Referring Plan, prior to the Member's discharge from care. (b) Hospital Duty to Referring Plan or BC BSA. Upon request of Referring Plan or BCBSA, Hospital agrees to provide any and all Protected Health Information relating to Members to Referring Plan or BCBSA, on behalf of Referring Plan, that is reasonably necessary for Preauthorization, discharge planning and coordination of patient care during the Member's hospitalization for Transplant Services.\u00a0 (c) Prohibition on Use and Disclosure. The parties agree that they shall not and shall require that their directors, officers, agents, and employees do not Use or Disclose Protected Health Information in any manner that would constitute a violation of the Privacy Standards and any other applicable federal or state laws",
+        "Business Area": "Operational Risk Management",
+        "Page #": "14 of 20"
+    },
+    {
+        "#": "14",
+        "Term Type": "Personal Health Information",
+        "Sub-Type": "PHI disclosure to third parties",
+        "Description": "6.4 Disclosures of Protected Health Information to Third Parties. To the extent that the parties Disclose Protected Health Information to a third party, the parties must obtain\nsatisfactory assurances from the third party that: 1) it will not Use or Disclose such Protected Health Information other than as permitted or required by contract or as required\nby law; 2) it will use appropriate safeguards to prevent Use or Disclosure of such Protected Health Information other than as provided for by its contract; and 3) and it will immediately notify the parties of any breaches of the confidentiality of such Protected Health Information, to the extent that it has obtained knowledge of such breach.",
+        "Business Area": "Operational Risk Management",
+        "Page #": "14 of 20"
+    }
+]
