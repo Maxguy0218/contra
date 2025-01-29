@@ -4,6 +4,6 @@ plotly
 pdfplumber
 langchain-core
 langchain-community
-chromadb
+faiss-cpu
 sentence-transformers
 google-generativeai
