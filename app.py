@@ -66,30 +66,41 @@ text_splitter = RecursiveCharacterTextSplitter(
 
 def process_pdf(uploaded_file):
     """Extract and split text from PDF"""
-    with pdfplumber.open(uploaded_file) as pdf:
-        text = "\n".join([page.extract_text() for page in pdf.pages])
-    return text_splitter.split_text(text)
+    try:
+        with pdfplumber.open(uploaded_file) as pdf:
+            text = "\n".join([page.extract_text() or "" for page in pdf.pages])  # Handle empty pages
+        return text_splitter.split_text(text)
+    except Exception as e:
+        st.error(f"Failed to process PDF: {str(e)}")
+        return []
 
 def create_vector_store(texts):
     """Create FAISS vector store with free embeddings"""
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    return FAISS.from_texts(
-        texts=texts,
-        embedding=embeddings
-    )
+    if not texts:
+        st.error("No text extracted from document")
+        return None
+    try:
+        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        return FAISS.from_texts(texts=texts, embedding=embeddings)
+    except Exception as e:
+        st.error(f"Failed to create vector store: {str(e)}")
+        return None
 
 def get_answer(question, vector_store, api_key):
     """Get answer using Gemini Pro"""
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-pro')
-    
-    # Retrieve relevant text chunks
-    docs = vector_store.similarity_search(question, k=3)
-    context = "\n".join([doc.page_content for doc in docs])
-    
-    # Generate answer
-    response = model.generate_content(f"Context: {context}\n\nQuestion: {question}")
-    return response.text
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-pro')
+        
+        # Retrieve relevant text chunks
+        docs = vector_store.similarity_search(question, k=3)
+        context = "\n".join([doc.page_content for doc in docs])
+        
+        # Generate answer
+        response = model.generate_content(f"Answer based on this context only:\n{context}\n\nQuestion: {question}")
+        return response.text
+    except Exception as e:
+        return f"Error generating answer: {str(e)}"
 
 # Streamlit app
 def main():
@@ -229,13 +240,14 @@ def main():
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": user_input})
         
-        # Get answer from Gemini Pro
-        answer = get_answer(user_input, st.session_state.vector_store, gemini_api_key)
+        try:
+            # Get answer from Gemini Pro
+            answer = get_answer(user_input, st.session_state.vector_store, gemini_api_key)
+            st.session_state.messages.append({"role": "assistant", "content": answer})
+        except Exception as e:
+            st.error(f"Failed to generate answer: {str(e)}")
         
-        # Add assistant message to chat history
-        st.session_state.messages.append({"role": "assistant", "content": answer})
-        
-        # Rerun to update the chat interface
+        # Refresh the UI
         st.rerun()
     
     st.markdown("</div>", unsafe_allow_html=True)
@@ -252,26 +264,22 @@ def main():
         
         if st.button("Generate Report"):
             with st.spinner("Generating report..."):
-                time.sleep(5)
-            
-            report = filter_data(st.session_state.data, business_area)
+                time.sleep(2)  # Simulate processing time
+                report = filter_data(st.session_state.data, business_area)
+                st.session_state.report = report
     
     with col2:
         if uploaded_file and st.session_state.data is not None:
-            show_labels = not st.sidebar.expander("Options").checkbox("Hide Sidebar Labels")
-            pie_chart_placeholder = st.empty()
-            pie_chart_placeholder.empty()
+            show_labels = not st.sidebar.expander("Options").checkbox("Hide Labels")
             st.write("### Business Area Distribution")
             st.plotly_chart(plot_pie_chart(st.session_state.data, show_labels=show_labels), use_container_width=True)
     
-    # Ensure report is displayed below pie chart
-    if "report" in locals() and not report.empty:
+    # Display report
+    if "report" in st.session_state and not st.session_state.report.empty:
         st.markdown("<div class='report-container'>", unsafe_allow_html=True)
         st.write(f"### Report for {business_area}")
-        st.write(report.to_html(escape=False), unsafe_allow_html=True)
+        st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
-    elif "report" in locals():
-        st.warning("No data available for the selected business area.")
 
 if __name__ == "__main__":
     main()
