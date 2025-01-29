@@ -197,6 +197,7 @@ def main():
         st.session_state.business_area = None
         st.session_state.vector_store = None
         st.session_state.messages = []
+        st.session_state.chat_input = ""  # Initialize chat input state
 
     # Process document
     if uploaded_file:
@@ -217,7 +218,7 @@ def main():
             with st.spinner("Processing document..."):
                 texts = process_pdf(uploaded_file)
                 st.session_state.vector_store = create_vector_store(texts)
-                st.session_state.messages = []
+                st.session_state.messages = []  # Reset chat history for new document
 
     # Report section
     col1, col2 = st.columns([2, 4])
@@ -263,7 +264,7 @@ def main():
             st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
     
     # User input with auto-clear functionality
-    user_input = st.text_input("Ask about the contract:", key="input", value="")
+    user_input = st.text_input("Ask about the contract:", key="chat_input", value=st.session_state.chat_input)
     
     if user_input and st.session_state.vector_store and gemini_api_key:
         # Add user message to chat history
@@ -277,8 +278,8 @@ def main():
             st.error(f"Failed to generate answer: {str(e)}")
         
         # Clear input field after processing
-        st.session_state.input = ""
-        st.rerun()
+        st.session_state.chat_input = ""  # Reset input field
+        st.rerun()  # Refresh the UI
     
     st.markdown("</div>", unsafe_allow_html=True)
 
