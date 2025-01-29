@@ -1,7 +1,6 @@
 streamlit
 pandas
 plotly
-base64
 pdfplumber
 langchain
 chromadb
