@@ -217,7 +217,7 @@ def main():
             with st.spinner("Processing document..."):
                 texts = process_pdf(uploaded_file)
                 st.session_state.vector_store = create_vector_store(texts)
-                st.session_state.messages = []  # Reset chat history for new document
+                st.session_state.messages = []
 
     # Report section
     col1, col2 = st.columns([2, 4])
@@ -261,11 +261,13 @@ def main():
             st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
         else:
             st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+
+    # Chat input form
+    with st.form(key="chat_form"):
+        user_input = st.text_input("Ask about the contract:", key="chat_input")
+        submit_button = st.form_submit_button("Send")
     
-    # User input with auto-clear functionality
-    user_input = st.text_input("Ask about the contract:", key="chat_input")
-    
-    if user_input and st.session_state.vector_store and gemini_api_key:
+    if submit_button and user_input and st.session_state.vector_store and gemini_api_key:
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": user_input})
         
@@ -276,9 +278,8 @@ def main():
         except Exception as e:
             st.error(f"Failed to generate answer: {str(e)}")
         
-        # Clear input field using callback
-        st.session_state.chat_input = ""
-        st.experimental_rerun()
+        # Form automatically clears input, just rerun
+        st.rerun()
     
     st.markdown("</div>", unsafe_allow_html=True)
 
