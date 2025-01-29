@@ -68,7 +68,7 @@ def process_pdf(uploaded_file):
     """Extract and split text from PDF"""
     try:
         with pdfplumber.open(uploaded_file) as pdf:
-            text = "\n".join([page.extract_text() or "" for page in pdf.pages])  # Handle empty pages
+            text = "\n".join([page.extract_text() or "" for page in pdf.pages])
         return text_splitter.split_text(text)
     except Exception as e:
         st.error(f"Failed to process PDF: {str(e)}")
@@ -107,13 +107,14 @@ def main():
     # Set wide layout
     st.set_page_config(layout="wide")
     
-    # Custom Styling
+    # Custom Styling with reduced header spacing
     st.markdown("""
         <style>
             .header-container {
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                margin-bottom: -30px;
             }
             .main-title {
                 font-size: 48px;
@@ -128,15 +129,9 @@ def main():
                 align-items: center;
                 gap: 10px;
             }
-            .sidebar .css-1d391kg {
-                width: 180px !important;
-            }
             .report-container {
                 max-width: 100%;
                 margin: auto;
-            }
-            th {
-                text-align: left !important;
             }
             .chat-box {
                 border: 2px solid #4a4a4a;
@@ -145,6 +140,7 @@ def main():
                 height: 400px;
                 overflow-y: auto;
                 background: #f9f9f9;
+                margin-top: 20px;
             }
             .user-msg {
                 color: #ffffff;
@@ -221,38 +217,9 @@ def main():
             with st.spinner("Processing document..."):
                 texts = process_pdf(uploaded_file)
                 st.session_state.vector_store = create_vector_store(texts)
-                st.session_state.messages = []  # Reset chat history for new document
-    
-    # Chat interface
-    st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
-    
-    # Display chat history
-    for msg in st.session_state.messages:
-        if msg["role"] == "user":
-            st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
-        else:
-            st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
-    
-    # User input
-    user_input = st.text_input("Ask about the contract:", key="input")
-    
-    if user_input and st.session_state.vector_store and gemini_api_key:
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        
-        try:
-            # Get answer from Gemini Pro
-            answer = get_answer(user_input, st.session_state.vector_store, gemini_api_key)
-            st.session_state.messages.append({"role": "assistant", "content": answer})
-        except Exception as e:
-            st.error(f"Failed to generate answer: {str(e)}")
-        
-        # Refresh the UI
-        st.rerun()
-    
-    st.markdown("</div>", unsafe_allow_html=True)
+                st.session_state.messages = []
 
-    # Existing report generation logic
+    # Report section
     col1, col2 = st.columns([2, 4])
     
     with col1:
@@ -264,7 +231,7 @@ def main():
         
         if st.button("Generate Report"):
             with st.spinner("Generating report..."):
-                time.sleep(2)  # Simulate processing time
+                time.sleep(2)
                 report = filter_data(st.session_state.data, business_area)
                 st.session_state.report = report
     
@@ -280,6 +247,40 @@ def main():
         st.write(f"### Report for {business_area}")
         st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
+
+    # Chatbot section below report
+    st.markdown("---")
+    st.subheader("Document Chat Assistant")
+    
+    # Chat interface
+    st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
+    
+    # Display chat history
+    for msg in st.session_state.messages:
+        if msg["role"] == "user":
+            st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+    
+    # User input with auto-clear functionality
+    user_input = st.text_input("Ask about the contract:", key="input", value="")
+    
+    if user_input and st.session_state.vector_store and gemini_api_key:
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        
+        try:
+            # Get answer from Gemini Pro
+            answer = get_answer(user_input, st.session_state.vector_store, gemini_api_key)
+            st.session_state.messages.append({"role": "assistant", "content": answer})
+        except Exception as e:
+            st.error(f"Failed to generate answer: {str(e)}")
+        
+        # Clear input field after processing
+        st.session_state.input = ""
+        st.rerun()
+    
+    st.markdown("</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
