@@ -197,7 +197,6 @@ def main():
         st.session_state.business_area = None
         st.session_state.vector_store = None
         st.session_state.messages = []
-        st.session_state.chat_input = ""  # Initialize chat input state
 
     # Process document
     if uploaded_file:
@@ -264,7 +263,7 @@ def main():
             st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
     
     # User input with auto-clear functionality
-    user_input = st.text_input("Ask about the contract:", key="chat_input", value=st.session_state.chat_input)
+    user_input = st.text_input("Ask about the contract:", key="chat_input")
     
     if user_input and st.session_state.vector_store and gemini_api_key:
         # Add user message to chat history
@@ -277,9 +276,9 @@ def main():
         except Exception as e:
             st.error(f"Failed to generate answer: {str(e)}")
         
-        # Clear input field after processing
-        st.session_state.chat_input = ""  # Reset input field
-        st.rerun()  # Refresh the UI
+        # Clear input field using callback
+        st.session_state.chat_input = ""
+        st.experimental_rerun()
     
     st.markdown("</div>", unsafe_allow_html=True)
 
