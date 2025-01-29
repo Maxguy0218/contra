@@ -2,7 +2,8 @@ streamlit
 pandas
 plotly
 pdfplumber
-langchain
+langchain-core
+langchain-community
 chromadb
 sentence-transformers
 google-generativeai
