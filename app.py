@@ -236,7 +236,7 @@ def main():
         st.session_state.messages.append({"role": "assistant", "content": answer})
         
         # Rerun to update the chat interface
-        st.experimental_rerun()
+        st.rerun()
     
     st.markdown("</div>", unsafe_allow_html=True)
 
