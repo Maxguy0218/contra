@@ -8,7 +8,7 @@ import base64
 import pdfplumber
 import google.generativeai as genai
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma  # New import
 from langchain.embeddings import HuggingFaceEmbeddings
 
 # Define the paths for the JSON files relative to the script
