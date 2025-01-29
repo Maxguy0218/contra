@@ -8,7 +8,7 @@ import base64
 import pdfplumber
 import google.generativeai as genai
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma  # New import
+from langchain_community.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
 
 # Define the paths for the JSON files relative to the script
@@ -71,12 +71,11 @@ def process_pdf(uploaded_file):
     return text_splitter.split_text(text)
 
 def create_vector_store(texts):
-    """Create ChromaDB vector store with free embeddings"""
+    """Create FAISS vector store with free embeddings"""
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    return Chroma.from_texts(
+    return FAISS.from_texts(
         texts=texts,
-        embedding=embeddings,
-        collection_name="contract_docs"
+        embedding=embeddings
     )
 
 def get_answer(question, vector_store, api_key):
