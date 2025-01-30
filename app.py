@@ -10,29 +10,12 @@ import google.generativeai as genai
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
-import io  # For Excel export
-
-# MUST BE FIRST STREAMLIT COMMAND
-st.set_page_config(layout="wide")
 
 # Hardcoded API Key (Replace with your actual key)
 GEMINI_API_KEY = 'AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg'
 # Path configurations
 ATENA_JSON_PATH = os.path.join(os.getcwd(), "atena_annotations_fixed.json")
 BCBS_JSON_PATH = os.path.join(os.getcwd(), "bcbs_annotations_fixed.json")
-
-# Add JavaScript detection for screen width
-st.markdown("""
-    <script>
-    window.addEventListener('load', function() {
-        const width = window.innerWidth;
-        window.parent.postMessage({
-            type: 'streamlit:setComponentValue',
-            value: width
-        }, '*');
-    });
-    </script>
-    """, unsafe_allow_html=True)
 
 def load_atena_data():
     with open(ATENA_JSON_PATH, "r") as f:
@@ -51,7 +34,7 @@ def filter_data(df, business_area):
     df_filtered = df[df["Business Area"] == business_area]
     df_filtered["Key Takeaways"] = df_filtered["Description"].apply(generate_key_takeaways)
     df_filtered.reset_index(drop=True, inplace=True)
-    df_filtered.index = df_filtered.index + 1
+    df_filtered.index = df_filtered.index + 1  # Start index from 1
     return df_filtered[["Term Type", "Sub-Type", "Key Takeaways", "Page #"]]
 
 def plot_pie_chart(data):
@@ -62,26 +45,6 @@ def plot_pie_chart(data):
         custom_colors = list(custom_colors)
         medicaid_index = counts.index.get_loc("Medicaid Compliance")
         custom_colors[medicaid_index] = "#1f77b4"
-
-    # Detect screen width from session state
-    screen_width = st.session_state.get('screen_width', 1200)
-    
-    # Adjust label positions based on screen width
-    if screen_width < 1200:  # Sidebar likely visible
-        trace_params = {
-            'textposition': 'outside',
-            'textfont_size': 12,
-            'pull': 0.1,  # Single value instead of list
-            'legend_x': 1.2
-        }
-    else:  # Full width mode
-        trace_params = {
-            'textposition': 'inside',
-            'insidetextorientation': 'horizontal',
-            'textfont_size': 14,
-            'pull': 0,
-            'legend_x': 1
-        }
     
     fig = px.pie(
         names=counts.index,
@@ -89,33 +52,24 @@ def plot_pie_chart(data):
         title="",
         color_discrete_sequence=custom_colors
     )
-    
-    # Simplified update_traces call
+    # Updated pie chart configuration
     fig.update_traces(
         textinfo="percent+label",
+        textposition="inside",
+        insidetextorientation='horizontal',
+        pull=[0.1, 0],
         hole=0.2,
-        textfont_size=trace_params['textfont_size'],
-        pull=trace_params['pull'],
-        marker=dict(line=dict(color='#ffffff', width=2))
+        textfont=dict(size=12)  # Reduced text size
     )
-    
-    # Conditional parameter for inside text orientation
-    if 'insidetextorientation' in trace_params:
-        fig.update_traces(
-            insidetextorientation=trace_params['insidetextorientation']
-        )
-
     fig.update_layout(
         height=400,
         width=600,
         margin=dict(l=20, r=20, t=20, b=20),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        uniformtext_minsize=10,
-        uniformtext_mode='hide',
-        legend=dict(x=trace_params['legend_x'], y=0.5)
+        uniformtext_minsize=10,  # Minimum text size
+        uniformtext_mode='hide'   # Only show text that fits
     )
-    
     return fig
 
 def get_base64_image(file_path):
@@ -159,14 +113,8 @@ def get_answer(question, vector_store, api_key):
         return f"Error generating answer: {str(e)}"
 
 def main():
-    # Get screen width from frontend
-    if 'screen_width' not in st.session_state:
-        st.session_state.screen_width = 1200
+    st.set_page_config(layout="wide")
     
-    # Update screen width from JS
-    if 'component_value' in st.session_state:
-        st.session_state.screen_width = st.session_state.component_value
-
     st.markdown("""
         <style>
             .header-container {
@@ -227,19 +175,6 @@ def main():
             }
             .dataframe td:first-child {
                 font-weight: bold;
-            }
-            /* Styles for Export Button */
-            .stDownloadButton button {
-                background-color: #FF4500 !important;
-                color: white !important;
-                border: 1px solid #FF4500;
-                padding: 0.5rem 1rem;
-                border-radius: 8px;
-                margin-top: 25px;
-            }
-            .stDownloadButton button:hover {
-                background-color: #FF5722 !important;
-                border-color: #FF5722;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -327,27 +262,11 @@ def main():
 
         # Report Display
         if "report" in st.session_state and not st.session_state.report.empty:
-            # Add Export button row
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                st.markdown("<div class='section-title'>Analysis Report</div>", unsafe_allow_html=True)
-            with col2:
-                # Create Excel file in memory
-                buffer = io.BytesIO()
-                with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-                    st.session_state.report.to_excel(writer, index=False, sheet_name='Report')
-                    writer.close()
-                    
-                    st.download_button(
-                        label="📄 Export to Excel",
-                        data=buffer.getvalue(),
-                        file_name=f"{st.session_state.business_area} Report.xlsx",
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        key="export_btn",
-                        help="Download report in Excel format"
-                    )
-
+            st.markdown("<div class='section-title'>Analysis Report</div>", unsafe_allow_html=True)
             st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
+            
+            # Add Export button (no functionality)
+            st.button("Export to Excel", key="export_btn")
 
         # Chat Interface
         st.markdown("<div class='section-title'>Document Assistant</div>", unsafe_allow_html=True)
