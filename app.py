@@ -12,7 +12,7 @@ from langchain_community.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
 
 # Hardcoded API Key (Replace with your actual key)
-GEMINI_API_KEY =AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg
+GEMINI_API_KEY ='AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg'
 # Path configurations
 ATENA_JSON_PATH = os.path.join(os.getcwd(), "atena_annotations_fixed.json")
 BCBS_JSON_PATH = os.path.join(os.getcwd(), "bcbs_annotations_fixed.json")
