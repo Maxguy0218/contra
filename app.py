@@ -261,7 +261,7 @@ def main():
         st.markdown("---")
 
         # Report Display
-         if "report" in st.session_state and not st.session_state.report.empty:
+        if "report" in st.session_state and not st.session_state.report.empty:
             # Create columns for title and button with proper vertical alignment
             col_title, col_btn = st.columns([4, 1])
             with col_title:
