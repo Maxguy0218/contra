@@ -36,6 +36,7 @@ def filter_data(df, business_area):
     df_filtered = df[df["Business Area"] == business_area]
     df_filtered["Key Takeaways"] = df_filtered["Description"].apply(generate_key_takeaways)
     df_filtered.reset_index(drop=True, inplace=True)
+    df_filtered.index = df_filtered.index + 1  # Start counting from 1 instead of 0
     return df_filtered[["Term Type", "Sub-Type", "Key Takeaways", "Page #"]]
 
 def plot_pie_chart(data):
@@ -53,13 +54,22 @@ def plot_pie_chart(data):
         names=counts.index,
         values=counts.values,
         title="",
-        color_discrete_sequence=custom_colors  # Use the custom color sequence
+        color_discrete_sequence=custom_colors,  # Use the custom color sequence
+        hole=0.2,  # Add a hole in the middle for a donut chart
     )
-    fig.update_traces(textinfo="percent+label", pull=[0.1, 0], hole=0.2)
-    fig.update_layout(height=400, width=600, 
-                      margin=dict(l=20, r=20, t=20, b=20),
-                      paper_bgcolor='rgba(0,0,0,0)',
-                      plot_bgcolor='rgba(0,0,0,0)')
+    fig.update_traces(
+        textinfo="percent+label",  # Show percentage and label
+        textposition="outside",  # Move labels outside the chart
+        pull=[0.1, 0, 0],  # Pull slices slightly for better visibility
+        marker=dict(line=dict(color="#000000", width=1))  # Add a border to slices
+    )
+    fig.update_layout(
+        height=400, width=600, 
+        margin=dict(l=20, r=20, t=20, b=20),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        showlegend=False  # Hide legend since labels are outside
+    )
     return fig
 
 def get_base64_image(file_path):
@@ -214,32 +224,34 @@ def main():
 
     # Main Content
     if st.session_state.data is not None:
-        # Section Titles
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("<div class='section-title'>Select Business Area</div>", unsafe_allow_html=True)
-        with col2:
-            st.markdown("<div class='section-title'>Business Area Distribution</div>", unsafe_allow_html=True)
+        # Hide "Select Business Area" section when sidebar is open
+        if not st.sidebar.checkbox("Show Sidebar", value=True):
+            # Section Titles
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("<div class='section-title'>Select Business Area</div>", unsafe_allow_html=True)
+            with col2:
+                st.markdown("<div class='section-title'>Business Area Distribution</div>", unsafe_allow_html=True)
 
-        # Content Columns
-        col1, col2 = st.columns([1, 2])
-        
-        with col1:
-            business_area = st.radio(
-                "Select a Business Area",
-                ["Operational Risk Management", "Financial Risk Management", "Medicaid Compliance"],  # Added "Medicaid Compliance"
-                key="ba_radio",
-                label_visibility="collapsed"
-            )
+            # Content Columns
+            col1, col2 = st.columns([1, 2])
             
-            if st.button("Generate Report", key="report_btn"):
-                with st.spinner("Generating report..."):
-                    time.sleep(1)
-                    report = filter_data(st.session_state.data, business_area)
-                    st.session_state.report = report
+            with col1:
+                business_area = st.radio(
+                    "Select a Business Area",
+                    ["Operational Risk Management", "Financial Risk Management", "Medicaid Compliance"],  # Added "Medicaid Compliance"
+                    key="ba_radio",
+                    label_visibility="collapsed"
+                )
+                
+                if st.button("Generate Report", key="report_btn"):
+                    with st.spinner("Generating report..."):
+                        time.sleep(1)
+                        report = filter_data(st.session_state.data, business_area)
+                        st.session_state.report = report
 
-        with col2:
-            st.plotly_chart(plot_pie_chart(st.session_state.data), use_container_width=True)
+            with col2:
+                st.plotly_chart(plot_pie_chart(st.session_state.data), use_container_width=True)
 
         # Divider line
         st.markdown("---")
