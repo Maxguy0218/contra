@@ -218,7 +218,7 @@ def main():
         with col1:
             business_area = st.radio(
                 "Select a Business Area",
-                ["Operational Risk Management", "Financial Risk Management"],
+                ["Operational Risk Management", "Financial Risk Management", "Medicaid Compliance"],  # Added "Medicaid Compliance"
                 key="ba_radio",
                 label_visibility="collapsed"
             )
@@ -256,11 +256,9 @@ def main():
                 st.error(f"Failed to generate answer: {str(e)}")
 
         # Display chat history
-        # Display chat history
         if st.session_state.messages:
             with st.container():
                 st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
-                # Changed this line to reverse the message order
                 for msg in reversed(st.session_state.messages):
                     if msg["role"] == "user":
                         st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
