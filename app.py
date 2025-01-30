@@ -11,6 +11,9 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
 
+# MUST BE FIRST STREAMLIT COMMAND
+st.set_page_config(layout="wide")
+
 # Hardcoded API Key (Replace with your actual key)
 GEMINI_API_KEY = 'AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg'
 # Path configurations
@@ -148,8 +151,6 @@ def get_answer(question, vector_store, api_key):
         return f"Error generating answer: {str(e)}"
 
 def main():
-    st.set_page_config(layout="wide")
-    
     # Get screen width from frontend
     if 'screen_width' not in st.session_state:
         st.session_state.screen_width = 1200
