@@ -257,7 +257,7 @@ def main():
 
         # Display chat history
         # Display chat history
-         if st.session_state.messages:
+          if st.session_state.messages:
             with st.container():
                 st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
                 # Changed this line to reverse the message order
