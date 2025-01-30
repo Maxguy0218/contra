@@ -135,12 +135,6 @@ def main():
                 padding: 15px !important;
                 border-radius: 10px !important;
             }
-            .chat-container {
-                border: 2px solid #FF4500;
-                border-radius: 10px;
-                padding: 20px;
-                margin-top: 20px;
-            }
             .user-msg {
                 color: #ffffff;
                 padding: 12px 18px;
