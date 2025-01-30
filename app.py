@@ -256,15 +256,19 @@ def main():
                 st.error(f"Failed to generate answer: {str(e)}")
 
         # Display chat history
+        # Display chat history
         if st.session_state.messages:
             with st.container():
                 st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
-                for msg in st.session_state.messages:
+                # Changed this line to reverse the message order
+                for msg in reversed(st.session_state.messages):
                     if msg["role"] == "user":
                         st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
                     else:
                         st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
                 st.markdown("</div>", unsafe_allow_html=True)
+
+
 
 if __name__ == "__main__":
     main()
