@@ -40,11 +40,20 @@ def filter_data(df, business_area):
 
 def plot_pie_chart(data):
     counts = data["Business Area"].value_counts()
+    
+    # Define a custom color sequence
+    custom_colors = px.colors.sequential.RdBu  # Default color sequence
+    if "Medicaid Compliance" in counts.index:
+        # Make "Medicaid Compliance" darker by using a specific color
+        custom_colors = list(custom_colors)  # Convert to list to modify
+        medicaid_index = counts.index.get_loc("Medicaid Compliance")  # Get index of "Medicaid Compliance"
+        custom_colors[medicaid_index] = "#1f77b4"  # Darker blue color for Medicaid Compliance
+    
     fig = px.pie(
         names=counts.index,
         values=counts.values,
         title="",
-        color_discrete_sequence=px.colors.sequential.RdBu
+        color_discrete_sequence=custom_colors  # Use the custom color sequence
     )
     fig.update_traces(textinfo="percent+label", pull=[0.1, 0], hole=0.2)
     fig.update_layout(height=400, width=600, 
