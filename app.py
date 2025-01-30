@@ -101,6 +101,10 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
+    # Sidebar
+    st.sidebar.header("Upload Contract")
+    uploaded_file = st.sidebar.file_uploader("Upload a contract file", type=["pdf"])
+
     # Branding
     logo_path = "logo.svg"
     logo_base64 = ""
@@ -112,19 +116,17 @@ def main():
         st.markdown(f'<div class="centered-header"><img src="data:image/svg+xml;base64,{logo_base64}" width="100" /></div>', unsafe_allow_html=True)
     st.markdown('<h1 class="centered-header">ContractIQ</h1>', unsafe_allow_html=True)
 
-    # Layout: Sidebar + Main Content
     col1, col2 = st.columns([1, 2])
-
     with col1:
         st.subheader("Select Business Area")
         business_area = st.radio("", ["Operational Risk Management", "Financial Risk Management"], label_visibility="collapsed")
         st.button("Generate Report")
     
     with col2:
-        if "uploaded_file" in st.session_state:
-            st.plotly_chart(plot_pie_chart(st.session_state.data), use_container_width=True)
+        if uploaded_file:
+            data = load_atena_data() if "AETNA" in uploaded_file.name.upper() else load_bcbs_data()
+            st.plotly_chart(plot_pie_chart(data), use_container_width=True)
     
-    # Chat Section
     st.markdown("---")
     st.subheader("Document Chat Assistant")
     st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
