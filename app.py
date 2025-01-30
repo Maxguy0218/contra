@@ -11,11 +11,12 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
 
-# Define the paths for the JSON files relative to the script
+# Hardcoded API Key (Replace with your actual key)
+GEMINI_API_KEY = 'AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg'
+# Path configurations
 ATENA_JSON_PATH = os.path.join(os.getcwd(), "atena_annotations_fixed.json")
 BCBS_JSON_PATH = os.path.join(os.getcwd(), "bcbs_annotations_fixed.json")
 
-# Load the annotated data from JSON files
 def load_atena_data():
     with open(ATENA_JSON_PATH, "r") as f:
         return pd.DataFrame(json.load(f))
@@ -24,7 +25,6 @@ def load_bcbs_data():
     with open(BCBS_JSON_PATH, "r") as f:
         return pd.DataFrame(json.load(f))
 
-# Generate key takeaways from the description
 def generate_key_takeaways(description):
     sentences = description.split('. ')
     takeaways = [f"• {sentence.strip()}" for sentence in sentences[:5]]
@@ -32,50 +32,46 @@ def generate_key_takeaways(description):
         takeaways.append("• [No further details available]")
     return '<br>'.join(takeaways)
 
-# Filter data based on the selected business area
 def filter_data(df, business_area):
     df_filtered = df[df["Business Area"] == business_area]
     df_filtered["Key Takeaways"] = df_filtered["Description"].apply(generate_key_takeaways)
     df_filtered.reset_index(drop=True, inplace=True)
     return df_filtered[["Term Type", "Sub-Type", "Key Takeaways", "Page #"]]
 
-# Plot pie chart using Plotly
-def plot_pie_chart(data, show_labels=True):
+def plot_pie_chart(data):
     counts = data["Business Area"].value_counts()
     fig = px.pie(
         names=counts.index,
         values=counts.values,
-        title="Business Area Distribution",
+        title="",
         color_discrete_sequence=px.colors.sequential.RdBu
     )
-    textinfo = "percent+label" if show_labels else "none"
-    fig.update_traces(textinfo=textinfo, pull=[0.1, 0], hole=0.2)
-    fig.update_layout(height=600, width=850, margin=dict(l=150, r=150, t=50, b=50))
+    fig.update_traces(textinfo="percent+label", pull=[0.1, 0], hole=0.2)
+    fig.update_layout(height=400, width=600, 
+                      margin=dict(l=20, r=20, t=20, b=20),
+                      paper_bgcolor='rgba(0,0,0,0)',
+                      plot_bgcolor='rgba(0,0,0,0)')
     return fig
 
-# Function to encode the logo in Base64
 def get_base64_image(file_path):
     with open(file_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
-# Initialize components for chatbot
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=1000,
     chunk_overlap=200
 )
 
 def process_pdf(uploaded_file):
-    """Extract and split text from PDF"""
     try:
         with pdfplumber.open(uploaded_file) as pdf:
-            text = "\n".join([page.extract_text() or "" for page in pdf.pages])  # Handle empty pages
+            text = "\n".join([page.extract_text() or "" for page in pdf.pages])
         return text_splitter.split_text(text)
     except Exception as e:
         st.error(f"Failed to process PDF: {str(e)}")
         return []
 
 def create_vector_store(texts):
-    """Create FAISS vector store with free embeddings"""
     if not texts:
         st.error("No text extracted from document")
         return None
@@ -87,114 +83,100 @@ def create_vector_store(texts):
         return None
 
 def get_answer(question, vector_store, api_key):
-    """Get answer using Gemini Pro"""
     try:
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-pro')
-        
-        # Retrieve relevant text chunks
         docs = vector_store.similarity_search(question, k=3)
         context = "\n".join([doc.page_content for doc in docs])
-        
-        # Generate answer
         response = model.generate_content(f"Answer based on this context only:\n{context}\n\nQuestion: {question}")
         return response.text
     except Exception as e:
         return f"Error generating answer: {str(e)}"
 
-# Streamlit app
 def main():
-    # Set wide layout
     st.set_page_config(layout="wide")
     
-    # Custom Styling
     st.markdown("""
         <style>
             .header-container {
-                display: flex;
-                align-items: center;
-                gap: 10px;
+                text-align: center;
+                margin: -75px 0 -30px 0;
+                padding: 0;
             }
             .main-title {
-                font-size: 48px;
+                font-size: 36px;
                 font-weight: bold;
-                color: #FF5733;
+                color: #FF4500;
+                display: inline-block;
+                vertical-align: middle;
+                margin: 0;
+            }
+            .logo-img {
+                height: 50px;
+                vertical-align: middle;
+                margin-right: 15px;
             }
             .sidebar-title {
                 font-size: 24px;
+                color: #FF4500;
                 font-weight: bold;
-                color: #FF5733;
-                display: flex;
-                align-items: center;
-                gap: 10px;
+                margin: -10px 0 20px 0;
             }
-            .sidebar .css-1d391kg {
-                width: 180px !important;
+            .section-title {
+                font-size: 24px;
+                font-weight: bold;
+                color: #FF4500;
+                margin: 20px 0;
             }
-            .report-container {
-                max-width: 100%;
-                margin: auto;
+            .stRadio [role=radiogroup] {
+                gap: 15px;
             }
-            th {
-                text-align: left !important;
-            }
-            .chat-box {
-                border: 2px solid #4a4a4a;
-                border-radius: 10px;
-                padding: 20px;
-                height: 400px;
-                overflow-y: auto;
-                background: #f9f9f9;
+            .stRadio [role=radio] {
+                padding: 15px !important;
+                border-radius: 10px !important;
             }
             .user-msg {
                 color: #ffffff;
-                padding: 10px;
-                margin: 5px 0;
-                border-radius: 5px;
+                padding: 12px 18px;
+                margin: 10px 0;
+                border-radius: 15px;
                 background: #0078d4;
-                text-align: right;
+                word-break: break-word;
             }
             .assistant-msg {
-                color: #2d3436;
-                padding: 10px;
-                margin: 5px 0;
-                border-radius: 5px;
-                background: #dfe6e9;
+                color: #ffffff;
+                padding: 12px 18px;
+                margin: 10px 0;
+                border-radius: 15px;
+                background: #4a4a4a;
+                word-break: break-word;
             }
         </style>
     """, unsafe_allow_html=True)
-    
-    # Branding in sidebar and main page
-    logo_path = "logo.svg"
-    if os.path.exists(logo_path):
-        logo_base64 = get_base64_image(logo_path)
-        logo_img = f'<img src="data:image/svg+xml;base64,{logo_base64}" alt="Logo" style="width: 50px; vertical-align: middle;">'
-    else:
-        logo_img = "[Logo Missing]"
 
-    st.sidebar.markdown(
-        f"""
-        <div class="sidebar-title">
-            {logo_img}
-            ContractIQ
-        </div>
-        """, unsafe_allow_html=True
-    )
-    
-    st.markdown(
-        f"""
+    # Main Header
+    logo_base64 = get_base64_image("logo.svg") if os.path.exists("logo.svg") else ""
+    st.markdown(f"""
         <div class="header-container">
-            <img src="data:image/svg+xml;base64,{logo_base64}" alt="Logo" style="width: 120px; vertical-align: middle;">
-            <span class="main-title">ContractIQ</span>
+            <h1 class="main-title">
+                <img src="data:image/svg+xml;base64,{logo_base64}" class="logo-img">
+                ContractIQ
+            </h1>
         </div>
-        """, unsafe_allow_html=True
-    )
-    
-    # Sidebar upload section
-    uploaded_file = st.sidebar.file_uploader("Upload a contract file", type=["pdf"])
-    gemini_api_key = st.sidebar.text_input("Enter Gemini API Key", type="password")
-    
-    # Initialize session state
+    """, unsafe_allow_html=True)
+
+    # Sidebar
+    with st.sidebar:
+        st.markdown(f"""
+            <div class="sidebar-title">
+                <img src="data:image/svg+xml;base64,{logo_base64}" style="height: 40px; vertical-align: middle;">
+                ContractIQ
+            </div>
+        """, unsafe_allow_html=True)
+        st.markdown("## Document Upload")
+        uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
+
+    # Session State
     if "uploaded_file" not in st.session_state:
         st.session_state.uploaded_file = None
         st.session_state.data = None
@@ -202,84 +184,87 @@ def main():
         st.session_state.vector_store = None
         st.session_state.messages = []
 
-    # Process document
-    if uploaded_file:
-        if st.session_state.uploaded_file != uploaded_file:
-            st.session_state.uploaded_file = uploaded_file
-            st.session_state.data = None
-            st.session_state.business_area = None
-            
-            if "AETNA" in uploaded_file.name.upper():
-                st.session_state.data = load_atena_data()
-            elif "BLUE" in uploaded_file.name.upper():
-                st.session_state.data = load_bcbs_data()
-            else:
-                st.error("ERROR: Unsupported document type.")
-                return
-            
-            # Process PDF for chatbot
-            with st.spinner("Processing document..."):
-                texts = process_pdf(uploaded_file)
-                st.session_state.vector_store = create_vector_store(texts)
-                st.session_state.messages = []  # Reset chat history for new document
-    
-    # Chat interface
-    st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
-    
-    # Display chat history
-    for msg in st.session_state.messages:
-        if msg["role"] == "user":
-            st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+    # Process Document
+    if uploaded_file and st.session_state.uploaded_file != uploaded_file:
+        st.session_state.uploaded_file = uploaded_file
+        st.session_state.data = None
+        st.session_state.business_area = None
+        
+        if "AETNA" in uploaded_file.name.upper():
+            st.session_state.data = load_atena_data()
+        elif "BLUE" in uploaded_file.name.upper():
+            st.session_state.data = load_bcbs_data()
         else:
-            st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
-    
-    # User input
-    user_input = st.text_input("Ask about the contract:", key="input")
-    
-    if user_input and st.session_state.vector_store and gemini_api_key:
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": user_input})
+            st.error("ERROR: Unsupported document type.")
+            return
         
-        try:
-            # Get answer from Gemini Pro
-            answer = get_answer(user_input, st.session_state.vector_store, gemini_api_key)
-            st.session_state.messages.append({"role": "assistant", "content": answer})
-        except Exception as e:
-            st.error(f"Failed to generate answer: {str(e)}")
-        
-        # Refresh the UI
-        st.rerun()
-    
-    st.markdown("</div>", unsafe_allow_html=True)
+        with st.spinner("Processing document..."):
+            texts = process_pdf(uploaded_file)
+            st.session_state.vector_store = create_vector_store(texts)
+            st.session_state.messages = []
 
-    # Existing report generation logic
-    col1, col2 = st.columns([2, 4])
-    
-    with col1:
-        st.subheader("Select Business Area")
-        business_area = st.radio(
-            "Select a Business Area",
-            ["Operational Risk Management", "Financial Risk Management"]
-        )
+    # Main Content
+    if st.session_state.data is not None:
+        # Section Titles
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("<div class='section-title'>Select Business Area</div>", unsafe_allow_html=True)
+        with col2:
+            st.markdown("<div class='section-title'>Business Area Distribution</div>", unsafe_allow_html=True)
+
+        # Content Columns
+        col1, col2 = st.columns([1, 2])
         
-        if st.button("Generate Report"):
-            with st.spinner("Generating report..."):
-                time.sleep(2)  # Simulate processing time
-                report = filter_data(st.session_state.data, business_area)
-                st.session_state.report = report
-    
-    with col2:
-        if uploaded_file and st.session_state.data is not None:
-            show_labels = not st.sidebar.expander("Options").checkbox("Hide Labels")
-            st.write("### Business Area Distribution")
-            st.plotly_chart(plot_pie_chart(st.session_state.data, show_labels=show_labels), use_container_width=True)
-    
-    # Display report
-    if "report" in st.session_state and not st.session_state.report.empty:
-        st.markdown("<div class='report-container'>", unsafe_allow_html=True)
-        st.write(f"### Report for {business_area}")
-        st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        with col1:
+            business_area = st.radio(
+                "Select a Business Area",
+                ["Operational Risk Management", "Financial Risk Management"],
+                key="ba_radio",
+                label_visibility="collapsed"
+            )
+            
+            if st.button("Generate Report", key="report_btn"):
+                with st.spinner("Generating report..."):
+                    time.sleep(1)
+                    report = filter_data(st.session_state.data, business_area)
+                    st.session_state.report = report
+
+        with col2:
+            st.plotly_chart(plot_pie_chart(st.session_state.data), use_container_width=True)
+
+        # Divider line
+        st.markdown("---")
+
+        # Report Display
+        if "report" in st.session_state and not st.session_state.report.empty:
+            st.markdown("<div class='section-title'>Analysis Report</div>", unsafe_allow_html=True)
+            st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
+
+        # Chat Interface
+        st.markdown("<div class='section-title'>Document Assistant</div>", unsafe_allow_html=True)
+        with st.container():
+            with st.form(key="chat_form"):
+                user_input = st.text_input("Ask about the contract:", key="chat_input")
+                submit_button = st.form_submit_button("Ask Question")
+
+        if submit_button and user_input and st.session_state.vector_store:
+            try:
+                answer = get_answer(user_input, st.session_state.vector_store, GEMINI_API_KEY)
+                st.session_state.messages.append({"role": "user", "content": user_input})
+                st.session_state.messages.append({"role": "assistant", "content": answer})
+            except Exception as e:
+                st.error(f"Failed to generate answer: {str(e)}")
+
+        # Display chat history
+        if st.session_state.messages:
+            with st.container():
+                st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
+                for msg in st.session_state.messages:
+                    if msg["role"] == "user":
+                        st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
