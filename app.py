@@ -26,11 +26,7 @@ def load_bcbs_data():
         return pd.DataFrame(json.load(f))
 
 def generate_key_takeaways(description):
-    sentences = description.split('. ')
-    takeaways = [f"• {sentence.strip()}" for sentence in sentences[:5]]
-    while len(takeaways) < 5:
-        takeaways.append("• [No further details available]")
-    return '<br>'.join(takeaways)
+    return description
 
 def filter_data(df, business_area):
     df_filtered = df[df["Business Area"] == business_area]
