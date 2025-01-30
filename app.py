@@ -26,9 +26,11 @@ def load_bcbs_data():
         return pd.DataFrame(json.load(f))
 
 def generate_key_takeaways(description):
+    # If description is a list, join each item with a line break
     if isinstance(description, list):
-        return "\n".join(description)  # Join list items with newline for separate lines
-    return description  # Return as is if not a list
+        return "<br>".join(description)
+    # If description is a string, return it as-is
+    return description
 
 def filter_data(df, business_area):
     df_filtered = df[df["Business Area"] == business_area]
