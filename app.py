@@ -158,20 +158,13 @@ def main():
     logo_base64 = get_base64_image("logo.svg") if os.path.exists("logo.svg") else ""
     st.markdown(f"""
         <div class="header-container">
-            <h1 class="main-title">
-                <img src="data:image/svg+xml;base64,{logo_base64}" class="logo-img">
-                ContractIQ
-            </h1>
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown(f"""
-        <div class="header-container">
+            <img src="data:image/svg+xml;base64,{logo_base64}" class="logo-img">
             <h1 class="main-title">
                 ContractIQ
             </h1>
         </div>
     """, unsafe_allow_html=True)
-
+    
     # Sidebar
     with st.sidebar:
         st.markdown(f"""
