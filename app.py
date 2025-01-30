@@ -61,14 +61,23 @@ def plot_pie_chart(data):
         textinfo="percent+label",  # Show percentage and label
         textposition="outside",  # Move labels outside the chart
         pull=[0.1, 0, 0],  # Pull slices slightly for better visibility
-        marker=dict(line=dict(color="#000000", width=1))  # Add a border to slices
+        marker=dict(line=dict(color="#000000", width=1)),  # Add a border to slices
+        insidetextorientation='horizontal'  # Ensure text inside is horizontal
     )
     fig.update_layout(
         height=400, width=600, 
         margin=dict(l=20, r=20, t=20, b=20),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        showlegend=False  # Hide legend since labels are outside
+        legend=dict(
+            title="Business Areas",
+            orientation="v",  # Vertical legend
+            yanchor="top",  # Anchor to the top
+            y=1,  # Position at the top
+            xanchor="right",  # Anchor to the right
+            x=1.2  # Position to the right of the chart
+        ),
+        showlegend=True  # Show legend
     )
     return fig
 
@@ -225,7 +234,7 @@ def main():
     # Main Content
     if st.session_state.data is not None:
         # Hide "Select Business Area" section when sidebar is open
-        if not st.sidebar.checkbox("Show Sidebar", value=True):
+        if not st.sidebar._is_sidebar_open:
             # Section Titles
             col1, col2 = st.columns(2)
             with col1:
