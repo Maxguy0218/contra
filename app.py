@@ -48,7 +48,7 @@ def plot_pie_chart(data, show_labels=True):
     )
     textinfo = "percent+label" if show_labels else "none"
     fig.update_traces(textinfo=textinfo, pull=[0.1, 0], hole=0.2)
-    fig.update_layout(height=500, width=700, margin=dict(l=20, r=20, t=20, b=20),
+    fig.update_layout(height=400, width=600, margin=dict(l=20, r=20, t=20, b=20),
                       paper_bgcolor='rgba(0,0,0,0)',
                       plot_bgcolor='rgba(0,0,0,0)')
     return fig
@@ -100,31 +100,34 @@ def main():
         <style>
             .header-container {
                 text-align: center;
-                margin-bottom: 40px;
+                margin-bottom: 20px;
             }
             .main-title {
-                font-size: 48px;
+                font-size: 36px;
                 font-weight: bold;
                 color: #FF5733;
-                margin-top: 20px;
                 display: inline-block;
                 vertical-align: middle;
             }
             .logo-img {
-                height: 80px;
+                height: 50px;
                 vertical-align: middle;
-                margin-right: 20px;
+                margin-right: 15px;
+            }
+            .sidebar-logo {
+                height: 40px;
+                margin-right: 10px;
+                vertical-align: middle;
             }
             .chart-card {
                 border: 2px solid #4a4a4a;
                 border-radius: 15px;
                 padding: 20px;
                 background: rgba(255, 255, 255, 0.1);
-                margin-bottom: 30px;
+                margin: 20px 0;
             }
             .radio-container {
                 background-color: transparent !important;
-                box-shadow: none !important;
                 padding: 0 !important;
             }
             .stRadio [role=radiogroup] {
@@ -180,20 +183,27 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # Header Section
+    # Sidebar with Logo
+    with st.sidebar:
+        logo_base64 = get_base64_image("logo.svg") if os.path.exists("logo.svg") else ""
+        st.markdown(f"""
+            <div style="margin-top: -30px; margin-bottom: 30px;">
+                <img src="data:image/svg+xml;base64,{logo_base64}" class="sidebar-logo">
+                <span style="font-size: 24px; color: #FF5733; vertical-align: middle;">ContractIQ</span>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("## Document Upload")
+        uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
+
+    # Main Header
     st.markdown(f"""
         <div class="header-container">
             <h1 class="main-title">
-                <img src="data:image/svg+xml;base64,{get_base64_image('logo.svg')}" class="logo-img">
-                ContractIQ
+                Contract Analysis Dashboard
             </h1>
         </div>
     """, unsafe_allow_html=True)
-
-    # Sidebar
-    with st.sidebar:
-        st.markdown("## Document Upload")
-        uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
 
     # Session State
     if "uploaded_file" not in st.session_state:
@@ -260,7 +270,7 @@ def main():
     with st.container():
         chat_col, _ = st.columns([3, 1])
         with chat_col:
-            with st.markdown("<div class='chat-container'>", unsafe_allow_html=True):
+            with st.markdown("<div class='chat-container' id='chat-box'>", unsafe_allow_html=True):
                 for msg in st.session_state.messages:
                     if msg["role"] == "user":
                         st.markdown(f"<div class='user-msg'>{msg['content']}</div>", 
@@ -283,6 +293,16 @@ def main():
         except Exception as e:
             st.error(f"Failed to generate answer: {str(e)}")
         st.rerun()
+
+    # Scroll to bottom of chat
+    st.markdown("""
+        <script>
+            window.addEventListener('load', function() {
+                var chatBox = document.getElementById('chat-box');
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        </script>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
