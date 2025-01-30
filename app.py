@@ -43,12 +43,13 @@ def plot_pie_chart(data, show_labels=True):
     fig = px.pie(
         names=counts.index,
         values=counts.values,
-        title="",
+        title="Business Area Distribution",
         color_discrete_sequence=px.colors.sequential.RdBu
     )
     textinfo = "percent+label" if show_labels else "none"
     fig.update_traces(textinfo=textinfo, pull=[0.1, 0], hole=0.2)
-    fig.update_layout(height=400, width=600, margin=dict(l=20, r=20, t=20, b=20),
+    fig.update_layout(height=400, width=600, 
+                      margin=dict(l=20, r=20, t=40, b=20),
                       paper_bgcolor='rgba(0,0,0,0)',
                       plot_bgcolor='rgba(0,0,0,0)')
     return fig
@@ -100,7 +101,8 @@ def main():
         <style>
             .header-container {
                 text-align: center;
-                margin-bottom: 20px;
+                margin: -75px 0 -30px 0;
+                padding: 0;
             }
             .main-title {
                 font-size: 36px;
@@ -108,6 +110,7 @@ def main():
                 color: #FF5733;
                 display: inline-block;
                 vertical-align: middle;
+                margin: 0;
             }
             .logo-img {
                 height: 50px;
@@ -125,10 +128,6 @@ def main():
                 padding: 20px;
                 background: rgba(255, 255, 255, 0.1);
                 margin: 20px 0;
-            }
-            .radio-container {
-                background-color: transparent !important;
-                padding: 0 !important;
             }
             .stRadio [role=radiogroup] {
                 gap: 15px;
@@ -180,6 +179,9 @@ def main():
                 background-color: #E54B2A !important;
                 transform: scale(1.02);
             }
+            .stMarkdown h3 {
+                margin-top: -10px !important;
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -187,7 +189,7 @@ def main():
     with st.sidebar:
         logo_base64 = get_base64_image("logo.svg") if os.path.exists("logo.svg") else ""
         st.markdown(f"""
-            <div style="margin-top: -30px; margin-bottom: 30px;">
+            <div style="margin: -30px 0 20px 0;">
                 <img src="data:image/svg+xml;base64,{logo_base64}" class="sidebar-logo">
                 <span style="font-size: 24px; color: #FF5733; vertical-align: middle;">ContractIQ</span>
             </div>
@@ -197,10 +199,12 @@ def main():
         uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
 
     # Main Header
+    logo_base64 = get_base64_image("logo.svg") if os.path.exists("logo.svg") else ""
     st.markdown(f"""
         <div class="header-container">
             <h1 class="main-title">
-                Contract Analysis Dashboard
+                <img src="data:image/svg+xml;base64,{logo_base64}" class="logo-img">
+                ContractIQ
             </h1>
         </div>
     """, unsafe_allow_html=True)
@@ -270,7 +274,9 @@ def main():
     with st.container():
         chat_col, _ = st.columns([3, 1])
         with chat_col:
-            with st.markdown("<div class='chat-container' id='chat-box'>", unsafe_allow_html=True):
+            chat_container = st.container()
+            with chat_container:
+                st.markdown("<div class='chat-container' id='chat-box'>", unsafe_allow_html=True)
                 for msg in st.session_state.messages:
                     if msg["role"] == "user":
                         st.markdown(f"<div class='user-msg'>{msg['content']}</div>", 
@@ -278,6 +284,7 @@ def main():
                     else:
                         st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", 
                                   unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
 
             with st.form(key="chat_form"):
                 user_input = st.text_input("Ask about the contract:", 
