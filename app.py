@@ -170,7 +170,7 @@ def main():
         st.markdown(f"""
             <div class="sidebar-title">
                 <img src="data:image/svg+xml;base64,{logo_base64}" style="height: 40px; vertical-align: middle;">
-                ContractIQ
+               <h1 color: #FF4500> ContractIQ</h1>
             </div>
         """, unsafe_allow_html=True)
         st.markdown("## Document Upload")
