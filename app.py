@@ -262,11 +262,14 @@ def main():
 
         # Report Display
         if "report" in st.session_state and not st.session_state.report.empty:
-            st.markdown("<div class='section-title'>Analysis Report</div>", unsafe_allow_html=True)
-            st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
+            # Create columns for title and button
+            col_title, col_btn = st.columns([4, 1])
+            with col_title:
+                st.markdown("<div class='section-title'>Analysis Report</div>", unsafe_allow_html=True)
+            with col_btn:
+                st.button("Export to Excel", key="export_btn")
             
-            # Add Export button (no functionality)
-            st.button("Export to Excel", key="export_btn")
+            st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
 
         # Chat Interface
         st.markdown("<div class='section-title'>Document Assistant</div>", unsafe_allow_html=True)
