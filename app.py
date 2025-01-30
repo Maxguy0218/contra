@@ -34,7 +34,7 @@ def filter_data(df, business_area):
     df_filtered = df[df["Business Area"] == business_area]
     df_filtered["Key Takeaways"] = df_filtered["Description"].apply(generate_key_takeaways)
     df_filtered.reset_index(drop=True, inplace=True)
-    df_filtered.index = df_filtered.index + 1  # Start index from 1 instead of 0
+    df_filtered.index = df_filtered.index + 1  # Start index from 1
     return df_filtered[["Term Type", "Sub-Type", "Key Takeaways", "Page #"]]
 
 def plot_pie_chart(data):
@@ -52,13 +52,14 @@ def plot_pie_chart(data):
         title="",
         color_discrete_sequence=custom_colors
     )
-    # Updated to show horizontal labels and percentages
+    # Updated pie chart configuration
     fig.update_traces(
         textinfo="percent+label",
         textposition="inside",
-        insidetextorientation='horizontal',  # Horizontal text alignment
+        insidetextorientation='horizontal',
         pull=[0.1, 0],
-        hole=0.2
+        hole=0.2,
+        textfont=dict(size=12)  # Reduced text size
     )
     fig.update_layout(
         height=400,
@@ -66,8 +67,8 @@ def plot_pie_chart(data):
         margin=dict(l=20, r=20, t=20, b=20),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        uniformtext_minsize=12,
-        uniformtext_mode='hide'
+        uniformtext_minsize=10,  # Minimum text size
+        uniformtext_mode='hide'   # Only show text that fits
     )
     return fig
 
@@ -169,7 +170,6 @@ def main():
                 background: #4a4a4a;
                 word-break: break-word;
             }
-            /* Added CSS for table index */
             .dataframe thead th {
                 text-align: left !important;
             }
@@ -263,7 +263,6 @@ def main():
         # Report Display
         if "report" in st.session_state and not st.session_state.report.empty:
             st.markdown("<div class='section-title'>Analysis Report</div>", unsafe_allow_html=True)
-            # Display index starting from 1
             st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
 
         # Chat Interface
