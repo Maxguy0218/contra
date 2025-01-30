@@ -257,19 +257,16 @@ def main():
 
         # Display chat history
         # Display chat history
-        if st.session_state.messages:
+         if st.session_state.messages:
             with st.container():
                 st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
-                # Iterate in reverse order, showing prompt first, then response
-                for i in reversed(range(0, len(st.session_state.messages), 2)):
-                    if i-1 >= 0:  # Ensure we don't go out of bounds
-                        user_msg = st.session_state.messages[i-1]
-                        assistant_msg = st.session_state.messages[i]
-                        # Show prompt first, then response
-                        st.markdown(f"<div class='user-msg'>{user_msg['content']}</div>", unsafe_allow_html=True)
-                        st.markdown(f"<div class='assistant-msg'>{assistant_msg['content']}</div>", unsafe_allow_html=True)
+                # Changed this line to reverse the message order
+                for msg in reversed(st.session_state.messages):
+                    if msg["role"] == "user":
+                        st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
                 st.markdown("</div>", unsafe_allow_html=True)
-
 
 
 if __name__ == "__main__":
