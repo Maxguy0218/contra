@@ -82,6 +82,17 @@ def create_vector_store(texts):
         st.error(f"Failed to create vector store: {str(e)}")
         return None
 
+def get_answer(question, vector_store, api_key):
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-pro')
+        docs = vector_store.similarity_search(question, k=3)
+        context = "\n".join([doc.page_content for doc in docs])
+        response = model.generate_content(f"Answer based on this context only:\n{context}\n\nQuestion: {question}")
+        return response.text
+    except Exception as e:
+        return f"Error generating answer: {str(e)}"
+
 def main():
     st.set_page_config(layout="wide")
     
@@ -105,6 +116,12 @@ def main():
                 vertical-align: middle;
                 margin-right: 15px;
             }
+            .sidebar-title {
+                font-size: 24px;
+                color: #FF4500;
+                font-weight: bold;
+                margin: -10px 0 20px 0;
+            }
             .section-title {
                 font-size: 24px;
                 font-weight: bold;
@@ -117,6 +134,28 @@ def main():
             .stRadio [role=radio] {
                 padding: 15px !important;
                 border-radius: 10px !important;
+            }
+            .chat-container {
+                border: 2px solid #FF4500;
+                border-radius: 10px;
+                padding: 20px;
+                margin-top: 20px;
+            }
+            .user-msg {
+                color: #ffffff;
+                padding: 12px 18px;
+                margin: 10px 0;
+                border-radius: 15px;
+                background: #0078d4;
+                word-break: break-word;
+            }
+            .assistant-msg {
+                color: #ffffff;
+                padding: 12px 18px;
+                margin: 10px 0;
+                border-radius: 15px;
+                background: #4a4a4a;
+                word-break: break-word;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -134,6 +173,12 @@ def main():
 
     # Sidebar
     with st.sidebar:
+        st.markdown(f"""
+            <div class="sidebar-title">
+                <img src="data:image/svg+xml;base64,{logo_base64}" style="height: 40px; vertical-align: middle;">
+                ContractIQ
+            </div>
+        """, unsafe_allow_html=True)
         st.markdown("## Document Upload")
         uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
 
@@ -142,6 +187,8 @@ def main():
         st.session_state.uploaded_file = None
         st.session_state.data = None
         st.session_state.business_area = None
+        st.session_state.vector_store = None
+        st.session_state.messages = []
 
     # Process Document
     if uploaded_file and st.session_state.uploaded_file != uploaded_file:
@@ -156,6 +203,11 @@ def main():
         else:
             st.error("ERROR: Unsupported document type.")
             return
+        
+        with st.spinner("Processing document..."):
+            texts = process_pdf(uploaded_file)
+            st.session_state.vector_store = create_vector_store(texts)
+            st.session_state.messages = []
 
     # Main Content
     if st.session_state.data is not None:
@@ -193,6 +245,32 @@ def main():
         if "report" in st.session_state and not st.session_state.report.empty:
             st.markdown("<div class='section-title'>Analysis Report</div>", unsafe_allow_html=True)
             st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
+
+        # Chat Interface
+        st.markdown("<div class='section-title'>Document Assistant</div>", unsafe_allow_html=True)
+        with st.container():
+            with st.form(key="chat_form"):
+                user_input = st.text_input("Ask about the contract:", key="chat_input")
+                submit_button = st.form_submit_button("Ask Question")
+
+        if submit_button and user_input and st.session_state.vector_store:
+            try:
+                answer = get_answer(user_input, st.session_state.vector_store, GEMINI_API_KEY)
+                st.session_state.messages.append({"role": "user", "content": user_input})
+                st.session_state.messages.append({"role": "assistant", "content": answer})
+            except Exception as e:
+                st.error(f"Failed to generate answer: {str(e)}")
+
+        # Display chat history
+        if st.session_state.messages:
+            with st.container():
+                st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
+                for msg in st.session_state.messages:
+                    if msg["role"] == "user":
+                        st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
