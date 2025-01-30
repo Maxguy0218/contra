@@ -12,8 +12,7 @@ from langchain_community.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
 
 # Hardcoded API Key (Replace with your actual key)
-GEMINI_API_KEY = "AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg"
-
+GEMINI_API_KEY =AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg
 # Path configurations
 ATENA_JSON_PATH = os.path.join(os.getcwd(), "atena_annotations_fixed.json")
 BCBS_JSON_PATH = os.path.join(os.getcwd(), "bcbs_annotations_fixed.json")
@@ -101,14 +100,14 @@ def main():
                 display: flex;
                 align-items: center;
                 gap: 10px;
-                margin-bottom: -60px;
+                margin-bottom: -40px;
                 padding-top: 0;
             }
             .main-title {
                 font-size: 48px;
                 font-weight: bold;
                 color: #FF5733;
-                margin-top: -30px;
+                margin-top: -10px;
             }
             .sidebar-title {
                 font-size: 24px;
@@ -117,7 +116,7 @@ def main():
                 display: flex;
                 align-items: center;
                 gap: 10px;
-                margin-top: -20px;
+                margin-top: -10px;
             }
             .report-container {
                 max-width: 100%;
@@ -160,7 +159,7 @@ def main():
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: -40px;
+                margin-bottom: -20px;
                 padding: 10px;
                 border-bottom: 1px solid #4a4a4a;
             }
@@ -168,6 +167,18 @@ def main():
                 background-color: #f0f2f6;
                 padding: 20px;
                 border-radius: 10px;
+                margin-bottom: 20px;
+            }
+            .stButton button {
+                width: 100%;
+                background-color: #0078d4;
+                color: white;
+                border-radius: 10px;
+                padding: 10px;
+                font-size: 16px;
+            }
+            .stButton button:hover {
+                background-color: #005bb5;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -177,7 +188,7 @@ def main():
     logo_base64 = ""
     if os.path.exists(logo_path):
         logo_base64 = get_base64_image(logo_path)
-    logo_img = f'<img src="data:image/svg+xml;base64,{logo_base64}" style="width: 50px;">' if logo_base64 else ""
+    logo_img = f'<img src="data:image/svg+xml;base64,{logo_base64}" style="width: 50px; vertical-align: middle;">' if logo_base64 else ""
 
     st.sidebar.markdown(f"""
         <div class="sidebar-title">
@@ -191,7 +202,7 @@ def main():
     with col1:
         st.markdown(f"""
             <div class="header-container">
-                <img src="data:image/svg+xml;base64,{logo_base64}" style="width: 120px;">
+                <img src="data:image/svg+xml;base64,{logo_base64}" style="width: 120px; vertical-align: middle;">
                 <span class="main-title">ContractIQ</span>
             </div>
         """, unsafe_allow_html=True)
@@ -266,12 +277,14 @@ def main():
     st.markdown("---")
     st.subheader("Document Chat Assistant")
     
-    with st.markdown("<div class='chat-container'>", unsafe_allow_html=True):
+    with st.container():
+        st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
         for msg in st.session_state.messages:
             if msg["role"] == "user":
                 st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
             else:
                 st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
         with st.form(key="chat_form"):
             user_input = st.text_input("Ask about the contract:", key="chat_input")
