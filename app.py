@@ -17,6 +17,19 @@ GEMINI_API_KEY = 'AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg'
 ATENA_JSON_PATH = os.path.join(os.getcwd(), "atena_annotations_fixed.json")
 BCBS_JSON_PATH = os.path.join(os.getcwd(), "bcbs_annotations_fixed.json")
 
+# Add JavaScript detection for screen width
+st.markdown("""
+    <script>
+    window.addEventListener('load', function() {
+        const width = window.innerWidth;
+        window.parent.postMessage({
+            type: 'streamlit:setComponentValue',
+            value: width
+        }, '*');
+    });
+    </script>
+    """, unsafe_allow_html=True)
+
 def load_atena_data():
     with open(ATENA_JSON_PATH, "r") as f:
         return pd.DataFrame(json.load(f))
@@ -34,7 +47,7 @@ def filter_data(df, business_area):
     df_filtered = df[df["Business Area"] == business_area]
     df_filtered["Key Takeaways"] = df_filtered["Description"].apply(generate_key_takeaways)
     df_filtered.reset_index(drop=True, inplace=True)
-    df_filtered.index = df_filtered.index + 1  # Start index from 1
+    df_filtered.index = df_filtered.index + 1
     return df_filtered[["Term Type", "Sub-Type", "Key Takeaways", "Page #"]]
 
 def plot_pie_chart(data):
@@ -45,6 +58,23 @@ def plot_pie_chart(data):
         custom_colors = list(custom_colors)
         medicaid_index = counts.index.get_loc("Medicaid Compliance")
         custom_colors[medicaid_index] = "#1f77b4"
+
+    # Detect screen width from session state
+    screen_width = st.session_state.get('screen_width', 1200)
+    
+    # Adjust label positions based on screen width
+    if screen_width < 1200:  # Sidebar likely visible
+        textposition = 'outside'
+        textangle = 0
+        insidetextorientation = None
+        textfont_size = 12
+        legend_x = 1.2
+    else:  # Full width mode
+        textposition = 'inside'
+        textangle = 0
+        insidetextorientation = 'horizontal'
+        textfont_size = 14
+        legend_x = 1
     
     fig = px.pie(
         names=counts.index,
@@ -52,24 +82,29 @@ def plot_pie_chart(data):
         title="",
         color_discrete_sequence=custom_colors
     )
-    # Updated pie chart configuration
+    
     fig.update_traces(
         textinfo="percent+label",
-        textposition="inside",
-        insidetextorientation='horizontal',
+        textposition=textposition,
+        insidetextorientation=insidetextorientation,
+        textangle=textangle,
         pull=[0.1, 0],
         hole=0.2,
-        textfont=dict(size=12)  # Reduced text size
+        textfont=dict(size=textfont_size),
+        marker=dict(line=dict(color='#ffffff', width=2))
     )
+    
     fig.update_layout(
         height=400,
         width=600,
         margin=dict(l=20, r=20, t=20, b=20),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        uniformtext_minsize=10,  # Minimum text size
-        uniformtext_mode='hide'   # Only show text that fits
+        uniformtext_minsize=10,
+        uniformtext_mode='hide',
+        legend=dict(x=legend_x, y=0.5)
     )
+    
     return fig
 
 def get_base64_image(file_path):
@@ -115,6 +150,14 @@ def get_answer(question, vector_store, api_key):
 def main():
     st.set_page_config(layout="wide")
     
+    # Get screen width from frontend
+    if 'screen_width' not in st.session_state:
+        st.session_state.screen_width = 1200
+    
+    # Update screen width from JS
+    if 'component_value' in st.session_state:
+        st.session_state.screen_width = st.session_state.component_value
+
     st.markdown("""
         <style>
             .header-container {
