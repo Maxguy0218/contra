@@ -261,13 +261,15 @@ def main():
         st.markdown("---")
 
         # Report Display
-        if "report" in st.session_state and not st.session_state.report.empty:
-            # Create columns for title and button
+         if "report" in st.session_state and not st.session_state.report.empty:
+            # Create columns for title and button with proper vertical alignment
             col_title, col_btn = st.columns([4, 1])
             with col_title:
-                st.markdown("<div class='section-title'>Analysis Report</div>", unsafe_allow_html=True)
+                st.markdown("<div class='section-title' style='margin-bottom: 0;'>Analysis Report</div>", unsafe_allow_html=True)
             with col_btn:
+                st.markdown("<div style='margin-top: 28px;'>", unsafe_allow_html=True)  # Adjust margin to align button
                 st.button("Export to Excel", key="export_btn")
+                st.markdown("</div>", unsafe_allow_html=True)
             
             st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
 
