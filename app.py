@@ -79,7 +79,13 @@ def main():
 
     # Branding
     st.markdown('<h1 style="text-align:center;">ContractIQ</h1>', unsafe_allow_html=True)
-
+    st.markdown("""
+        <style>
+            .stRadio > div { background-color: transparent !important; }
+            .chat-container { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 10px; }
+        </style>
+    """, unsafe_allow_html=True)
+    
     col1, col2 = st.columns([1, 2])
     with col1:
         st.subheader("Select Business Area")
@@ -101,9 +107,11 @@ def main():
     if "messages" not in st.session_state:
         st.session_state.messages = []
     
+    st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
     for msg in st.session_state.messages:
         role_class = "user-msg" if msg["role"] == "user" else "assistant-msg"
         st.markdown(f"<div class='{role_class}'>{msg['content']}</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
     
     with st.form(key="chat_form"):
         user_input = st.text_input("Ask about the contract:")
