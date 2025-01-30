@@ -164,6 +164,13 @@ def main():
             </h1>
         </div>
     """, unsafe_allow_html=True)
+    st.markdown(f"""
+        <div class="header-container">
+            <h1 class="main-title">
+                ContractIQ
+            </h1>
+        </div>
+    """, unsafe_allow_html=True)
 
     # Sidebar
     with st.sidebar:
