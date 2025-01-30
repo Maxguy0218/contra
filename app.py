@@ -12,7 +12,7 @@ from langchain_community.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
 
 # Hardcoded API Key (Replace with your actual key)
-GEMINI_API_KEY ='AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg'
+GEMINI_API_KEY = 'AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg'
 # Path configurations
 ATENA_JSON_PATH = os.path.join(os.getcwd(), "atena_annotations_fixed.json")
 BCBS_JSON_PATH = os.path.join(os.getcwd(), "bcbs_annotations_fixed.json")
@@ -48,7 +48,9 @@ def plot_pie_chart(data, show_labels=True):
     )
     textinfo = "percent+label" if show_labels else "none"
     fig.update_traces(textinfo=textinfo, pull=[0.1, 0], hole=0.2)
-    fig.update_layout(height=500, width=700, margin=dict(l=20, r=20, t=20, b=20))
+    fig.update_layout(height=500, width=700, margin=dict(l=20, r=20, t=20, b=20),
+                      paper_bgcolor='rgba(0,0,0,0)',
+                      plot_bgcolor='rgba(0,0,0,0)')
     return fig
 
 def get_base64_image(file_path):
@@ -97,30 +99,42 @@ def main():
     st.markdown("""
         <style>
             .header-container {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-bottom: -40px;
-                padding-top: 0;
+                text-align: center;
+                margin-bottom: 40px;
             }
             .main-title {
                 font-size: 48px;
                 font-weight: bold;
                 color: #FF5733;
-                margin-top: -10px;
+                margin-top: 20px;
+                display: inline-block;
+                vertical-align: middle;
             }
-            .sidebar-title {
-                font-size: 24px;
-                font-weight: bold;
-                color: #FF5733;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-top: -10px;
+            .logo-img {
+                height: 80px;
+                vertical-align: middle;
+                margin-right: 20px;
             }
-            .report-container {
-                max-width: 100%;
-                margin: auto;
+            .chart-card {
+                border: 2px solid #4a4a4a;
+                border-radius: 15px;
+                padding: 20px;
+                background: rgba(255, 255, 255, 0.1);
+                margin-bottom: 30px;
+            }
+            .radio-container {
+                background-color: transparent !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+            .stRadio [role=radiogroup] {
+                gap: 15px;
+            }
+            .stRadio [role=radio] {
+                background: rgba(255, 255, 255, 0.1) !important;
+                border: 1px solid #4a4a4a !important;
+                padding: 15px !important;
+                border-radius: 10px !important;
             }
             .chat-container {
                 border: 2px solid #4a4a4a;
@@ -128,88 +142,58 @@ def main():
                 padding: 20px;
                 height: 400px;
                 overflow-y: auto;
-                background: #2d3436;
+                background: rgba(45, 52, 54, 0.8);
                 margin-top: 20px;
             }
             .user-msg {
                 color: #ffffff;
-                padding: 10px;
-                margin: 5px 0;
+                padding: 12px 18px;
+                margin: 10px 0;
                 border-radius: 15px;
                 background: #0078d4;
-                max-width: 80%;
+                max-width: 70%;
                 margin-left: auto;
+                word-break: break-word;
             }
             .assistant-msg {
                 color: #ffffff;
-                padding: 10px;
-                margin: 5px 0;
+                padding: 12px 18px;
+                margin: 10px 0;
                 border-radius: 15px;
                 background: #4a4a4a;
-                max-width: 80%;
+                max-width: 70%;
                 margin-right: auto;
-            }
-            .chart-container {
-                border: 2px solid #4a4a4a;
-                border-radius: 10px;
-                padding: 20px;
-                margin-top: -20px;
-            }
-            .chart-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: -20px;
-                padding: 10px;
-                border-bottom: 1px solid #4a4a4a;
-            }
-            .stRadio > div {
-                background-color: #f0f2f6;
-                padding: 20px;
-                border-radius: 10px;
-                margin-bottom: 20px;
+                word-break: break-word;
             }
             .stButton button {
-                width: 100%;
-                background-color: #0078d4;
-                color: white;
-                border-radius: 10px;
-                padding: 10px;
-                font-size: 16px;
+                background-color: #FF5733 !important;
+                color: white !important;
+                border-radius: 10px !important;
+                padding: 12px 24px !important;
+                font-size: 16px !important;
+                transition: all 0.3s ease !important;
             }
             .stButton button:hover {
-                background-color: #005bb5;
+                background-color: #E54B2A !important;
+                transform: scale(1.02);
             }
         </style>
     """, unsafe_allow_html=True)
 
-    # Branding
-    logo_path = "logo.svg"
-    logo_base64 = ""
-    if os.path.exists(logo_path):
-        logo_base64 = get_base64_image(logo_path)
-    logo_img = f'<img src="data:image/svg+xml;base64,{logo_base64}" style="width: 50px; vertical-align: middle;">' if logo_base64 else ""
-
-    st.sidebar.markdown(f"""
-        <div class="sidebar-title">
-            {logo_img}
-            ContractIQ
+    # Header Section
+    st.markdown(f"""
+        <div class="header-container">
+            <h1 class="main-title">
+                <img src="data:image/svg+xml;base64,{get_base64_image('logo.svg')}" class="logo-img">
+                ContractIQ
+            </h1>
         </div>
     """, unsafe_allow_html=True)
 
-    # Main Header
-    st.markdown(f"""
-    <div style="text-align: center;">
-        <img src="data:image/svg+xml;base64,{logo_base64}" style="width: 120px;">
-        <h1 style="color: #FF5733; margin-top: -10px;">ContractIQ</h1>
-    </div>
-""", unsafe_allow_html=True)
-
-col1, col2 = st.columns([2, 3], gap="large")
-
-
-    # File Uploader
-    uploaded_file = st.sidebar.file_uploader("Upload a contract file", type=["pdf"])
+    # Sidebar
+    with st.sidebar:
+        st.markdown("## Document Upload")
+        uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
 
     # Session State
     if "uploaded_file" not in st.session_state:
@@ -239,58 +223,58 @@ col1, col2 = st.columns([2, 3], gap="large")
             st.session_state.messages = []
 
     # Main Content
-    col1, col2 = st.columns([2, 4])
-    
-    with col1:
-        st.subheader("Select Business Area")
-        business_area = st.radio(
-            "Select a Business Area",
-            ["Operational Risk Management", "Financial Risk Management"]
-        )
+    if st.session_state.data is not None:
+        col1, col2 = st.columns([1, 2])
         
-        if st.button("Generate Report"):
-            with st.spinner("Generating report..."):
-                time.sleep(2)
-                report = filter_data(st.session_state.data, business_area)
-                st.session_state.report = report
-    
-    with col2:
-        if uploaded_file and st.session_state.data is not None:
-            show_labels = not st.sidebar.expander("Options").checkbox("Hide Labels")
+        with col1:
+            st.markdown("### Select Business Area")
+            business_area = st.radio(
+                "Select a Business Area",
+                ["Operational Risk Management", "Financial Risk Management"],
+                key="ba_radio"
+            )
+            
+            if st.button("Generate Report", key="report_btn"):
+                with st.spinner("Generating report..."):
+                    time.sleep(1)
+                    report = filter_data(st.session_state.data, business_area)
+                    st.session_state.report = report
+
+        with col2:
             with st.container():
-                st.markdown("""
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <h3>Business Area Distribution</h3>
-                        </div>
-                """, unsafe_allow_html=True)
-                st.plotly_chart(plot_pie_chart(st.session_state.data, show_labels=show_labels), use_container_width=True)
+                st.markdown("<div class='chart-card'>", unsafe_allow_html=True)
+                show_labels = not st.checkbox("Hide Chart Labels", key="labels_check")
+                st.plotly_chart(plot_pie_chart(st.session_state.data, show_labels=show_labels), 
+                              use_container_width=True)
                 st.markdown("</div>", unsafe_allow_html=True)
 
-    # Report Display
-    if "report" in st.session_state and not st.session_state.report.empty:
-        st.markdown("<div class='report-container'>", unsafe_allow_html=True)
-        st.write(f"### Report for {business_area}")
-        st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        # Report Display
+        if "report" in st.session_state and not st.session_state.report.empty:
+            st.markdown("### Analysis Report")
+            st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
 
     # Chat Interface
     st.markdown("---")
-    st.subheader("Document Chat Assistant")
+    st.markdown("### Document Chat Assistant")
     
     with st.container():
-        st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
-        for msg in st.session_state.messages:
-            if msg["role"] == "user":
-                st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        chat_col, _ = st.columns([3, 1])
+        with chat_col:
+            with st.markdown("<div class='chat-container'>", unsafe_allow_html=True):
+                for msg in st.session_state.messages:
+                    if msg["role"] == "user":
+                        st.markdown(f"<div class='user-msg'>{msg['content']}</div>", 
+                                  unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", 
+                                  unsafe_allow_html=True)
 
-        with st.form(key="chat_form"):
-            user_input = st.text_input("Ask about the contract:", key="chat_input")
-            submit_button = st.form_submit_button("Send")
-    
+            with st.form(key="chat_form"):
+                user_input = st.text_input("Ask about the contract:", 
+                                         key="chat_input",
+                                         label_visibility="collapsed")
+                submit_button = st.form_submit_button("Send Message")
+
     if submit_button and user_input and st.session_state.vector_store:
         st.session_state.messages.append({"role": "user", "content": user_input})
         try:
