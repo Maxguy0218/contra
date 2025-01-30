@@ -26,6 +26,10 @@ def load_bcbs_data():
     with open(BCBS_JSON_PATH, "r") as f:
         return pd.DataFrame(json.load(f))
 
+def filter_data(df, business_area):
+    df_filtered = df[df["Business Area"] == business_area]
+    return df_filtered[["Term Type", "Sub-Type", "Description", "Page #"]]
+
 def plot_pie_chart(data):
     counts = data["Business Area"].value_counts()
     fig = px.pie(
@@ -55,82 +59,45 @@ def create_vector_store(texts):
         st.error(f"Failed to create vector store: {str(e)}")
         return None
 
+def get_answer(question, vector_store, api_key):
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-pro')
+        docs = vector_store.similarity_search(question, k=3)
+        context = "\n".join([doc.page_content for doc in docs])
+        response = model.generate_content(f"Answer based on this context only:\n{context}\n\nQuestion: {question}")
+        return response.text
+    except Exception as e:
+        return f"Error generating answer: {str(e)}"
+
 def main():
     st.set_page_config(layout="wide")
-
-    # CSS Styling
-    st.markdown("""
-        <style>
-            .centered-header {
-                text-align: center;
-            }
-            .sidebar-title {
-                font-size: 24px;
-                font-weight: bold;
-                color: #FF5733;
-                text-align: center;
-                padding-bottom: 20px;
-            }
-            .chat-container {
-                border: 2px solid #4a4a4a;
-                border-radius: 10px;
-                padding: 20px;
-                height: 400px;
-                overflow-y: auto;
-                background: #2d3436;
-                margin-top: 20px;
-            }
-            .user-msg {
-                color: #ffffff;
-                padding: 10px;
-                margin: 5px 0;
-                border-radius: 15px;
-                background: #0078d4;
-                max-width: 80%;
-                margin-left: auto;
-            }
-            .assistant-msg {
-                color: #ffffff;
-                padding: 10px;
-                margin: 5px 0;
-                border-radius: 15px;
-                background: #4a4a4a;
-                max-width: 80%;
-                margin-right: auto;
-            }
-        </style>
-    """, unsafe_allow_html=True)
 
     # Sidebar
     st.sidebar.header("Upload Contract")
     uploaded_file = st.sidebar.file_uploader("Upload a contract file", type=["pdf"])
 
     # Branding
-    logo_path = "logo.svg"
-    logo_base64 = ""
-    if os.path.exists(logo_path):
-        with open(logo_path, "rb") as img_file:
-            logo_base64 = base64.b64encode(img_file.read()).decode()
-
-    if logo_base64:
-        st.markdown(f'<div class="centered-header"><img src="data:image/svg+xml;base64,{logo_base64}" width="100" /></div>', unsafe_allow_html=True)
-    st.markdown('<h1 class="centered-header">ContractIQ</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 style="text-align:center;">ContractIQ</h1>', unsafe_allow_html=True)
 
     col1, col2 = st.columns([1, 2])
     with col1:
         st.subheader("Select Business Area")
         business_area = st.radio("", ["Operational Risk Management", "Financial Risk Management"], label_visibility="collapsed")
-        st.button("Generate Report")
+        if st.button("Generate Report") and uploaded_file:
+            data = load_atena_data() if "AETNA" in uploaded_file.name.upper() else load_bcbs_data()
+            st.session_state.report = filter_data(data, business_area)
     
     with col2:
         if uploaded_file:
             data = load_atena_data() if "AETNA" in uploaded_file.name.upper() else load_bcbs_data()
             st.plotly_chart(plot_pie_chart(data), use_container_width=True)
+
+    if "report" in st.session_state:
+        st.write(st.session_state.report)
     
-    st.markdown("---")
+    # Chatbot
     st.subheader("Document Chat Assistant")
-    st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
-    
     if "messages" not in st.session_state:
         st.session_state.messages = []
     
@@ -138,15 +105,17 @@ def main():
         role_class = "user-msg" if msg["role"] == "user" else "assistant-msg"
         st.markdown(f"<div class='{role_class}'>{msg['content']}</div>", unsafe_allow_html=True)
     
-    st.markdown("</div>", unsafe_allow_html=True)
-    
     with st.form(key="chat_form"):
         user_input = st.text_input("Ask about the contract:")
         submit_button = st.form_submit_button("Send")
     
-    if submit_button and user_input:
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        st.session_state.messages.append({"role": "assistant", "content": "[Placeholder response]"})
+    if submit_button and user_input and uploaded_file:
+        texts = process_pdf(uploaded_file)
+        vector_store = create_vector_store(texts)
+        if vector_store:
+            answer = get_answer(user_input, vector_store, GEMINI_API_KEY)
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            st.session_state.messages.append({"role": "assistant", "content": answer})
         st.rerun()
 
 if __name__ == "__main__":
