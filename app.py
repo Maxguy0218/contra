@@ -68,17 +68,20 @@ def plot_pie_chart(data):
     
     # Adjust label positions based on screen width
     if screen_width < 1200:  # Sidebar likely visible
-        textposition = 'outside'
-        textangle = 0
-        insidetextorientation = None
-        textfont_size = 12
-        legend_x = 1.2
+        trace_params = {
+            'textposition': 'outside',
+            'textfont_size': 12,
+            'pull': 0.1,  # Single value instead of list
+            'legend_x': 1.2
+        }
     else:  # Full width mode
-        textposition = 'inside'
-        textangle = 0
-        insidetextorientation = 'horizontal'
-        textfont_size = 14
-        legend_x = 1
+        trace_params = {
+            'textposition': 'inside',
+            'insidetextorientation': 'horizontal',
+            'textfont_size': 14,
+            'pull': 0,
+            'legend_x': 1
+        }
     
     fig = px.pie(
         names=counts.index,
@@ -87,17 +90,21 @@ def plot_pie_chart(data):
         color_discrete_sequence=custom_colors
     )
     
+    # Simplified update_traces call
     fig.update_traces(
         textinfo="percent+label",
-        textposition=textposition,
-        insidetextorientation=insidetextorientation,
-        textangle=textangle,
-        pull=[0.1, 0],
         hole=0.2,
-        textfont=dict(size=textfont_size),
+        textfont_size=trace_params['textfont_size'],
+        pull=trace_params['pull'],
         marker=dict(line=dict(color='#ffffff', width=2))
     )
     
+    # Conditional parameter for inside text orientation
+    if 'insidetextorientation' in trace_params:
+        fig.update_traces(
+            insidetextorientation=trace_params['insidetextorientation']
+        )
+
     fig.update_layout(
         height=400,
         width=600,
@@ -106,7 +113,7 @@ def plot_pie_chart(data):
         plot_bgcolor='rgba(0,0,0,0)',
         uniformtext_minsize=10,
         uniformtext_mode='hide',
-        legend=dict(x=legend_x, y=0.5)
+        legend=dict(x=trace_params['legend_x'], y=0.5)
     )
     
     return fig
