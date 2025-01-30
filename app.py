@@ -26,58 +26,61 @@ def load_bcbs_data():
         return pd.DataFrame(json.load(f))
 
 def generate_key_takeaways(description):
-    # If description is a list, join each item with a line break
     if isinstance(description, list):
         return "<br>".join(description)
-    # If description is a string, return it as-is
     return description
 
 def filter_data(df, business_area):
     df_filtered = df[df["Business Area"] == business_area]
     df_filtered["Key Takeaways"] = df_filtered["Description"].apply(generate_key_takeaways)
     df_filtered.reset_index(drop=True, inplace=True)
-    df_filtered.index = df_filtered.index + 1  # Start counting from 1 instead of 0
+    df_filtered.index = df_filtered.index + 1  # Start index from 1
     return df_filtered[["Term Type", "Sub-Type", "Key Takeaways", "Page #"]]
 
 def plot_pie_chart(data):
     counts = data["Business Area"].value_counts()
     
-    # Define a custom color sequence
-    custom_colors = px.colors.sequential.RdBu  # Default color sequence
+    # Custom colors with darker Medicaid Compliance
+    custom_colors = px.colors.sequential.RdBu
     if "Medicaid Compliance" in counts.index:
-        # Make "Medicaid Compliance" darker by using a specific color
-        custom_colors = list(custom_colors)  # Convert to list to modify
-        medicaid_index = counts.index.get_loc("Medicaid Compliance")  # Get index of "Medicaid Compliance"
-        custom_colors[medicaid_index] = "#1f77b4"  # Darker blue color for Medicaid Compliance
+        custom_colors = list(custom_colors)
+        medicaid_index = counts.index.get_loc("Medicaid Compliance")
+        custom_colors[medicaid_index] = "#1f77b4"  # Dark blue
     
     fig = px.pie(
         names=counts.index,
         values=counts.values,
         title="",
-        color_discrete_sequence=custom_colors,  # Use the custom color sequence
-        hole=0.2,  # Add a hole in the middle for a donut chart
+        color_discrete_sequence=custom_colors,
+        hole=0.3
     )
+    
+    # Add labels with connecting lines and legend
     fig.update_traces(
-        textinfo="percent+label",  # Show percentage and label
-        textposition="outside",  # Move labels outside the chart
-        pull=[0.1, 0, 0],  # Pull slices slightly for better visibility
-        marker=dict(line=dict(color="#000000", width=1)),  # Add a border to slices
-        insidetextorientation='horizontal'  # Ensure text inside is horizontal
+        textposition='outside',
+        textinfo='percent+label',
+        pull=[0.1, 0, 0],
+        marker=dict(line=dict(color='#000000', width=1)),
+        textfont=dict(size=12),
+        insidetextorientation='radial',
+        outsidetextfont=dict(color='black'),
+        showlegend=False  # Disable trace legend since we add custom legend
     )
+    
+    # Add custom legend at top right
     fig.update_layout(
-        height=400, width=600, 
-        margin=dict(l=20, r=20, t=20, b=20),
+        height=500,
+        margin=dict(l=20, r=20, t=50, b=20),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         legend=dict(
             title="Business Areas",
-            orientation="v",  # Vertical legend
-            yanchor="top",  # Anchor to the top
-            y=1,  # Position at the top
-            xanchor="right",  # Anchor to the right
-            x=1.2  # Position to the right of the chart
-        ),
-        showlegend=True  # Show legend
+            orientation="v",
+            yanchor="top",
+            y=1.1,
+            xanchor="right",
+            x=1.05
+        )
     )
     return fig
 
@@ -124,6 +127,7 @@ def get_answer(question, vector_store, api_key):
 def main():
     st.set_page_config(layout="wide")
     
+    # Custom CSS
     st.markdown("""
         <style>
             .header-container {
@@ -201,14 +205,29 @@ def main():
                 ContractIQ
             </div>
         """, unsafe_allow_html=True)
+        
         st.markdown("## Document Upload")
         uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
+        
+        # Business Area Selection in Sidebar
+        if uploaded_file:
+            st.markdown("---")
+            st.markdown("### Business Area")
+            business_area = st.radio(
+                "Select a Business Area",
+                ["Operational Risk Management", "Financial Risk Management", "Medicaid Compliance"],
+                key="ba_radio",
+                label_visibility="collapsed"
+            )
+            if st.button("Generate Report", key="report_btn"):
+                with st.spinner("Generating report..."):
+                    time.sleep(1)
+                    st.session_state.report = filter_data(st.session_state.data, business_area)
 
     # Session State
     if "uploaded_file" not in st.session_state:
         st.session_state.uploaded_file = None
         st.session_state.data = None
-        st.session_state.business_area = None
         st.session_state.vector_store = None
         st.session_state.messages = []
 
@@ -216,7 +235,6 @@ def main():
     if uploaded_file and st.session_state.uploaded_file != uploaded_file:
         st.session_state.uploaded_file = uploaded_file
         st.session_state.data = None
-        st.session_state.business_area = None
         
         if "AETNA" in uploaded_file.name.upper():
             st.session_state.data = load_atena_data()
@@ -233,40 +251,12 @@ def main():
 
     # Main Content
     if st.session_state.data is not None:
-        # Hide "Select Business Area" section when sidebar is open
-        if not st.sidebar._is_sidebar_open:
-            # Section Titles
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("<div class='section-title'>Select Business Area</div>", unsafe_allow_html=True)
-            with col2:
-                st.markdown("<div class='section-title'>Business Area Distribution</div>", unsafe_allow_html=True)
-
-            # Content Columns
-            col1, col2 = st.columns([1, 2])
-            
-            with col1:
-                business_area = st.radio(
-                    "Select a Business Area",
-                    ["Operational Risk Management", "Financial Risk Management", "Medicaid Compliance"],  # Added "Medicaid Compliance"
-                    key="ba_radio",
-                    label_visibility="collapsed"
-                )
-                
-                if st.button("Generate Report", key="report_btn"):
-                    with st.spinner("Generating report..."):
-                        time.sleep(1)
-                        report = filter_data(st.session_state.data, business_area)
-                        st.session_state.report = report
-
-            with col2:
-                st.plotly_chart(plot_pie_chart(st.session_state.data), use_container_width=True)
-
-        # Divider line
-        st.markdown("---")
+        # Full-width pie chart
+        st.plotly_chart(plot_pie_chart(st.session_state.data), use_container_width=True)
 
         # Report Display
         if "report" in st.session_state and not st.session_state.report.empty:
+            st.markdown("---")
             st.markdown("<div class='section-title'>Analysis Report</div>", unsafe_allow_html=True)
             st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
 
