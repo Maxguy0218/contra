@@ -1,0 +1,170 @@
+[
+    {
+        "#": "1",
+        "Term Type": "Contract Administration / Notices",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": [
+            "Hospital must notify BCBSA and the Local Plan within 24 hours (72 hours on weekends if no 24-hour access) of any material change affecting patient care.",
+            "This includes changes to the transplant program or services, such as suspension or cessation.",
+            "The notice must relate to the most recent Blue Quality Centers for Transplant credentialing process."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "7 of 20"
+    },
+    {
+        "#": "2",
+        "Term Type": "Contract Administration / Notices",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": [
+            "Hospital must ensure all Participating Physicians and Providers comply with the Agreement.",
+            "Written agreements (or arrangements acceptable to BCBSA) must be in place with Participating Physicians and Providers.",
+            "These agreements must require compliance with the terms of the Agreement for Transplant Services."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "7 of 20"
+    },
+    {
+        "#": "3",
+        "Term Type": "Preauthorization",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": [
+            "Hospital agrees to admit Members for Transplant Services only with written Preauthorization from the Referring Plan.",
+            "Hospital must inform BCBSA of Preauthorization within one week of admission or Preauthorization.",
+            "Referring Plan case managers must be notified of admission within one business day via telephone."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "7 of 20"
+    },
+    {
+        "#": "4",
+        "Term Type": "Preauthorization",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": [
+            "Hospital shall perform adult and/or pediatric, cadaveric and/or living donor transplants or retransplants.",
+            "Transplant Services are provided to Members with written Preauthorization from the Referring Plan.",
+            "Services include human organ and/or tissue transplants as applicable."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "8 of 20"
+    },
+    {
+        "#": "5",
+        "Term Type": "Preauthorization",
+        "Sub-Type": "Emergency Admission Process",
+        "Description": [
+            "In emergency cases, Hospital must obtain Preauthorization from the Referring Plan prior to admission, unless it delays necessary treatment.",
+            "Preauthorization for Emergency Services may be obtained by telephone, with written confirmation to follow.",
+            "If Preauthorization cannot be obtained due to severity, Hospital must notify the Referring Plan no later than the first business day after admission."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "8 of 20"
+    },
+    {
+        "#": "6",
+        "Term Type": "Preauthorization",
+        "Sub-Type": "Retrospective Denial",
+        "Description": [
+            "Local Plan cannot retrospectively deny claims with Preauthorization unless abuse, fraud, or concealment of material information is demonstrated.",
+            "Referring Plans must also adhere to this rule, as required by state or federal law.",
+            "The Participating Hospital must have provided all necessary information during the Preauthorization review."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "8 of 20"
+    },
+    {
+        "#": "7",
+        "Term Type": "Payment",
+        "Sub-Type": "Payment Rate",
+        "Description": [
+            "Referring Plan shall pay Hospital for Transplant Services as per Attachment A, without surcharges.",
+            "Payment is subject to benefit maximums, copayment, coinsurance, and deductible provisions of the Member Benefit Contract.",
+            "Hospital is responsible for compensating Participating Physicians and Providers, who cannot separately bill for Transplant Services."
+        ],
+        "Business Area": "Financial Risk Management",
+        "Page #": "8 of 20"
+    },
+    {
+        "#": "8",
+        "Term Type": "Payment",
+        "Sub-Type": "Payment in Full /Coverage",
+        "Description": [
+            "Hospital shall only seek compensation from the Referring Plan for Transplant Services, even in cases of non-payment or insolvency.",
+            "Hospital cannot bill Members or others for services, except for applicable copayments, coinsurance, or deductibles.",
+            "This provision survives termination of the Agreement and supersedes any contrary agreements."
+        ],
+        "Business Area": "Financial Risk Management",
+        "Page #": "9 of 20"
+    },
+    {
+        "#": "9",
+        "Term Type": "Payment",
+        "Sub-Type": "Non Covered Services",
+        "Description": [
+            "Members may request services not authorized by the Referring Plan or covered by the Member Benefit Contract.",
+            "Hospital must inform Members of their payment responsibility before rendering such services.",
+            "Participating Plans and BCBSA have no financial responsibility for non-covered services."
+        ],
+        "Business Area": "Financial Risk Management",
+        "Page #": "9 of 20"
+    },
+    {
+        "#": "10",
+        "Term Type": "Payment",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": [
+            "Hospital must follow the administrative policies of the Hospital Procedures Manual.",
+            "As a condition of payment, Hospital must certify in writing that all Established Charges have been bundled.",
+            "The manual may be amended from time to time and is incorporated by reference."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "9 of 20"
+    },
+    {
+        "#": "11",
+        "Term Type": "Payment",
+        "Sub-Type": "Payment Terms and Interest",
+        "Description": [
+            "Referring Plan must process and pay Clean Claims within 45 days of receipt or request additional information.",
+            "If additional information is requested, payment must be made within 45 days of receiving the complete information.",
+            "Late payments incur interest at 1% above Bank One's prime rate, starting 45 days after receipt of Clean Claims or additional information."
+        ],
+        "Business Area": "Financial Risk Management",
+        "Page #": "10 of 20"
+    },
+    {
+        "#": "12",
+        "Term Type": "Personal Health Information",
+        "Sub-Type": "Case Audits",
+        "Description": [
+            "Hospital must permit Referring Plan or BCBSA to conduct case audits with 14 days' prior written notice.",
+            "Audits may include adherence to patient selection criteria, quality of care, and follow-up care.",
+            "Audits are for payment and health care operations as defined in the Privacy Standards."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "14 of 20"
+    },
+    {
+        "#": "13",
+        "Term Type": "Personal Health Information",
+        "Sub-Type": "Patient Management, discharge, disclosures",
+        "Description": [
+            "Hospital must provide a written protocol for discharge planning and follow-up care for Members receiving Transplant Services.",
+            "The protocol must be approved by the Referring Plan or BCBSA before discharge.",
+            "Hospital must provide Protected Health Information to Referring Plan or BCBSA for Preauthorization, discharge planning, and care coordination."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "14 of 20"
+    },
+    {
+        "#": "14",
+        "Term Type": "Personal Health Information",
+        "Sub-Type": "PHI disclosure to third parties",
+        "Description": [
+            "Parties must obtain assurances from third parties that Protected Health Information will not be used or disclosed improperly.",
+            "Third parties must use safeguards to prevent unauthorized use or disclosure of Protected Health Information.",
+            "Third parties must notify the parties immediately of any breaches of confidentiality."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "14 of 20"
+    }
+]

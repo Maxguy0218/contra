@@ -1,0 +1,170 @@
+[
+    {
+        "#": "1",
+        "Term Type": "Care Contingency / Patient Care Safeguard",
+        "Sub-Type": "Continuity of Care / Events of Default / Patient Care Protective Term",
+        "Description": [
+            "Hospital agrees to provide Covered Services to Members of an insolvent MCO until premiums expire or the Member is covered under another plan.",
+            "For inpatients, services continue until discharge.",
+            "This provision ensures continuity of care during MCO insolvency."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 21 of 36 point # 4"
+    },
+    {
+        "#": "2",
+        "Term Type": "Contract Administration / Notices",
+        "Sub-Type": "Policy and Procedure Updates",
+        "Description": [
+            "MCO must notify Hospital of material modifications to policies, edit programs, or specific edits 30 days in advance.",
+            "This ensures Hospital is informed of changes affecting operations.",
+            "The notice period allows Hospital to adjust to new policies or procedures."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 6 of 36"
+    },
+    {
+        "#": "3",
+        "Term Type": "Contract Administration / Notices",
+        "Sub-Type": "Emergency Admission Notification",
+        "Description": [
+            "Hospital must notify Coventry of Emergency admissions within one working day if the ID Card is available.",
+            "Notification should occur as soon as possible if the ID Card is not immediately available.",
+            "This ensures timely communication for emergency cases."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 6 of 36 Point #7"
+    },
+    {
+        "#": "4",
+        "Term Type": "Contract Administration / Notices",
+        "Sub-Type": "Changes to Required Documentation",
+        "Description": [
+            "MCO must provide 30 days' prior written notice of changes to Exhibit D.",
+            "Changes may include modifications to claim attachments or other required documents.",
+            "This ensures Hospital is aware of new documentation requirements."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 7 of 36 Point #10"
+    },
+    {
+        "#": "5",
+        "Term Type": "Revenue Cycle Management / Notifications",
+        "Sub-Type": "Requests for Additional Information",
+        "Description": [
+            "MCO must notify Hospital in writing or electronically if additional information is needed to process a claim.",
+            "The notice must specify the service under review and the information required.",
+            "MCO must complete the review within the time permitted by Kentucky law after receiving the requested information."
+        ],
+        "Business Area": "Financial Risk Management",
+        "Page #": "Page 11 of 36 Point # d"
+    },
+    {
+        "#": "6",
+        "Term Type": "Dispute Resolution Procedures / Notifications",
+        "Sub-Type": "Dispute Resolution; Overpayment Recovery",
+        "Description": [
+            "MCO must provide written or electronic notice of overpayments, including the amount, Member details, and basis for the overpayment.",
+            "Hospital has 60 days to dispute the overpayment or provide a refund.",
+            "If not disputed, MCO may recoup the overpayment through offset from future payments."
+        ],
+        "Business Area": "Financial Risk Management",
+        "Page #": "Page 12 of 36 Point 15"
+    },
+    {
+        "#": "7",
+        "Term Type": "Revenue Cycle Management / Notifications",
+        "Sub-Type": "Overpayment Reporting and Adjustments",
+        "Description": [
+            "Hospital must notify MCO of any identified overpayments.",
+            "Overpayments can be adjusted by removing the amount from future claim payments or sending a check with a remittance advice.",
+            "This ensures accurate financial reporting and adjustments."
+        ],
+        "Business Area": "Financial Risk Management",
+        "Page #": "Page 13 of 36 Point 15"
+    },
+    {
+        "#": "8",
+        "Term Type": "Revenue Cycle Management / Error Correction",
+        "Sub-Type": "Claim Denial Resolution",
+        "Description": [
+            "Hospital has 24 months to correct billing or coding errors related to denied claims.",
+            "This allows Hospital to address errors and resubmit claims for payment.",
+            "The provision ensures timely resolution of claim denials."
+        ],
+        "Business Area": "Financial Risk Management",
+        "Page #": "Page 13 of 36 Point 17"
+    },
+    {
+        "#": "9",
+        "Term Type": "Operational Compliance / Notifications",
+        "Sub-Type": "Contract Administration",
+        "Description": [
+            "Hospital must notify MCO of changes in business address, ownership, licensure, or accreditation status.",
+            "Notification is also required for judgments, settlements, or situations affecting Hospital's obligations under the Agreement.",
+            "Hospital must use commercially reasonable efforts to notify MCO of Member complaints."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 17 of 36 Point # H"
+    },
+    {
+        "#": "10",
+        "Term Type": "Contract Termination and Transition - Member Notification",
+        "Sub-Type": "Notice of Termination",
+        "Description": [
+            "MCO must notify Members in writing at least 30 days prior to the termination of the Agreement.",
+            "Hospital and MCO must cooperate on the form and content of the notice.",
+            "This ensures Members are informed of the termination and any transition plans."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 20 of 36 Point 3."
+    },
+    {
+        "#": "11",
+        "Term Type": "Billing and Compliance / Prohibited Billing Practices",
+        "Sub-Type": "Medicaid Billing Compliance",
+        "Description": [
+            "Hospital cannot bill Members for Medically Necessary Covered Services, except for applicable copays or cost-sharing.",
+            "Knowingly billing a Member for Medicaid Covered Services is a felony under the Social Security Act.",
+            "This provision remains in effect even if MCO becomes insolvent."
+        ],
+        "Business Area": "Medicaid Compliance",
+        "Page #": "Page 9 of 36 Point 4"
+    },
+    {
+        "#": "12",
+        "Term Type": "Billing and Compliance / Non-Covered Services",
+        "Sub-Type": "Medicaid Billing Compliance",
+        "Description": [
+            "Hospital cannot bill Members for non-Covered Services unless the Member agrees in writing to pay.",
+            "Standard release forms do not relieve Hospital from the prohibition against billing Medicaid Members.",
+            "The form must specifically state the non-covered services or procedures."
+        ],
+        "Business Area": "",
+        "Page #": "Page 9 of 36 Point 6"
+    },
+    {
+        "#": "13",
+        "Term Type": "Billing and Collection - Member Protection",
+        "Sub-Type": "Contractual Compliance - False Claims / Improper billing practices",
+        "Description": [
+            "Hospital cannot bill Members for Covered Services, even in cases of non-payment, insolvency, or breach of the Agreement.",
+            "This provision survives termination of the Agreement and supersedes any contrary agreements.",
+            "Hospital can only collect applicable copayments, coinsurance, or deductibles in accordance with the Member's Contract."
+        ],
+        "Business Area": "Operational Risk Management",
+        "Page #": "Page 9 of 36 Point 7 and 8"
+    },
+    {
+        "#": "14",
+        "Term Type": "Billing and Reimbursement / Claims Submission",
+        "Sub-Type": "Claims Timeliness and Accuracy",
+        "Description": [
+            "Hospital must submit claims within 365 days of service or discharge, using UB04 or CMS 1500 forms with current coding.",
+            "Payments for Clean Claims must be made within 30 days (60 days for organ transplants) of receipt.",
+            "If additional information is needed, MCO must notify Hospital within the claims payment timeframe and complete the review within the time permitted by law."
+        ],
+        "Business Area": "Financial Risk Management",
+        "Page #": "Page 10 of 36 Point # 9"
+    }
+]
