@@ -104,7 +104,7 @@ def create_vector_store(texts):
 def get_answer(question, vector_store, api_key):
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel('gemini-1.0-pro')
         docs = vector_store.similarity_search(question, k=3)
         context = "\n".join([doc.page_content for doc in docs])
         response = model.generate_content(f"Answer based on this context only:\n{context}\n\nQuestion: {question}")
