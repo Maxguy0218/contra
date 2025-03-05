@@ -246,7 +246,7 @@ def main():
         # Persona Cognition Model - IT Vendor Contracts
         st.markdown("""
             <div class="attribute-response">
-                <span class="attribute">Persona Cognition Model</span>
+                <span class="attribute">Persona/ AI Model</span>
                 <span class="response">IT Vendor Contracts</span>
                 <span class="dropdown-arrow">▼</span>
             </div>
@@ -292,7 +292,7 @@ def main():
         st.session_state.data = None
         st.session_state.business_area = None
         
-        if "AETNA" in uploaded_file.name.upper():
+        if "ACME" in uploaded_file.name.upper():
             st.session_state.data = load_atena_data()
         elif "BLUE" in uploaded_file.name.upper():
             st.session_state.data = load_bcbs_data()
