@@ -187,6 +187,7 @@ def main():
                 border: 1px solid #ddd;
                 padding: 12px;
                 text-align: left;
+                color: #333333; /* Darker font for better readability */
             }
             .summary-table th {
                 background-color: #f2f2f2;
@@ -217,7 +218,7 @@ def main():
                 color: #FF4500;
             }
             .response {
-                color: #000000;
+                color: #666666; /* Lighter shade for response text */
             }
         </style>
     """, unsafe_allow_html=True)
@@ -261,22 +262,21 @@ def main():
         """, unsafe_allow_html=True)
         uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
 
-        # Summary Tab for Table
-        with st.expander("View Summary"):
-            st.markdown("""
-                <table class="summary-table">
-                    <tr><th>Commercial</th><th></th></tr>
-                    <tr><td>Service Description</td><td>Cloud Services</td></tr>
-                    <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
-                    <tr><td>Contract Value</td><td>$3,000,000</td></tr>
-                    <tr><td>Payment Terms</td><td>Net 30</td></tr>
-                    <tr><th>Legal</th><th></th></tr>
-                    <tr><td>Right to Terminate</td><td>Yes - With Cause</td></tr>
-                    <tr><td>Right to Indemnify</td><td>Yes</td></tr>
-                    <tr><td>Right to Assign</td><td>Yes - Assignable with Restrictions</td></tr>
-                    <tr><td>Renewal Terms</td><td>Auto Renewal</td></tr>
-                </table>
-            """, unsafe_allow_html=True)
+        # Display the table directly without an expander
+        st.markdown("""
+            <table class="summary-table">
+                <tr><th>Commercial</th><th></th></tr>
+                <tr><td>Service Description</td><td>Cloud Services</td></tr>
+                <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
+                <tr><td>Contract Value</td><td>$3,000,000</td></tr>
+                <tr><td>Payment Terms</td><td>Net 30</td></tr>
+                <tr><th>Legal</th><th></th></tr>
+                <tr><td>Right to Terminate</td><td>Yes - With Cause</td></tr>
+                <tr><td>Right to Indemnify</td><td>Yes</td></tr>
+                <tr><td>Right to Assign</td><td>Yes - Assignable with Restrictions</td></tr>
+                <tr><td>Renewal Terms</td><td>Auto Renewal</td></tr>
+            </table>
+        """, unsafe_allow_html=True)
 
     # Session State
     if "uploaded_file" not in st.session_state:
