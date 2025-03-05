@@ -178,27 +178,27 @@ def main():
                 width: 100%;
                 border-collapse: collapse;
                 margin-top: 10px;
-                background-color: #ffffff;
+                background-color: #2d3436; /* Dark background */
                 border-radius: 10px;
                 overflow: hidden;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             }
             .summary-table th, .summary-table td {
-                border: 1px solid #ddd;
+                border: 1px solid #444;
                 padding: 12px;
                 text-align: left;
-                color: #333333; /* Darker font for better readability */
+                color: #ffffff; /* Light font for contrast */
             }
             .summary-table th {
-                background-color: #f2f2f2;
-                color: #000000;
+                background-color: #4a4a4a; /* Slightly lighter header */
+                color: #ffffff;
                 font-weight: bold;
             }
             .summary-table tr:nth-child(even) {
-                background-color: #f9f9f9;
+                background-color: #3a3a3a; /* Alternate row color */
             }
             .summary-table tr:hover {
-                background-color: #f1f1f1;
+                background-color: #555; /* Hover effect */
             }
             .dropdown {
                 margin-bottom: 20px;
