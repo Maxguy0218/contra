@@ -41,9 +41,9 @@ def filter_data(df, business_area):
 def plot_pie_chart(data):
     counts = data["Business Area"].value_counts()
     custom_colors = px.colors.sequential.RdBu
-    if "Regulatory Compliance" in counts.index:
+    if "Regulatory Risk" in counts.index:
         custom_colors = list(custom_colors)
-        regulatory_index = counts.index.get_loc("Regulatory Compliance")
+        regulatory_index = counts.index.get_loc("Regulatory Risk")
         custom_colors[regulatory_index] = "#1f77b4"
     fig = px.pie(
         names=counts.index,
@@ -178,27 +178,27 @@ def main():
                 width: 100%;
                 border-collapse: collapse;
                 margin-top: 10px;
-                background-color: #2d3436; /* Dark background */
+                background-color: #ffffff;
                 border-radius: 10px;
                 overflow: hidden;
                 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             }
             .summary-table th, .summary-table td {
-                border: 1px solid #444;
+                border: 1px solid #ddd;
                 padding: 12px;
                 text-align: left;
-                color: #ffffff; /* Light font for contrast */
+                color: #333333; /* Darker font for better readability */
             }
             .summary-table th {
-                background-color: #4a4a4a; /* Slightly lighter header */
-                color: #ffffff;
+                background-color: #f2f2f2;
+                color: #000000;
                 font-weight: bold;
             }
             .summary-table tr:nth-child(even) {
-                background-color: #3a3a3a; /* Alternate row color */
+                background-color: #f9f9f9;
             }
             .summary-table tr:hover {
-                background-color: #555; /* Hover effect */
+                background-color: #f1f1f1;
             }
             .dropdown {
                 margin-bottom: 20px;
@@ -218,23 +218,7 @@ def main():
                 color: #FF4500;
             }
             .response {
-                color: #666666; /* Lighter shade for response text */
-            }
-            .view-summary {
-                font-size: 18px;
-                font-weight: bold;
-                color: #FF4500;
-                background-color: #f9f9f9;
-                padding: 10px;
-                border-radius: 10px;
-                border: 1px solid #ddd;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .view-summary:hover {
-                background-color: #f1f1f1;
+                color: #90EE90; /* Lighter shade for response text */
             }
         </style>
     """, unsafe_allow_html=True)
@@ -262,7 +246,7 @@ def main():
         # Persona Cognition Model - IT Vendor Contracts
         st.markdown("""
             <div class="attribute-response">
-                <span class="attribute">Persona/ AI Model</span>
+                <span class="attribute">Persona Cognition Model</span>
                 <span class="response">IT Vendor Contracts</span>
                 <span class="dropdown-arrow">▼</span>
             </div>
@@ -278,27 +262,21 @@ def main():
         """, unsafe_allow_html=True)
         uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
 
-        # View Summary Expander
-        with st.expander("""
-            <div class="view-summary">
-                <span>View Summary</span>
-                <span class="dropdown-arrow">▼</span>
-            </div>
-        """):
-            st.markdown("""
-                <table class="summary-table">
-                    <tr><th>Commercial</th><th></th></tr>
-                    <tr><td>Service Description</td><td>Cloud Services</td></tr>
-                    <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
-                    <tr><td>Contract Value</td><td>$3,000,000</td></tr>
-                    <tr><td>Payment Terms</td><td>Net 30</td></tr>
-                    <tr><th>Legal</th><th></th></tr>
-                    <tr><td>Right to Terminate</td><td>Yes - With Cause</td></tr>
-                    <tr><td>Right to Indemnify</td><td>Yes</td></tr>
-                    <tr><td>Right to Assign</td><td>Yes - Assignable with Restrictions</td></tr>
-                    <tr><td>Renewal Terms</td><td>Auto Renewal</td></tr>
-                </table>
-            """, unsafe_allow_html=True)
+        # Display the table directly without an expander
+        st.markdown("""
+            <table class="summary-table">
+                <tr><th>Commercial</th><th></th></tr>
+                <tr><td>Service Description</td><td>Cloud Services</td></tr>
+                <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
+                <tr><td>Contract Value</td><td>$3,000,000</td></tr>
+                <tr><td>Payment Terms</td><td>Net 30</td></tr>
+                <tr><th>Legal</th><th></th></tr>
+                <tr><td>Right to Terminate</td><td>Yes - With Cause</td></tr>
+                <tr><td>Right to Indemnify</td><td>Yes</td></tr>
+                <tr><td>Right to Assign</td><td>Yes - Assignable with Restrictions</td></tr>
+                <tr><td>Renewal Terms</td><td>Auto Renewal</td></tr>
+            </table>
+        """, unsafe_allow_html=True)
 
     # Session State
     if "uploaded_file" not in st.session_state:
@@ -314,7 +292,7 @@ def main():
         st.session_state.data = None
         st.session_state.business_area = None
         
-        if "ACME" in uploaded_file.name.upper():
+        if "AETNA" in uploaded_file.name.upper():
             st.session_state.data = load_atena_data()
         elif "BLUE" in uploaded_file.name.upper():
             st.session_state.data = load_bcbs_data()
@@ -342,7 +320,7 @@ def main():
         with col1:
             business_area = st.radio(
                 "Select a Business Area",
-                ["Operational Risk Management", "Financial Risk Management", "Regulatory Compliance"],
+                ["Operational Risk Management", "Financial Risk Management", "Regulatory Risk"],
                 key="ba_radio",
                 label_visibility="collapsed"
             )
