@@ -187,7 +187,6 @@ def main():
                 border: 1px solid #ddd;
                 padding: 12px;
                 text-align: left;
-                color: #333333; /* Darker font for better readability */
             }
             .summary-table th {
                 background-color: #f2f2f2;
@@ -218,23 +217,7 @@ def main():
                 color: #FF4500;
             }
             .response {
-                color: #666666; /* Lighter shade for response text */
-            }
-            .view-summary {
-                font-size: 18px;
-                font-weight: bold;
-                color: #FF4500;
-                background-color: #f9f9f9;
-                padding: 10px;
-                border-radius: 10px;
-                border: 1px solid #ddd;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .view-summary:hover {
-                background-color: #f1f1f1;
+                color: #000000;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -278,13 +261,8 @@ def main():
         """, unsafe_allow_html=True)
         uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
 
-        # View Summary Expander
-        with st.expander("""
-            <div class="view-summary">
-                <span>View Summary</span>
-                <span class="dropdown-arrow">▼</span>
-            </div>
-        """):
+        # Summary Tab for Table
+        with st.expander("View Summary"):
             st.markdown("""
                 <table class="summary-table">
                     <tr><th>Commercial</th><th></th></tr>
