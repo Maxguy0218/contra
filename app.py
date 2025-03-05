@@ -186,9 +186,14 @@ def main():
             }
             .summary-table th {
                 background-color: #f2f2f2;
+                color: #000000; /* Dark text for headers */
             }
             .dropdown {
                 margin-bottom: 20px;
+            }
+            .dropdown-arrow {
+                float: right;
+                margin-left: 10px;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -213,27 +218,44 @@ def main():
             </div>
         """, unsafe_allow_html=True)
 
-        # Persona Cognition Model - IT Vendor Contracts
-        st.markdown("**Persona Cognition Model - IT Vendor Contracts**")
-        with st.expander("View Details"):
-            st.markdown("""
-                <table class="summary-table">
-                    <tr><th>Commercial</th><th></th></tr>
-                    <tr><td>Service Description</td><td>Cloud Services</td></tr>
-                    <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
-                    <tr><td>Contract Value</td><td>$3,000,000</td></tr>
-                    <tr><td>Payment Terms</td><td>Net 30</td></tr>
-                    <tr><th>Legal</th><th></th></tr>
-                    <tr><td>Right to Terminate</td><td>Yes - With Cause</td></tr>
-                    <tr><td>Right to Indemnify</td><td>Yes</td></tr>
-                    <tr><td>Right to Assign</td><td>Yes - Assignable with Restrictions</td></tr>
-                    <tr><td>Renewal Terms</td><td>Auto Renewal</td></tr>
-                </table>
-            """, unsafe_allow_html=True)
-
-        # Path - Document Upload
-        st.markdown("**Path - Document Upload**")
+        # Path - Document Upload with Dropdown Arrow
+        st.markdown("""
+            <div class="dropdown">
+                <details>
+                    <summary>
+                        <b>Path - Document Upload</b>
+                        <span class="dropdown-arrow">▼</span>
+                    </summary>
+                    <div style="margin-top: 10px;">
+        """, unsafe_allow_html=True)
         uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
+        st.markdown("</div></details></div>", unsafe_allow_html=True)
+
+        # Persona Cognition Model - IT Vendor Contracts with Dropdown Arrow
+        st.markdown("""
+            <div class="dropdown">
+                <details>
+                    <summary>
+                        <b>Persona Cognition Model - IT Vendor Contracts</b>
+                        <span class="dropdown-arrow">▼</span>
+                    </summary>
+                    <div style="margin-top: 10px;">
+                        <table class="summary-table">
+                            <tr><th>Commercial</th><th></th></tr>
+                            <tr><td>Service Description</td><td>Cloud Services</td></tr>
+                            <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
+                            <tr><td>Contract Value</td><td>$3,000,000</td></tr>
+                            <tr><td>Payment Terms</td><td>Net 30</td></tr>
+                            <tr><th>Legal</th><th></th></tr>
+                            <tr><td>Right to Terminate</td><td>Yes - With Cause</td></tr>
+                            <tr><td>Right to Indemnify</td><td>Yes</td></tr>
+                            <tr><td>Right to Assign</td><td>Yes - Assignable with Restrictions</td></tr>
+                            <tr><td>Renewal Terms</td><td>Auto Renewal</td></tr>
+                        </table>
+                    </div>
+                </details>
+            </div>
+        """, unsafe_allow_html=True)
 
     # Session State
     if "uploaded_file" not in st.session_state:
