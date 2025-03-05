@@ -41,10 +41,10 @@ def filter_data(df, business_area):
 def plot_pie_chart(data):
     counts = data["Business Area"].value_counts()
     custom_colors = px.colors.sequential.RdBu
-    if "Medicaid Compliance" in counts.index:
+    if "Regulatory Compliance" in counts.index:
         custom_colors = list(custom_colors)
-        medicaid_index = counts.index.get_loc("Medicaid Compliance")
-        custom_colors[medicaid_index] = "#1f77b4"
+        regulatory_index = counts.index.get_loc("Regulatory Compliance")
+        custom_colors[regulatory_index] = "#1f77b4"
     fig = px.pie(
         names=counts.index,
         values=counts.values,
@@ -178,22 +178,46 @@ def main():
                 width: 100%;
                 border-collapse: collapse;
                 margin-top: 10px;
+                background-color: #ffffff;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             }
             .summary-table th, .summary-table td {
                 border: 1px solid #ddd;
-                padding: 8px;
+                padding: 12px;
                 text-align: left;
             }
             .summary-table th {
                 background-color: #f2f2f2;
-                color: #000000; /* Dark text for headers */
+                color: #000000;
+                font-weight: bold;
+            }
+            .summary-table tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            .summary-table tr:hover {
+                background-color: #f1f1f1;
             }
             .dropdown {
                 margin-bottom: 20px;
             }
             .dropdown-arrow {
-                float: right;
-                margin-left: 10px;
+                margin-right: 10px;
+                font-size: 18px;
+            }
+            .attribute-response {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+            .attribute {
+                font-weight: bold;
+                color: #FF4500;
+            }
+            .response {
+                color: #000000;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -218,44 +242,41 @@ def main():
             </div>
         """, unsafe_allow_html=True)
 
-        # Path - Document Upload with Dropdown Arrow
+        # Persona Cognition Model - IT Vendor Contracts
         st.markdown("""
-            <div class="dropdown">
-                <details>
-                    <summary>
-                        <b>Path - Document Upload</b>
-                        <span class="dropdown-arrow">▼</span>
-                    </summary>
-                    <div style="margin-top: 10px;">
-        """, unsafe_allow_html=True)
-        uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
-        st.markdown("</div></details></div>", unsafe_allow_html=True)
-
-        # Persona Cognition Model - IT Vendor Contracts with Dropdown Arrow
-        st.markdown("""
-            <div class="dropdown">
-                <details>
-                    <summary>
-                        <b>Persona Cognition Model - IT Vendor Contracts</b>
-                        <span class="dropdown-arrow">▼</span>
-                    </summary>
-                    <div style="margin-top: 10px;">
-                        <table class="summary-table">
-                            <tr><th>Commercial</th><th></th></tr>
-                            <tr><td>Service Description</td><td>Cloud Services</td></tr>
-                            <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
-                            <tr><td>Contract Value</td><td>$3,000,000</td></tr>
-                            <tr><td>Payment Terms</td><td>Net 30</td></tr>
-                            <tr><th>Legal</th><th></th></tr>
-                            <tr><td>Right to Terminate</td><td>Yes - With Cause</td></tr>
-                            <tr><td>Right to Indemnify</td><td>Yes</td></tr>
-                            <tr><td>Right to Assign</td><td>Yes - Assignable with Restrictions</td></tr>
-                            <tr><td>Renewal Terms</td><td>Auto Renewal</td></tr>
-                        </table>
-                    </div>
-                </details>
+            <div class="attribute-response">
+                <span class="attribute">Persona Cognition Model</span>
+                <span class="response">IT Vendor Contracts</span>
+                <span class="dropdown-arrow">▼</span>
             </div>
         """, unsafe_allow_html=True)
+
+        # Path - Document Upload
+        st.markdown("""
+            <div class="attribute-response">
+                <span class="attribute">Path</span>
+                <span class="response">Document Upload</span>
+                <span class="dropdown-arrow">▼</span>
+            </div>
+        """, unsafe_allow_html=True)
+        uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
+
+        # Summary Tab for Table
+        with st.expander("View Summary"):
+            st.markdown("""
+                <table class="summary-table">
+                    <tr><th>Commercial</th><th></th></tr>
+                    <tr><td>Service Description</td><td>Cloud Services</td></tr>
+                    <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
+                    <tr><td>Contract Value</td><td>$3,000,000</td></tr>
+                    <tr><td>Payment Terms</td><td>Net 30</td></tr>
+                    <tr><th>Legal</th><th></th></tr>
+                    <tr><td>Right to Terminate</td><td>Yes - With Cause</td></tr>
+                    <tr><td>Right to Indemnify</td><td>Yes</td></tr>
+                    <tr><td>Right to Assign</td><td>Yes - Assignable with Restrictions</td></tr>
+                    <tr><td>Renewal Terms</td><td>Auto Renewal</td></tr>
+                </table>
+            """, unsafe_allow_html=True)
 
     # Session State
     if "uploaded_file" not in st.session_state:
@@ -299,7 +320,7 @@ def main():
         with col1:
             business_area = st.radio(
                 "Select a Business Area",
-                ["Operational Risk Management", "Financial Risk Management", "Medicaid Compliance"],
+                ["Operational Risk Management", "Financial Risk Management", "Regulatory Compliance"],
                 key="ba_radio",
                 label_visibility="collapsed"
             )
