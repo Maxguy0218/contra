@@ -218,7 +218,7 @@ def main():
                 color: #FF4500;
             }
             .response {
-                color: #666666; /* Lighter shade for response text */
+                color: #FFFFFF; /* Lighter shade for response text */
             }
         </style>
     """, unsafe_allow_html=True)
