@@ -184,6 +184,19 @@ def main():
             .dropdown {
                 margin-bottom: 20px;
             }
+            .summary-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+            .summary-table th, .summary-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+            .summary-table th {
+                background-color: #f2f2f2;
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -213,7 +226,7 @@ def main():
                 <h3>Persona Cognition Model - IT Vendor Contracts</h3>
                 <details>
                     <summary>View Summary</summary>
-                    <table>
+                    <table class="summary-table">
                         <tr><th>Commercial</th><th></th></tr>
                         <tr><td>Service Description</td><td>Cloud Services</td></tr>
                         <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
@@ -239,8 +252,104 @@ def main():
         uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
         st.markdown("</div></details></div>", unsafe_allow_html=True)
 
-    # Rest of the code remains the same...
-    # [Include the rest of your existing code here]
+    # Session State
+    if "uploaded_file" not in st.session_state:
+        st.session_state.uploaded_file = None
+        st.session_state.data = None
+        st.session_state.business_area = None
+        st.session_state.vector_store = None
+        st.session_state.messages = []
+
+    # Process Document
+    if uploaded_file and st.session_state.uploaded_file != uploaded_file:
+        st.session_state.uploaded_file = uploaded_file
+        st.session_state.data = None
+        st.session_state.business_area = None
+        
+        if "AETNA" in uploaded_file.name.upper():
+            st.session_state.data = load_atena_data()
+        elif "BLUE" in uploaded_file.name.upper():
+            st.session_state.data = load_bcbs_data()
+        else:
+            st.error("ERROR: Unsupported document type.")
+            return
+        
+        with st.spinner("Processing document..."):
+            texts = process_pdf(uploaded_file)
+            st.session_state.vector_store = create_vector_store(texts)
+            st.session_state.messages = []
+
+    # Main Content
+    if st.session_state.data is not None:
+        # Section Titles
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("<div class='section-title'>Select Business Area</div>", unsafe_allow_html=True)
+        with col2:
+            st.markdown("<div class='section-title'>Business Area Distribution</div>", unsafe_allow_html=True)
+
+        # Content Columns
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            business_area = st.radio(
+                "Select a Business Area",
+                ["Operational Risk Management", "Financial Risk Management", "Medicaid Compliance"],
+                key="ba_radio",
+                label_visibility="collapsed"
+            )
+            
+            if st.button("Generate Report", key="report_btn"):
+                with st.spinner("Generating report..."):
+                    time.sleep(1)
+                    report = filter_data(st.session_state.data, business_area)
+                    st.session_state.report = report
+
+        with col2:
+            st.plotly_chart(plot_pie_chart(st.session_state.data), use_container_width=True)
+
+        # Divider line
+        st.markdown("---")
+
+        # Report Display
+        if "report" in st.session_state and not st.session_state.report.empty:
+            # Create columns for title and button with proper vertical alignment
+            col_title, col_btn = st.columns([4, 1])
+            with col_title:
+                st.markdown("<div class='section-title' style='margin-bottom: 0;'>Analysis Report</div>", unsafe_allow_html=True)
+            with col_btn:
+                st.markdown("<div style='margin-top: 28px;'>", unsafe_allow_html=True)  # Adjust margin to align button
+                st.button("Export to Excel", key="export_btn")
+                st.markdown("</div>", unsafe_allow_html=True)
+            
+            st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
+
+        # Chat Interface
+        st.markdown("<div class='section-title'>Document Assistant</div>", unsafe_allow_html=True)
+        with st.container():
+            with st.form(key="chat_form"):
+                user_input = st.text_input("Ask about the contract:", key="chat_input")
+                submit_button = st.form_submit_button("Ask Question")
+
+        if submit_button and user_input and st.session_state.vector_store:
+            try:
+                answer = get_answer(user_input, st.session_state.vector_store, GEMINI_API_KEY)
+                st.session_state.messages.append({"role": "user", "content": user_input})
+                st.session_state.messages.append({"role": "assistant", "content": answer})
+            except Exception as e:
+                st.error(f"Failed to generate answer: {str(e)}")
+
+        # Display chat history
+        if st.session_state.messages:
+            with st.container():
+                st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
+                for msg in reversed(st.session_state.messages):
+                    if msg["role"] == "user":
+                        st.markdown(f"<div class='user-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"<div class='assistant-msg'>{msg['content']}</div>", unsafe_allow_html=True)
+                st.markdown("</div>", unsafe_allow_html=True)
+
 
 if __name__ == "__main__":
     main()
