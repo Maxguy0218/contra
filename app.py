@@ -41,9 +41,9 @@ def filter_data(df, business_area):
 def plot_pie_chart(data):
     counts = data["Business Area"].value_counts()
     custom_colors = px.colors.sequential.RdBu
-    if "Regulatory Compliance" in counts.index:
+    if "Regulatory Risk" in counts.index:
         custom_colors = list(custom_colors)
-        regulatory_index = counts.index.get_loc("Regulatory Compliance")
+        regulatory_index = counts.index.get_loc("Regulatory Risk")
         custom_colors[regulatory_index] = "#1f77b4"
     fig = px.pie(
         names=counts.index,
@@ -320,7 +320,7 @@ def main():
         with col1:
             business_area = st.radio(
                 "Select a Business Area",
-                ["Operational Risk Management", "Financial Risk Management", "Regulatory Compliance"],
+                ["Operational Risk Management", "Financial Risk Management", "Regulatory Risk"],
                 key="ba_radio",
                 label_visibility="collapsed"
             )
