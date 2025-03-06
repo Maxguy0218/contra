@@ -259,7 +259,7 @@ def main():
         # Path - Document Upload
         st.markdown("""
             <div class="attribute-response">
-                <span class="path-attribute">Path</span>
+                <span class="path-attribute">Source</span>
                 <span class="response">Document Upload</span>
                 <span class="dropdown-arrow">▼</span>
             </div>
