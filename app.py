@@ -215,10 +215,14 @@ def main():
             }
             .attribute {
                 font-weight: bold;
-                color: #FF4500;
+                color: #20B2AA; /* Softer color for Persona/ AI Model */
             }
             .response {
-                color: #90EE90; /* Lighter shade for response text */
+                color: #90EE90; /* Light green for IT Vendor Contracts */
+            }
+            .path-attribute {
+                font-weight: bold;
+                color: #FFA07A; /* Softer color for Path */
             }
         </style>
     """, unsafe_allow_html=True)
@@ -255,28 +259,29 @@ def main():
         # Path - Document Upload
         st.markdown("""
             <div class="attribute-response">
-                <span class="attribute">Path</span>
+                <span class="path-attribute">Path</span>
                 <span class="response">Document Upload</span>
                 <span class="dropdown-arrow">▼</span>
             </div>
         """, unsafe_allow_html=True)
         uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
 
-        # Display the table directly without an expander
-        st.markdown("""
-            <table class="summary-table">
-                <tr><th>Commercial</th><th></th></tr>
-                <tr><td>Service Description</td><td>Cloud Services</td></tr>
-                <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
-                <tr><td>Contract Value</td><td>$3,000,000</td></tr>
-                <tr><td>Payment Terms</td><td>Net 30</td></tr>
-                <tr><th>Legal</th><th></th></tr>
-                <tr><td>Right to Terminate</td><td>Yes - With Cause</td></tr>
-                <tr><td>Right to Indemnify</td><td>Yes</td></tr>
-                <tr><td>Right to Assign</td><td>Yes - Assignable with Restrictions</td></tr>
-                <tr><td>Renewal Terms</td><td>Auto Renewal</td></tr>
-            </table>
-        """, unsafe_allow_html=True)
+        # Display the table only after a file is uploaded
+        if uploaded_file:
+            st.markdown("""
+                <table class="summary-table">
+                    <tr><th>Commercial</th><th></th></tr>
+                    <tr><td>Service Description</td><td>Cloud Services</td></tr>
+                    <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
+                    <tr><td>Contract Value</td><td>$3,000,000</td></tr>
+                    <tr><td>Payment Terms</td><td>Net 30</td></tr>
+                    <tr><th>Legal</th><th></th></tr>
+                    <tr><td>Right to Terminate</td><td>Yes - With Cause</td></tr>
+                    <tr><td>Right to Indemnify</td><td>Yes</td></tr>
+                    <tr><td>Right to Assign</td><td>Yes - Assignable with Restrictions</td></tr>
+                    <tr><td>Renewal Terms</td><td>Auto Renewal</td></tr>
+                </table>
+            """, unsafe_allow_html=True)
 
     # Session State
     if "uploaded_file" not in st.session_state:
