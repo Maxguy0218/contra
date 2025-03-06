@@ -320,7 +320,7 @@ def main():
         with col1:
             business_area = st.radio(
                 "Select a Business Area",
-                ["Operational Risk Management", "Financial Risk Management", "Regulatory Risk"],
+                ["Operational Risk", "Financial Risk", "Regulatory Risk", "Legal Risk"],
                 key="ba_radio",
                 label_visibility="collapsed"
             )
