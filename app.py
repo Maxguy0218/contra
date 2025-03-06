@@ -57,7 +57,7 @@ def plot_pie_chart(data):
         insidetextorientation='horizontal',
         pull=[0.1, 0],
         hole=0.2,
-        textfont=dict(size=12)
+        textfont=dict(size=14, color='black', family='Arial', weight='bold')  # Darker and bolder text
     )
     fig.update_layout(
         height=400,
@@ -65,7 +65,7 @@ def plot_pie_chart(data):
         margin=dict(l=20, r=20, t=20, b=20),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        uniformtext_minsize=10,
+        uniformtext_minsize=12,
         uniformtext_mode='hide'
     )
     return fig
