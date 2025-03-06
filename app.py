@@ -40,11 +40,11 @@ def filter_data(df, business_area):
 
 def plot_pie_chart(data):
     counts = data["Business Area"].value_counts()
-    custom_colors = px.colors.sequential.RdBu
+    custom_colors = px.colors.qualitative.Pastel  # Softer and more pleasing colors
     if "Regulatory Risk" in counts.index:
         custom_colors = list(custom_colors)
         regulatory_index = counts.index.get_loc("Regulatory Risk")
-        custom_colors[regulatory_index] = "#1f77b4"
+        custom_colors[regulatory_index] = "#A6CEE3"  # Softer blue for Regulatory Risk
     fig = px.pie(
         names=counts.index,
         values=counts.values,
