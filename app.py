@@ -215,10 +215,10 @@ def main():
             }
             .attribute {
                 font-weight: bold;
-                color: #20B2AA; /* Softer color for Persona/ AI Model */
+                color: #FFA07A; /* Softer color for Persona/ AI Model */
             }
             .response {
-                color: #90EE90; /* Light green for IT Vendor Contracts */
+                color: #D3D3D3; /* Light green for IT Vendor Contracts */
             }
             .path-attribute {
                 font-weight: bold;
