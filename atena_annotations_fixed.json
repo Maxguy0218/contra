@@ -49,15 +49,14 @@
     },
     {
         "#": "5",
-        "Term Type": "Revenue Cycle Management / Notifications",
-        "Sub-Type": "Requests for Additional Information",
+        "Term Type": "General Limitation of Liability",
+        "Sub-Type": "Liability Cap",
         "Description": [
-            "MCO must notify Hospital in writing or electronically if additional information is needed to process a claim.",
-            "The notice must specify the service under review and the information required.",
-            "MCO must complete the review within the time permitted by Kentucky law after receiving the requested information."
+            "Except as otherwise stated in this Agreement, the Vendor’s total liability for all claims, damages, or losses arising from or related to this Agreement shall not exceed the greater of:",
+            "150% of the total fees paid by Buyer under this Agreement in the 12 months preceding the claim, or $10 million in aggregate damages."
         ],
         "Business Area": "Financial Risk Management",
-        "Page #": "Page 11 of 36 Point # d"
+        "Page #": "Page 8 of 14 Point 8.2"
     },
     {
         "#": "6",
