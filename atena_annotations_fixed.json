@@ -49,63 +49,65 @@
     },
     {
         "#": "5",
-        "Term Type": "Revenue Cycle Management / Notifications",
-        "Sub-Type": "Requests for Additional Information",
+        "Term Type": "General Limitation of Liability",
+        "Sub-Type": "Liability Cap",
         "Description": [
-            "Except as otherwise stated in this Agreement, the Vendor’s total liability for all claims, damages, or losses arising from or related to this Agreement shall not exceed the greater of -
-150% of the total fees paid by Buyer under this Agreement in the 12 months preceding the claim, or
-$10 million in aggregate damages."
+            "Except as otherwise stated in this Agreement, the Vendor’s total liability for all claims, damages, or losses arising from or related to this Agreement shall not exceed the greater of:",
+            "150% of the total fees paid by Buyer under this Agreement in the 12 months preceding the claim, or $10 million in aggregate damages."
         ],
-        "Business Area": "Financial Risk Management",
-        "Page #": "Page 11 of 36 Point # d"
+        "Business Area": "Financial Risk",
+        "Page #": "Page 8 of 14 Point 8.2"
     },
     {
         "#": "6",
-        "Term Type": "Dispute Resolution Procedures / Notifications",
-        "Sub-Type": "Dispute Resolution; Overpayment Recovery",
+        "Term Type": "Carve-Outs",
+        "Sub-Type": "Unlimited Liability (High-Risk Events)",
         "Description": [
-            "MCO must provide written or electronic notice of overpayments, including the amount, Member details, and basis for the overpayment.",
-            "Hospital has 60 days to dispute the overpayment or provide a refund.",
-            "If not disputed, MCO may recoup the overpayment through offset from future payments."
+            "The limits on liability set forth in Clause 11.1(i) shall not apply to limit a Party’s liability for:",
+            "(a) its indemnification obligations; (b) any breach by Supplier of Applicable Law relating to data privacy or information security, or of its obligations with respect to BUYER Data, including terms set forth in the Data Protection Schedule and the Info Protect Schedule; (c) liability arising from a Party’s fraud, recklessness, gross negligence or wilful misconduct in the performance of this Agreement; (d) for death or personal injury caused by a Party, its Affiliates or Subcontractors; or (e) BUYER’s obligation to pay fees due under a Service Order."
         ],
-        "Business Area": "Financial Risk Management",
-        "Page #": "Page 12 of 36 Point 15"
+        "Business Area": "Financial Risk",
+        "Page #": "Page 8 of 14 Point 8.3"
     },
     {
         "#": "7",
-        "Term Type": "Revenue Cycle Management / Notifications",
-        "Sub-Type": "Overpayment Reporting and Adjustments",
+        "Term Type": "Consequential & Indirect Damages",
+        "Sub-Type": "Consequential Damage Waiver (With Carve-Outs)",
         "Description": [
-            "Hospital must notify MCO of any identified overpayments.",
-            "Overpayments can be adjusted by removing the amount from future claim payments or sending a check with a remittance advice.",
-            "This ensures accurate financial reporting and adjustments."
+            "Except for the excluded liabilities stated above, neither party shall be liable for indirect, incidental, special, punitive, or consequential damages, including but not limited to:",
+            "Loss of revenue, profits, or business opportunities",
+            "Downtime, reputational harm, or loss of data",
+            "Interruption of operations or increased operational costs",
+            "This exclusion shall not apply to cybersecurity failures, intellectual property infringement, regulatory fines, or fraud."
         ],
-        "Business Area": "Financial Risk Management",
-        "Page #": "Page 13 of 36 Point 15"
+        "Business Area": "Financial Risk",
+        "Page #": "Page 8 of 14 Point 8.4"
     },
     {
         "#": "8",
-        "Term Type": "Revenue Cycle Management / Error Correction",
-        "Sub-Type": "Claim Denial Resolution",
+        "Term Type": "Remedies for Vendor’s Failure to Perform",
+        "Sub-Type": "SLA-Based Financial Penalties",
         "Description": [
-            "Hospital has 24 months to correct billing or coding errors related to denied claims.",
-            "This allows Hospital to address errors and resubmit claims for payment.",
-            "The provision ensures timely resolution of claim denials."
+            "If the Vendor fails to meet the agreed service levels, Buyer shall be entitled to:",
+            "A. Service credits of up to 5% of monthly fees per breach, deducted from the next invoice.",
+            "B. Reimbursement of Buyer’s actual damages, if Vendor’s failure results in business disruption, regulatory action, or contractual penalties.",
+            "C. Right to terminate the Agreement without penalty if Vendor commits three or more SLA violations within a six-month period."
         ],
-        "Business Area": "Financial Risk Management",
-        "Page #": "Page 13 of 36 Point 17"
+        "Business Area": "Financial Risk",
+        "Page #": "Page 5 of 14 Point 5.5"
     },
     {
         "#": "9",
-        "Term Type": "Operational Compliance / Notifications",
-        "Sub-Type": "Contract Administration",
+        "Term Type": "Termination & Transition Support",
+        "Sub-Type": "Termination Costs & Risk Mitigation",
         "Description": [
-            "Hospital must notify MCO of changes in business address, ownership, licensure, or accreditation status.",
-            "Notification is also required for judgments, settlements, or situations affecting Hospital's obligations under the Agreement.",
-            "Hospital must use commercially reasonable efforts to notify MCO of Member complaints."
+            "If Buyer terminates the Agreement due to the Vendor’s breach of security, IP infringement, or regulatory non-compliance, the Vendor shall:",
+            "Provide full transition support at no additional cost for a minimum period of six (6) months.",
+            "Refund any pre-paid fees for undelivered services.",
+            "Assume liability for any additional costs incurred by Buyer to replace the Vendor’s services."
         ],
-        "Business Area": "Operational Risk Management",
-        "Page #": "Page 17 of 36 Point # H"
+        "Business Area": "Financial Risk",
+        "Page #": "Page 12 of 14 point 9.2"
     },
     {
         "#": "10",
@@ -155,16 +157,5 @@ $10 million in aggregate damages."
         "Business Area": "Operational Risk Management",
         "Page #": "Page 9 of 36 Point 7 and 8"
     },
-    {
-        "#": "14",
-        "Term Type": "Billing and Reimbursement / Claims Submission",
-        "Sub-Type": "Claims Timeliness and Accuracy",
-        "Description": [
-            "Hospital must submit claims within 365 days of service or discharge, using UB04 or CMS 1500 forms with current coding.",
-            "Payments for Clean Claims must be made within 30 days (60 days for organ transplants) of receipt.",
-            "If additional information is needed, MCO must notify Hospital within the claims payment timeframe and complete the review within the time permitted by law."
-        ],
-        "Business Area": "Financial Risk Management",
-        "Page #": "Page 10 of 36 Point # 9"
-    }
+    
 ]
