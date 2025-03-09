@@ -248,7 +248,7 @@ def main():
         """, unsafe_allow_html=True)
 
         # Persona Cognition Model - Dropdown
-        persona_options = ["IT Vendor Contracts", "QWERTY", "POIUY"]
+        persona_options = ["IT Vendor Services", "IT Vendor Infra", "Commercial"]
         selected_persona = st.selectbox(
             "Persona/ AI Model",
             options=persona_options,
@@ -257,7 +257,7 @@ def main():
         )
 
         # Path - Dropdown
-        path_options = ["Upload", "ASDF"]
+        path_options = ["Upload Contract(s)", "Network Path","Integration"]
         selected_path = st.selectbox(
             "Source",
             options=path_options,
