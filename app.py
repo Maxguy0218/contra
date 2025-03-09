@@ -226,6 +226,12 @@ def main():
                 font-weight: bold;
                 color: #FFA07A; /* Softer color for Path */
             }
+            .checkbox-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -358,7 +364,7 @@ def main():
                 st.button("Export to Excel", key="export_btn")
                 st.markdown("</div>", unsafe_allow_html=True)
             
-            # Display the table with checkboxes outside the table
+            # Display checkboxes outside the table but aligned with each row
             st.session_state.selected_rows = []
             for index, row in st.session_state.report.iterrows():
                 col1, col2 = st.columns([1, 20])  # Adjust column widths as needed
