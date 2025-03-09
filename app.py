@@ -292,6 +292,7 @@ def main():
         st.session_state.business_area = None
         st.session_state.vector_store = None
         st.session_state.messages = []
+        st.session_state.selected_rows = []  # To store selected rows
 
     # Process Document
     if uploaded_file and st.session_state.uploaded_file != uploaded_file:
@@ -355,6 +356,22 @@ def main():
                 st.button("Export to Excel", key="export_btn")
                 st.markdown("</div>", unsafe_allow_html=True)
             
+            # Add checkboxes for each row
+            st.session_state.selected_rows = []
+            for index, row in st.session_state.report.iterrows():
+                if st.checkbox(f"Select Row {index}", key=f"row_{index}"):
+                    st.session_state.selected_rows.append(index)
+            
+            # Add "Send to" dropdown and button
+            email_options = ["abc@asd.com", "qwerr@wsde.com", "qswok@cvf.com"]
+            selected_email = st.selectbox("Send to", options=email_options, key="email_selectbox")
+            
+            if st.button("Send to"):
+                if st.session_state.selected_rows:
+                    st.success(f"Email sent to {selected_email} for selected rows: {st.session_state.selected_rows}")
+                else:
+                    st.warning("Please select at least one row to send.")
+
             st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
 
         # Chat Interface
