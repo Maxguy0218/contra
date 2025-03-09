@@ -364,7 +364,7 @@ def main():
                 st.button("Export to Excel", key="export_btn")
                 st.markdown("</div>", unsafe_allow_html=True)
             
-            # Display checkboxes outside the table but aligned with each row
+            # Add checkboxes outside the table but aligned with each row
             st.session_state.selected_rows = []
             for index, row in st.session_state.report.iterrows():
                 col1, col2 = st.columns([1, 20])  # Adjust column widths as needed
