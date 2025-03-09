@@ -188,8 +188,6 @@ def main():
                 padding: 12px;
                 text-align: left;
                 color: #ffffff; /* Light font for contrast */
-                white-space: normal !important; /* Ensure text wraps */
-                word-wrap: break-word; /* Break long words */
             }
             .summary-table th {
                 background-color: #4a4a4a; /* Slightly lighter header */
@@ -294,7 +292,6 @@ def main():
         st.session_state.business_area = None
         st.session_state.vector_store = None
         st.session_state.messages = []
-        st.session_state.selected_rows = []  # To store selected rows
 
     # Process Document
     if uploaded_file and st.session_state.uploaded_file != uploaded_file:
@@ -358,41 +355,7 @@ def main():
                 st.button("Export to Excel", key="export_btn")
                 st.markdown("</div>", unsafe_allow_html=True)
             
-            # Add a "Select" column with checkboxes
-            report_with_checkbox = st.session_state.report.copy()
-            report_with_checkbox.insert(0, "Select", False)
-
-            # Configure column settings for text wrapping
-            column_config = {
-                "Select": st.column_config.CheckboxColumn(
-                    "Select",
-                    help="Select rows to send",
-                    width="small"
-                ),
-                "Key Takeaways": st.column_config.TextColumn(
-                    "Key Takeaways",
-                    width="large"
-                )
-            }
-
-            # Display the editable table
-            edited_report = st.data_editor(
-                report_with_checkbox,
-                column_config=column_config,
-                hide_index=True,
-                use_container_width=True
-            )
-
-            # Add "Send to" dropdown and button
-            email_options = ["abc@asd.com", "qwerr@wsde.com", "qswok@cvf.com"]
-            selected_email = st.selectbox("Send to", options=email_options, key="email_selectbox")
-            
-            if st.button("Send to"):
-                selected_rows = edited_report[edited_report["Select"]].index.tolist()
-                if selected_rows:
-                    st.success(f"Email sent to {selected_email} for selected rows: {selected_rows}")
-                else:
-                    st.warning("Please select at least one row to send.")
+            st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
 
         # Chat Interface
         st.markdown("<div class='section-title'>Document Assistant</div>", unsafe_allow_html=True)
