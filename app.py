@@ -188,6 +188,8 @@ def main():
                 padding: 12px;
                 text-align: left;
                 color: #ffffff; /* Light font for contrast */
+                white-space: normal !important; /* Ensure text wraps */
+                word-wrap: break-word; /* Break long words */
             }
             .summary-table th {
                 background-color: #4a4a4a; /* Slightly lighter header */
