@@ -356,20 +356,26 @@ def main():
                 st.button("Export to Excel", key="export_btn")
                 st.markdown("</div>", unsafe_allow_html=True)
             
-            # Add checkboxes in the rightmost column of the table
-            st.session_state.selected_rows = []
+            # Add a "Select" column with checkboxes
             report_with_checkbox = st.session_state.report.copy()
-            report_with_checkbox["Select"] = [st.checkbox("", key=f"row_{index}") for index in report_with_checkbox.index]
-            
-            # Display the table with checkboxes
-            st.write(report_with_checkbox.to_html(escape=False), unsafe_allow_html=True)
-            
+            report_with_checkbox["Select"] = False  # Initialize all checkboxes as unchecked
+
+            # Use st.data_editor to render the table with checkboxes
+            edited_report = st.data_editor(
+                report_with_checkbox,
+                column_config={
+                    "Select": st.column_config.CheckboxColumn("Select", help="Select rows to send")
+                },
+                hide_index=True,
+                use_container_width=True
+            )
+
             # Add "Send to" dropdown and button
             email_options = ["abc@asd.com", "qwerr@wsde.com", "qswok@cvf.com"]
             selected_email = st.selectbox("Send to", options=email_options, key="email_selectbox")
             
             if st.button("Send to"):
-                selected_rows = report_with_checkbox[report_with_checkbox["Select"]].index.tolist()
+                selected_rows = edited_report[edited_report["Select"]].index.tolist()
                 if selected_rows:
                     st.success(f"Email sent to {selected_email} for selected rows: {selected_rows}")
                 else:
