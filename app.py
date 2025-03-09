@@ -371,8 +371,7 @@ def main():
                 ),
                 "Key Takeaways": st.column_config.TextColumn(
                     "Key Takeaways",
-                    width="large",
-                    validate=lambda x: True  # Allows text wrapping
+                    width="large"
                 )
             }
 
