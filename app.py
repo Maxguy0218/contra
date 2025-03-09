@@ -226,6 +226,12 @@ def main():
                 font-weight: bold;
                 color: #FFA07A; /* Softer color for Path */
             }
+            .checkbox-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -358,39 +364,23 @@ def main():
                 st.button("Export to Excel", key="export_btn")
                 st.markdown("</div>", unsafe_allow_html=True)
             
-            # Add a "Select" column with checkboxes
-            report_with_checkbox = st.session_state.report.copy()
-            report_with_checkbox.insert(0, "Select", False)
-
-            # Configure column settings for text wrapping
-            column_config = {
-                "Select": st.column_config.CheckboxColumn(
-                    "Select",
-                    help="Select rows to send",
-                    width="small"
-                ),
-                "Key Takeaways": st.column_config.TextColumn(
-                    "Key Takeaways",
-                    width="large"
-                )
-            }
-
-            # Display the editable table
-            edited_report = st.data_editor(
-                report_with_checkbox,
-                column_config=column_config,
-                hide_index=True,
-                use_container_width=True
-            )
-
+            # Display checkboxes outside the table but aligned with each row
+            st.session_state.selected_rows = []
+            for index, row in st.session_state.report.iterrows():
+                col1, col2 = st.columns([1, 20])  # Adjust column widths as needed
+                with col1:
+                    if st.checkbox("", key=f"row_{index}"):
+                        st.session_state.selected_rows.append(index)
+                with col2:
+                    st.write(row.to_frame().T.to_html(escape=False), unsafe_allow_html=True)
+            
             # Add "Send to" dropdown and button
             email_options = ["abc@asd.com", "qwerr@wsde.com", "qswok@cvf.com"]
             selected_email = st.selectbox("Send to", options=email_options, key="email_selectbox")
             
             if st.button("Send to"):
-                selected_rows = edited_report[edited_report["Select"]].index.tolist()
-                if selected_rows:
-                    st.success(f"Email sent to {selected_email} for selected rows: {selected_rows}")
+                if st.session_state.selected_rows:
+                    st.success(f"Email sent to {selected_email} for selected rows: {st.session_state.selected_rows}")
                 else:
                     st.warning("Please select at least one row to send.")
 
