@@ -247,23 +247,25 @@ def main():
             </div>
         """, unsafe_allow_html=True)
 
-        # Persona Cognition Model - IT Vendor Contracts
-        st.markdown("""
-            <div class="attribute-response">
-                <span class="attribute">Persona/ AI Model</span>
-                <span class="response">IT Vendor Contracts</span>
-                <span class="dropdown-arrow">▼</span>
-            </div>
-        """, unsafe_allow_html=True)
+        # Persona Cognition Model - Dropdown
+        persona_options = ["IT Vendor Contracts", "QWERTY", "POIUY"]
+        selected_persona = st.selectbox(
+            "Persona/ AI Model",
+            options=persona_options,
+            index=0,  # Default to "IT Vendor Contracts"
+            key="persona_selectbox"
+        )
 
-        # Path - Document Upload
-        st.markdown("""
-            <div class="attribute-response">
-                <span class="path-attribute">Source</span>
-                <span class="response">Document Upload</span>
-                <span class="dropdown-arrow">▼</span>
-            </div>
-        """, unsafe_allow_html=True)
+        # Path - Dropdown
+        path_options = ["Upload", "ASDF"]
+        selected_path = st.selectbox(
+            "Source",
+            options=path_options,
+            index=0,  # Default to "Upload"
+            key="path_selectbox"
+        )
+
+        # File Uploader
         uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
 
         # Display the table only after a file is uploaded
