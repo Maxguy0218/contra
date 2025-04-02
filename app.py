@@ -377,6 +377,10 @@ def main():
                 'color': 'white',
                 'border': '1px solid #444'
             }), use_container_width=True, height=600)
+            st.markdown("---")
+            st.markdown("### Contract Type Distribution")
+            donut_chart = create_donut_chart(CRITICAL_DATA, num_files)
+            st.plotly_chart(donut_chart, use_container_width=True)
 
         with tab2:
             df = pd.DataFrame({k: v[:num_files] for k, v in COMMERCIAL_DATA.items()})
