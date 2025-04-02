@@ -8,15 +8,11 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain.embeddings import HuggingFaceEmbeddings
 
-# Hardcoded API Key (Replace with your actual key)
+# Configuration
 GEMINI_API_KEY = 'AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg'
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000,
-    chunk_overlap=200
-)
-
-# Predefined data for tables
+# Complete dataset definitions
 CRITICAL_DATA = {
     "Engagement": ["IT Services", "IT - Services", "IT - Services", "IT - Services", 
                   "IT - Services", "IT - Services", "IT - Services", "IT - Services",
@@ -28,7 +24,24 @@ CRITICAL_DATA = {
                         "FedEx Freight", "FedEx Services", "FedEx", "FedEx Freight",
                         "FedEx", "FedEx Enterprise", "FedEx Enterprise",
                         "FedEx", "FedEx Enterprise"],
-    # ... (rest of critical data columns)
+    "Geographical Scope": ["US", "US", "US, EMEA", "US", "US, Canada", "US", "APAC",
+                         "US, LATAM", "Global", "US", "US, EMEA", "US, EMEA, APAC", "Global"],
+    "Contract Scope": ["Professional Services AI", "Professional Services (AI & Analytics)",
+                     "Data Management Software Licenses", "Networking Infrastructure & Support",
+                     "Hybrid Cloud Deployment & Support", "Storage Solutions & Managed Services",
+                     "IT Support & Maintenance Services", "Software Licenses (Compliance & Security)",
+                     "Global Software Agreement & Support", "Servers Procurement & Maintenance",
+                     "Cybersecurity Services (Vulnerability Mgmt)", "Managed Detection and Response (MDR)", 
+                     "Microsoft Azure Cloud Services"],
+    "Effective From": ["12/1/2024", "1/7/2024", "12/31/2022", "7/31/2024", "1/31/2025",
+                     "12/31/2023", "3/31/2024", "2/23/2025", "3/31/2025", "11/30/2024",
+                     "12/15/2024", "12/20/2024", "7/14/2024"],
+    "Expiry Date": ["3/31/2026", "6/30/2027", "12/31/2024", "4/30/2026", "8/31/2028",
+                   "9/20/2025", "5/20/2025", "4/12/2026", "8/31/2029", "6/30/2027",
+                   "11/30/2028", "10/31/2026", "1/15/2027"],
+    "Status": ["Active", "Active", "Expired", "Active", "Active", "Active", "Active",
+              "Active", "Active", "Active", "Active", "Active", "Active"],
+    "Auto-renewal": ["No", "", "Yes", "", "Yes", "No", "Yes", "Yes", "No", "", "No", "Yes", "Yes"]
 }
 
 COMMERCIAL_DATA = {
@@ -36,13 +49,31 @@ COMMERCIAL_DATA = {
                            "$6,200,202", "$1,850,000", "$3,309,753", "$1,275,050",
                            "$7,500,060", "$4,409,850", "$2,750,075", "$3,950,040",
                            "$8,250,070"],
-    # ... (rest of commercial data columns)
+    "Payment Terms": ["Net 60", "Net 60", "Net 45", "Net 60", "Net 60", "Net 45",
+                    "Net 45", "Net 30", "Net 60", "Net 60", "Net 45", "Net 45", "Net 60"],
+    "Early Payment Discount %": ["NIL", "NIL", "1.25% within 20 days", "1% within 10 days",
+                               "", "NIL", "0.2% within 15 days", "", "0.2% within 15 days",
+                               "NIL", "1.5% within 15 days", "", "0.625% within 15 days"],
+    "Late Payment Penalty%": ["1.50%", "1.50%", "1%", "1.50%", "", "1%", "1%", "",
+                             "1.50%", "", "1.25%", "", "1.50%"],
+    "Volume based Discounts %": ["5% for spend > $3M", "5% for spend > $3M", "",
+                                "8% for equipment > $1M", "7% for spend > $5M",
+                                "4% for equipment > $5 M", "", "5% over 15000 licenses",
+                                "10% for spend > $6M", "8% for spend > $2M",
+                                "6% for annual spend > $2M", "", "10% for spend > $7M"],
+    "Annual Price Increase %": ["CPI + 1.5%", "CPI + 1.5%", "", "CPI", "CPI", "",
+                               "CPI -1%", "CPI", "CPI + .6%", "CPI + 0.25%", "CPI", "", "CPI + 1%"]
 }
 
 LEGAL_DATA = {
     "Right to Indemnify": ["Yes"] * 13,
     "Right to Assign": ["No"] * 13,
-    # ... (rest of legal data columns)
+    "Right to Terminate": ["Yes"] * 13,
+    "Governing Law": ["Tennessee", "Tennessee", "UK", "Tennessee", "Tennessee",
+                     "Tennessee", "Singapore", "Delaware", "Tennessee", "UK",
+                     "Delaware", "Singapore", "Delaware"],
+    "Liability Limit": ["TCV/ Higher or unl fdir IP/Conf", "", "", "", "", "", 
+                       "", "", "", "", "", "", ""]
 }
 
 def get_base64_image(file_path):
@@ -106,6 +137,18 @@ def main():
                 background-color: #2d3436;
                 color: white;
             }
+            .chat-message {
+                margin: 10px 0;
+                padding: 15px;
+                border-radius: 10px;
+                color: white;
+            }
+            .user-message {
+                background-color: #FF4500;
+            }
+            .assistant-message {
+                background-color: #2d3436;
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -129,7 +172,6 @@ def main():
             </div>
         """, unsafe_allow_html=True)
 
-        # File Upload
         uploaded_files = st.file_uploader(
             "Upload Contract(s)", 
             type=["pdf"], 
@@ -139,25 +181,24 @@ def main():
     # Main Content
     if uploaded_files:
         # Create tabs
-        tab1, tab2, tab3 = st.tabs([
-            "Critical Data Insights", 
-            "Commercial Insights", 
-            "Legal Insights"
-        ])
-
-        num_files = min(len(uploaded_files), 13)  # Cap at 13 records
+        tab1, tab2, tab3 = st.tabs(["Critical Data Insights", "Commercial Insights", "Legal Insights"])
+        
+        num_files = min(len(uploaded_files), 13)
         
         with tab1:
             df = pd.DataFrame({k: v[:num_files] for k, v in CRITICAL_DATA.items()})
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df.style.set_properties(**{'background-color': '#2d3436', 'color': 'white'}), 
+                        use_container_width=True, height=600)
 
         with tab2:
             df = pd.DataFrame({k: v[:num_files] for k, v in COMMERCIAL_DATA.items()})
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df.style.set_properties(**{'background-color': '#2d3436', 'color': 'white'}), 
+                        use_container_width=True, height=600)
 
         with tab3:
             df = pd.DataFrame({k: v[:num_files] for k, v in LEGAL_DATA.items()})
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df.style.set_properties(**{'background-color': '#2d3436', 'color': 'white'}), 
+                        use_container_width=True, height=600)
 
         # Chat Interface
         st.markdown("---")
@@ -175,16 +216,16 @@ def main():
         # Chat input
         question = st.text_input("Ask about your contracts:")
         if question and st.session_state.vector_store:
-            response = get_answer(question, st.session_state.vector_store)
-            st.session_state.chat_history.append(("user", question))
-            st.session_state.chat_history.append(("assistant", response))
+            with st.spinner("Generating answer..."):
+                response = get_answer(question, st.session_state.vector_store)
+                st.session_state.chat_history.append(("user", question))
+                st.session_state.chat_history.append(("assistant", response))
 
         # Display chat history
         for role, text in st.session_state.chat_history:
+            div_class = "user-message" if role == "user" else "assistant-message"
             st.markdown(f"""
-                <div style="margin:10px 0; padding:15px; border-radius:10px; 
-                    background-color:{"#2d3436" if role == "assistant" else "#FF4500"};
-                    color:white">
+                <div class="chat-message {div_class}">
                     <b>{role.title()}:</b> {text}
                 </div>
             """, unsafe_allow_html=True)
