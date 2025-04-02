@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 import base64
 import pdfplumber
 import google.generativeai as genai
