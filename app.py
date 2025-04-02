@@ -110,6 +110,75 @@ def get_answer(question, vector_store, api_key):
     except Exception as e:
         return f"Error generating answer: {str(e)}"
 
+# Define the data for the tables
+def get_critical_data_insights(num_files):
+    data = {
+        "Engagement": ["IT Services", "IT - Services", "IT - Services", "IT - Services", 
+                      "IT - Services", "IT - Services", "IT - Services", "IT - Services",
+                      "IT - Services", "IT-Infrastructure", "IT-Infrastructure",
+                      "IT-Infrastructure", "IT-Infrastructure"],
+        "Type of Contract": ["SOW", "SOW", "EULA", "EUSA", "SOW", "SOW", "SOW", 
+                            "EULA", "EUSA", "SOW", "EUSA", "EUSA", "EULA"],
+        "Contract Coverage": ["FedEx Enterprise", "FedEx", "FedEx Express", "FedEx Ground",
+                            "FedEx Freight", "FedEx Services", "FedEx", "FedEx Freight",
+                            "FedEx", "FedEx Enterprise", "FedEx Enterprise",
+                            "FedEx", "FedEx Enterprise"],
+        "Geographical Scope": ["US", "US", "US, EMEA", "US", "US, Canada", "US", "APAC",
+                             "US, LATAM", "Global", "US", "US, EMEA", "US, EMEA, APAC", "Global"],
+        "Contract Scope": ["Professional Services AI", "Professional Services (AI & Analytics)",
+                         "Data Management Software Licenses", "Networking Infrastructure & Support",
+                         "Hybrid Cloud Deployment & Support", "Storage Solutions & Managed Services",
+                         "IT Support & Maintenance Services", "Software Licenses (Compliance & Security)",
+                         "Global Software Agreement & Support", "Servers Procurement & Maintenance",
+                         "Cybersecurity Services (Vulnerability Mgmt)",
+                         "Managed Detection and Response (MDR)", "Microsoft Azure Cloud Services"],
+        "Effective From": ["12/1/2024", "1/7/2024", "12/31/2022", "7/31/2024", "1/31/2025",
+                         "12/31/2023", "3/31/2024", "2/23/2025", "3/31/2025", "11/30/2024",
+                         "12/15/2024", "12/20/2024", "7/14/2024"],
+        "Expiry Date": ["3/31/2026", "6/30/2027", "12/31/2024", "4/30/2026", "8/31/2028",
+                       "9/20/2025", "5/20/2025", "4/12/2026", "8/31/2029", "6/30/2027",
+                       "11/30/2028", "10/31/2026", "1/15/2027"],
+        "Status": ["Active", "Active", "Expired", "Active", "Active", "Active", "Active",
+                  "Active", "Active", "Active", "Active", "Active", "Active"],
+        "Auto-renewal": ["No", "", "Yes", "", "Yes", "No", "Yes", "Yes", "No", "", "No", "Yes", "Yes"]
+    }
+    return pd.DataFrame({k: v[:num_files] for k, v in data.items()})
+
+def get_commercial_insights(num_files):
+    data = {
+        "Total Contract Value": ["$5,250,785", "$6,953,977", "$2,400,000", "$4,750,000",
+                               "$6,200,202", "$1,850,000", "$3,309,753", "$1,275,050",
+                               "$7,500,060", "$4,409,850", "$2,750,075", "$3,950,040",
+                               "$8,250,070"],
+        "Payment Terms": ["Net 60", "Net 60", "Net 45", "Net 60", "Net 60", "Net 45",
+                        "Net 45", "Net 30", "Net 60", "Net 60", "Net 45", "Net 45", "Net 60"],
+        "Early Payment Discount %": ["NIL", "NIL", "1.25% within 20 days", "1% within 10 days",
+                                   "", "NIL", "0.2% within 15 days", "", "0.2% within 15 days",
+                                   "NIL", "1.5% within 15 days", "", "0.625% within 15 days"],
+        "Late Payment Penalty%": ["1.50%", "1.50%", "1%", "1.50%", "", "1%", "1%", "",
+                                 "1.50%", "", "1.25%", "", "1.50%"],
+        "Volume based Discounts %": ["5% for spend > $3M", "5% for spend > $3M", "",
+                                   "8% for equipment > $1M", "7% for spend > $5M",
+                                   "4% for equipment > $5 M", "", "5% over 15000 licenses",
+                                   "10% for spend > $6M", "8% for spend > $2M",
+                                   "6% for annual spend > $2M", "", "10% for spend > $7M"],
+        "Annual Price Increase %": ["CPI + 1.5%", "CPI + 1.5%", "", "CPI", "CPI", "",
+                                  "CPI -1%", "CPI", "CPI + .6%", "CPI + 0.25%", "CPI", "", "CPI + 1%"]
+    }
+    return pd.DataFrame({k: v[:num_files] for k, v in data.items()})
+
+def get_legal_insights(num_files):
+    data = {
+        "Right to Indemnify": ["Yes"] * 13,
+        "Right to Assign": ["No"] * 13,
+        "Right to Terminate": ["Yes"] * 13,
+        "Governing Law": ["Tennessee", "Tennessee", "UK", "Tennessee", "Tennessee",
+                         "Tennessee", "Singapore", "Delaware", "Tennessee", "UK",
+                         "Delaware", "Singapore", "Delaware"],
+        "Liability Limit": ["TCV/ Higher or unl fdir IP/Conf", "", "", "", "", "", "", "", "", "", "", "", ""]
+    }
+    return pd.DataFrame({k: v[:num_files] for k, v in data.items()})
+
 def main():
     st.set_page_config(layout="wide")
     
@@ -224,6 +293,26 @@ def main():
                 font-weight: bold;
                 color: #FFA07A; /* Softer color for Path */
             }
+            /* Tab styling */
+            .stTabs [role=tablist] {
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            .stTabs [role=tab] {
+                padding: 10px 20px;
+                border-radius: 10px 10px 0 0;
+                background-color: #3a3a3a;
+                color: white;
+                font-weight: bold;
+                border: none;
+            }
+            .stTabs [role=tab][aria-selected=true] {
+                background-color: #FF4500;
+                color: white;
+            }
+            .stTabs [role=tab]:hover {
+                background-color: #555;
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -257,107 +346,74 @@ def main():
         )
 
         # Path - Dropdown
-        path_options = ["Upload Contract(s)", "Network Path","Integration"]
+        path_options = ["Local Machine", "Network Path"]
         selected_path = st.selectbox(
             "Source",
             options=path_options,
-            index=0,  # Default to "Upload"
+            index=0,  # Default to "Local Machine"
             key="path_selectbox"
         )
 
-        # File Uploader
-        uploaded_file = st.file_uploader("Upload a contract file", type=["pdf"], label_visibility="collapsed")
-
-        # Display the table only after a file is uploaded
-        if uploaded_file:
-            st.markdown("""
-                <table class="summary-table">
-                    <tr><th>Commercial</th><th></th></tr>
-                    <tr><td>Service Description</td><td>Cloud Services</td></tr>
-                    <tr><td>Term of the Contract (Valid Till)</td><td>December 31, 2029</td></tr>
-                    <tr><td>Contract Value</td><td>$3,000,000</td></tr>
-                    <tr><td>Payment Terms</td><td>Net 30</td></tr>
-                    <tr><th>Legal</th><th></th></tr>
-                    <tr><td>Right to Terminate</td><td>Yes - With Cause</td></tr>
-                    <tr><td>Right to Indemnify</td><td>Yes</td></tr>
-                    <tr><td>Right to Assign</td><td>Yes - Assignable with Restrictions</td></tr>
-                    <tr><td>Renewal Terms</td><td>Auto Renewal</td></tr>
-                </table>
-            """, unsafe_allow_html=True)
+        # File Uploader - now supports multiple files
+        uploaded_files = st.file_uploader("Upload contract files", type=["pdf"], accept_multiple_files=True, label_visibility="collapsed")
 
     # Session State
-    if "uploaded_file" not in st.session_state:
-        st.session_state.uploaded_file = None
+    if "uploaded_files" not in st.session_state:
+        st.session_state.uploaded_files = None
         st.session_state.data = None
         st.session_state.business_area = None
         st.session_state.vector_store = None
         st.session_state.messages = []
+        st.session_state.active_tab = "Critical Data Insights"
 
     # Process Document
-    if uploaded_file and st.session_state.uploaded_file != uploaded_file:
-        st.session_state.uploaded_file = uploaded_file
+    if uploaded_files and st.session_state.uploaded_files != uploaded_files:
+        st.session_state.uploaded_files = uploaded_files
         st.session_state.data = None
         st.session_state.business_area = None
+        st.session_state.active_tab = "Critical Data Insights"
         
-        if "ACME" in uploaded_file.name.upper():
-            st.session_state.data = load_atena_data()
-        elif "BLUE" in uploaded_file.name.upper():
-            st.session_state.data = load_bcbs_data()
-        else:
-            st.error("ERROR: Unsupported document type.")
-            return
+        # For demo purposes, we'll just count the number of files uploaded
+        num_files = len(uploaded_files)
+        if num_files > 13:
+            num_files = 13  # Cap at 13 records as per your example data
         
-        with st.spinner("Processing document..."):
-            texts = process_pdf(uploaded_file)
-            st.session_state.vector_store = create_vector_store(texts)
-            st.session_state.messages = []
+        # Store the number of files for table display
+        st.session_state.num_files = num_files
+        
+        # Process all files (in a real app, you'd process each file)
+        with st.spinner("Processing documents..."):
+            all_texts = []
+            for uploaded_file in uploaded_files:
+                texts = process_pdf(uploaded_file)
+                if texts:
+                    all_texts.extend(texts)
+            
+            if all_texts:
+                st.session_state.vector_store = create_vector_store(all_texts)
+                st.session_state.messages = []
 
     # Main Content
-    if st.session_state.data is not None:
-        # Section Titles
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("<div class='section-title'>Select Business Area</div>", unsafe_allow_html=True)
-        with col2:
-            st.markdown("<div class='section-title'>Business Area Distribution</div>", unsafe_allow_html=True)
-
-        # Content Columns
-        col1, col2 = st.columns([1, 2])
+    if st.session_state.uploaded_files:
+        # Create tabs
+        tabs = st.tabs(["Critical Data Insights", "Commercial Insights", "Legal Insights"])
         
-        with col1:
-            business_area = st.radio(
-                "Select a Business Area",
-                ["Operational Risk", "Financial Risk", "Regulatory Risk", "Legal Risk"],
-                key="ba_radio",
-                label_visibility="collapsed"
-            )
-            
-            if st.button("Generate Report", key="report_btn"):
-                with st.spinner("Generating report..."):
-                    time.sleep(1)
-                    report = filter_data(st.session_state.data, business_area)
-                    st.session_state.report = report
+        with tabs[0]:
+            st.session_state.active_tab = "Critical Data Insights"
+            critical_data = get_critical_data_insights(st.session_state.num_files)
+            st.dataframe(critical_data, use_container_width=True)
+        
+        with tabs[1]:
+            st.session_state.active_tab = "Commercial Insights"
+            commercial_data = get_commercial_insights(st.session_state.num_files)
+            st.dataframe(commercial_data, use_container_width=True)
+        
+        with tabs[2]:
+            st.session_state.active_tab = "Legal Insights"
+            legal_data = get_legal_insights(st.session_state.num_files)
+            st.dataframe(legal_data, use_container_width=True)
 
-        with col2:
-            st.plotly_chart(plot_pie_chart(st.session_state.data), use_container_width=True)
-
-        # Divider line
-        st.markdown("---")
-
-        # Report Display
-        if "report" in st.session_state and not st.session_state.report.empty:
-            # Create columns for title and button with proper vertical alignment
-            col_title, col_btn = st.columns([4, 1])
-            with col_title:
-                st.markdown("<div class='section-title' style='margin-bottom: 0;'>Analysis Report</div>", unsafe_allow_html=True)
-            with col_btn:
-                st.markdown("<div style='margin-top: 28px;'>", unsafe_allow_html=True)  # Adjust margin to align button
-                st.button("Export to Excel", key="export_btn")
-                st.markdown("</div>", unsafe_allow_html=True)
-            
-            st.write(st.session_state.report.to_html(escape=False), unsafe_allow_html=True)
-
-        # Chat Interface
+        # Chat Interface (unchanged from original)
         st.markdown("<div class='section-title'>Document Assistant</div>", unsafe_allow_html=True)
         with st.container():
             with st.form(key="chat_form"):
