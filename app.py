@@ -109,7 +109,7 @@ def get_answer(question, vector_store):
 def main():
     st.set_page_config(layout="wide")
     
-    # Custom CSS
+    # Custom CSS with enhanced styling
     st.markdown("""
         <style>
             .header-container {
@@ -124,18 +124,55 @@ def main():
                 display: inline-block;
                 vertical-align: middle;
                 margin: 0;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             }
             .stTabs [role=tablist] {
-                gap: 10px;
-                margin-bottom: 20px;
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+                margin-bottom: 30px;
+                background: linear-gradient(90deg, #2d3436 0%, #404040 100%);
+                padding: 10px;
+                border-radius: 15px;
+            }
+            .stTabs [role=tab] {
+                padding: 12px 25px;
+                border-radius: 8px;
+                background: #4a4a4a;
+                color: white;
+                font-weight: bold;
+                border: none;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+            .stTabs [role=tab]:hover {
+                background: #FF4500;
+                transform: translateY(-2px);
             }
             .stTabs [role=tab][aria-selected=true] {
-                background-color: #FF4500;
+                background: linear-gradient(145deg, #FF4500, #FF6347);
                 color: white;
+                box-shadow: 0 4px 6px rgba(255,69,0,0.3);
             }
             .dataframe {
                 background-color: #2d3436;
                 color: white;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .sidebar-title {
+                font-size: 24px;
+                color: #FF4500;
+                font-weight: bold;
+                margin: -10px 0 20px 0;
+                text-align: center;
+            }
+            .dropdown-section {
+                background: #2d3436;
+                padding: 15px;
+                border-radius: 10px;
+                margin: 15px 0;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             }
             .chat-message {
                 margin: 10px 0;
@@ -144,10 +181,16 @@ def main():
                 color: white;
             }
             .user-message {
-                background-color: #FF4500;
+                background: linear-gradient(145deg, #FF4500, #FF6347);
             }
             .assistant-message {
-                background-color: #2d3436;
+                background: linear-gradient(145deg, #2d3436, #404040);
+            }
+            .file-uploader {
+                background: #2d3436;
+                padding: 20px;
+                border-radius: 10px;
+                margin-top: 20px;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -163,25 +206,54 @@ def main():
         </div>
     """, unsafe_allow_html=True)
 
-    # Sidebar
+    # Sidebar with enhanced dropdowns
     with st.sidebar:
         st.markdown(f"""
-            <div style="font-size:24px; color:#FF4500; font-weight:bold; margin:-10px 0 20px 0;">
+            <div class="sidebar-title">
                 <img src="data:image/svg+xml;base64,{logo_base64}" style="height:40px; vertical-align:middle">
-                Settings
+                Configuration
             </div>
         """, unsafe_allow_html=True)
 
+        # Dropdown sections
+        st.markdown('<div class="dropdown-section">', unsafe_allow_html=True)
+        
+        # Path Selection
+        path_options = ["Local Machine", "Network Path"]
+        selected_path = st.selectbox(
+            "Path",
+            options=path_options,
+            index=0
+        )
+        
+        # AI Model Selection
+        ai_model_options = ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"]
+        selected_model = st.selectbox(
+            "AI Model",
+            options=ai_model_options,
+            index=0
+        )
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # File Uploader
+        st.markdown('<div class="file-uploader">', unsafe_allow_html=True)
         uploaded_files = st.file_uploader(
             "Upload Contract(s)", 
             type=["pdf"], 
-            accept_multiple_files=True
+            accept_multiple_files=True,
+            help="Upload multiple PDF contracts for analysis"
         )
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # Main Content
     if uploaded_files:
-        # Create tabs
-        tab1, tab2, tab3 = st.tabs(["Critical Data Insights", "Commercial Insights", "Legal Insights"])
+        # Centered Tabs with icons
+        tab1, tab2, tab3 = st.tabs([
+            "📊 Critical Data Insights", 
+            "💰 Commercial Insights", 
+            "⚖️ Legal Insights"
+        ])
         
         num_files = min(len(uploaded_files), 13)
         
@@ -202,7 +274,7 @@ def main():
 
         # Chat Interface
         st.markdown("---")
-        st.markdown("### Document Assistant")
+        st.markdown("### 🤖 Document Assistant")
         
         if "chat_history" not in st.session_state:
             st.session_state.chat_history = []
