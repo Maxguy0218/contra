@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 import os
 import base64
 import pdfplumber
@@ -105,6 +106,39 @@ def get_answer(question, vector_store):
         return model.generate_content(f"Context:\n{context}\n\nQuestion: {question}").text
     except Exception as e:
         return f"Error: {str(e)}"
+
+def create_donut_chart(data, num_files):
+    contract_types = data["Type of Contract"][:num_files]
+    type_counts = pd.Series(contract_types).value_counts().reset_index()
+    type_counts.columns = ['Type', 'Count']
+    
+    fig = px.pie(type_counts, 
+                 values='Count', 
+                 names='Type',
+                 hole=0.4,
+                 title="Contract Type Distribution",
+                 color_discrete_sequence=px.colors.sequential.Oranges)
+    
+    fig.update_traces(textposition='inside', 
+                     textinfo='percent+label',
+                     marker=dict(line=dict(color='#1a1a1a', width=2)))
+    
+    fig.update_layout(
+        height=350,
+        margin=dict(l=20, r=20, t=50, b=20),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='white'),
+        title_font=dict(size=18, color='#FF6B35'),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.2,
+            xanchor="center",
+            x=0.5
+        )
+    )
+    return fig
 
 def main():
     st.set_page_config(layout="wide", page_title="ContractIQ", page_icon="📄")
@@ -377,6 +411,8 @@ def main():
                 'color': 'white',
                 'border': '1px solid #444'
             }), use_container_width=True, height=600)
+            
+            # Donut chart only shown in Critical Data Insights tab
             st.markdown("---")
             st.markdown("### Contract Type Distribution")
             donut_chart = create_donut_chart(CRITICAL_DATA, num_files)
