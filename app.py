@@ -107,146 +107,259 @@ def get_answer(question, vector_store):
         return f"Error: {str(e)}"
 
 def main():
-    st.set_page_config(layout="wide")
+    st.set_page_config(layout="wide", page_title="ContractIQ", page_icon="📄")
     
     # Custom CSS with enhanced styling
     st.markdown("""
         <style>
+            /* Main container styling */
+            .main {
+                background-color: #1a1a1a;
+                color: white;
+            }
+            
+            /* Header styling */
             .header-container {
                 text-align: center;
-                margin: -75px 0 -30px 0;
-                padding: 0;
+                margin: -50px 0 -20px 0;
+                padding: 20px 0;
+                background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
+                border-radius: 0 0 15px 15px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             }
+            
             .main-title {
-                font-size: 36px;
-                font-weight: bold;
-                color: #FF4500;
+                font-size: 2.5rem;
+                font-weight: 800;
+                color: #FF6B35;
                 display: inline-block;
                 vertical-align: middle;
                 margin: 0;
                 text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                letter-spacing: 0.5px;
             }
+            
+            /* Tab styling */
             .stTabs [role=tablist] {
                 display: flex;
                 justify-content: center;
-                gap: 15px;
-                margin-bottom: 30px;
-                background: linear-gradient(90deg, #2d3436 0%, #404040 100%);
-                padding: 10px;
-                border-radius: 15px;
+                gap: 10px;
+                margin: 0 auto 30px;
+                padding: 12px;
+                background: #2d3436;
+                border-radius: 12px;
+                max-width: 800px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
             }
+            
             .stTabs [role=tab] {
-                padding: 12px 25px;
+                padding: 12px 24px;
                 border-radius: 8px;
-                background: #4a4a4a;
-                color: white;
-                font-weight: bold;
+                background: #3a3a3a;
+                color: #ffffff;
+                font-weight: 600;
+                font-size: 0.9rem;
                 border: none;
                 transition: all 0.3s ease;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                margin: 0 5px;
             }
+            
             .stTabs [role=tab]:hover {
-                background: #FF4500;
+                background: #FF6B35;
                 transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(255,107,53,0.3);
             }
+            
             .stTabs [role=tab][aria-selected=true] {
-                background: linear-gradient(145deg, #FF4500, #FF6347);
+                background: linear-gradient(135deg, #FF6B35, #FF8C42);
                 color: white;
-                box-shadow: 0 4px 6px rgba(255,69,0,0.3);
+                box-shadow: 0 4px 8px rgba(255,107,53,0.4);
             }
+            
+            /* Dataframe styling */
             .dataframe {
                 background-color: #2d3436;
-                color: white;
-                border-radius: 10px;
+                color: white !important;
+                border-radius: 12px;
                 overflow: hidden;
+                border: 1px solid #444;
             }
+            
+            .dataframe th {
+                background-color: #FF6B35 !important;
+                color: white !important;
+                font-weight: 600;
+            }
+            
+            .dataframe tr:nth-child(even) {
+                background-color: #3a3a3a;
+            }
+            
+            .dataframe tr:hover {
+                background-color: #444 !important;
+            }
+            
+            /* Sidebar styling */
+            .sidebar .sidebar-content {
+                background: linear-gradient(180deg, #2d3436 0%, #1a1a1a 100%);
+                border-right: 1px solid #444;
+            }
+            
             .sidebar-title {
-                font-size: 24px;
-                color: #FF4500;
-                font-weight: bold;
+                font-size: 1.5rem;
+                color: #FF6B35;
+                font-weight: 700;
                 margin: -10px 0 20px 0;
                 text-align: center;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #FF6B35;
             }
+            
             .dropdown-section {
-                background: #2d3436;
-                padding: 15px;
+                background: #3a3a3a;
+                padding: 18px;
                 border-radius: 10px;
-                margin: 15px 0;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                margin: 20px 0;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                border: 1px solid #444;
             }
-            .chat-message {
-                margin: 10px 0;
-                padding: 15px;
-                border-radius: 10px;
-                color: white;
+            
+            .dropdown-section label {
+                color: #FF6B35 !important;
+                font-weight: 600;
             }
-            .user-message {
-                background: linear-gradient(145deg, #FF4500, #FF6347);
+            
+            .stSelectbox div[data-baseweb="select"] {
+                background-color: #2d3436 !important;
+                border-color: #444 !important;
+                color: white !important;
             }
-            .assistant-message {
-                background: linear-gradient(145deg, #2d3436, #404040);
-            }
+            
+            /* File uploader styling */
             .file-uploader {
-                background: #2d3436;
+                background: #3a3a3a;
                 padding: 20px;
                 border-radius: 10px;
-                margin-top: 20px;
+                margin-top: 25px;
+                border: 1px dashed #FF6B35;
+                text-align: center;
+            }
+            
+            .file-uploader:hover {
+                border: 1px dashed #FF8C42;
+            }
+            
+            /* Chat interface styling */
+            .chat-header {
+                font-size: 1.5rem;
+                color: #FF6B35;
+                font-weight: 700;
+                margin: 30px 0 15px 0;
+                text-align: center;
+            }
+            
+            .chat-message {
+                margin: 12px 0;
+                padding: 16px 20px;
+                border-radius: 12px;
+                color: white;
+                font-size: 0.95rem;
+                line-height: 1.5;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            }
+            
+            .user-message {
+                background: linear-gradient(135deg, #FF6B35, #FF8C42);
+                margin-left: 20%;
+                border-bottom-right-radius: 4px;
+            }
+            
+            .assistant-message {
+                background: linear-gradient(135deg, #2d3436, #3a3a3a);
+                margin-right: 20%;
+                border-bottom-left-radius: 4px;
+                border: 1px solid #444;
+            }
+            
+            /* Input field styling */
+            .stTextInput input {
+                background-color: #2d3436 !important;
+                color: white !important;
+                border: 1px solid #444 !important;
+                border-radius: 8px !important;
+                padding: 12px !important;
+            }
+            
+            /* Button styling */
+            .stButton button {
+                background: linear-gradient(135deg, #FF6B35, #FF8C42) !important;
+                color: white !important;
+                border: none !important;
+                border-radius: 8px !important;
+                padding: 10px 20px !important;
+                font-weight: 600 !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            .stButton button:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 4px 8px rgba(255,107,53,0.4) !important;
             }
         </style>
     """, unsafe_allow_html=True)
 
-    # Header
+    # Header with logo
     logo_base64 = get_base64_image("logo.svg") if os.path.exists("logo.svg") else ""
     st.markdown(f"""
         <div class="header-container">
             <h1 class="main-title">
-                <img src="data:image/svg+xml;base64,{logo_base64}" style="height:50px; vertical-align: middle">
+                <img src="data:image/svg+xml;base64,{logo_base64}" style="height:50px; vertical-align: middle; margin-right:15px;">
                 ContractIQ
             </h1>
         </div>
     """, unsafe_allow_html=True)
 
-    # Sidebar with enhanced dropdowns
+    # Sidebar configuration
     with st.sidebar:
         st.markdown(f"""
             <div class="sidebar-title">
-                <img src="data:image/svg+xml;base64,{logo_base64}" style="height:40px; vertical-align:middle">
-                Configuration
+                <img src="data:image/svg+xml;base64,{logo_base64}" style="height:35px; vertical-align:middle; margin-right:10px;">
+                Configuration Panel
             </div>
         """, unsafe_allow_html=True)
 
-        # Dropdown sections
-        st.markdown('<div class="dropdown-section">', unsafe_allow_html=True)
-        
         # Path Selection
+        st.markdown('<div class="dropdown-section">', unsafe_allow_html=True)
         path_options = ["Local Machine", "Network Path"]
         selected_path = st.selectbox(
-            "Path",
+            "📁 Source Path",
             options=path_options,
             index=0
         )
-        
+        st.markdown('</div>', unsafe_allow_html=True)
+
         # AI Model Selection
+        st.markdown('<div class="dropdown-section">', unsafe_allow_html=True)
         ai_model_options = ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"]
         selected_model = st.selectbox(
-            "AI Model",
+            "🧠 AI Model",
             options=ai_model_options,
             index=0
         )
-        
         st.markdown('</div>', unsafe_allow_html=True)
 
         # File Uploader
         st.markdown('<div class="file-uploader">', unsafe_allow_html=True)
         uploaded_files = st.file_uploader(
-            "Upload Contract(s)", 
-            type=["pdf"], 
+            "📤 Upload Contract Files",
+            type=["pdf"],
             accept_multiple_files=True,
-            help="Upload multiple PDF contracts for analysis"
+            help="Drag and drop multiple PDF contracts here"
         )
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # Main Content
+    # Main Content Area
     if uploaded_files:
         # Centered Tabs with icons
         tab1, tab2, tab3 = st.tabs([
@@ -259,39 +372,49 @@ def main():
         
         with tab1:
             df = pd.DataFrame({k: v[:num_files] for k, v in CRITICAL_DATA.items()})
-            st.dataframe(df.style.set_properties(**{'background-color': '#2d3436', 'color': 'white'}), 
-                        use_container_width=True, height=600)
+            st.dataframe(df.style.set_properties(**{
+                'background-color': '#2d3436',
+                'color': 'white',
+                'border': '1px solid #444'
+            }), use_container_width=True, height=600)
 
         with tab2:
             df = pd.DataFrame({k: v[:num_files] for k, v in COMMERCIAL_DATA.items()})
-            st.dataframe(df.style.set_properties(**{'background-color': '#2d3436', 'color': 'white'}), 
-                        use_container_width=True, height=600)
+            st.dataframe(df.style.set_properties(**{
+                'background-color': '#2d3436',
+                'color': 'white',
+                'border': '1px solid #444'
+            }), use_container_width=True, height=600)
 
         with tab3:
             df = pd.DataFrame({k: v[:num_files] for k, v in LEGAL_DATA.items()})
-            st.dataframe(df.style.set_properties(**{'background-color': '#2d3436', 'color': 'white'}), 
-                        use_container_width=True, height=600)
+            st.dataframe(df.style.set_properties(**{
+                'background-color': '#2d3436',
+                'color': 'white',
+                'border': '1px solid #444'
+            }), use_container_width=True, height=600)
 
         # Chat Interface
         st.markdown("---")
-        st.markdown("### 🤖 Document Assistant")
+        st.markdown('<div class="chat-header">💬 Contract Assistant</div>', unsafe_allow_html=True)
         
         if "chat_history" not in st.session_state:
             st.session_state.chat_history = []
 
         # Process documents for AI
         if "vector_store" not in st.session_state:
-            with st.spinner("Processing documents..."):
+            with st.spinner("🔍 Processing documents..."):
                 all_text = [process_pdf(f) for f in uploaded_files]
                 st.session_state.vector_store = create_vector_store(all_text)
 
         # Chat input
-        question = st.text_input("Ask about your contracts:")
+        question = st.text_input("Ask a question about your contracts:", key="chat_input")
         if question and st.session_state.vector_store:
-            with st.spinner("Generating answer..."):
+            with st.spinner("🤖 Generating answer..."):
                 response = get_answer(question, st.session_state.vector_store)
                 st.session_state.chat_history.append(("user", question))
                 st.session_state.chat_history.append(("assistant", response))
+                st.experimental_rerun()
 
         # Display chat history
         for role, text in st.session_state.chat_history:
