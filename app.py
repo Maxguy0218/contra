@@ -21,7 +21,7 @@ TEXT_COLOR = "#333333"
 BORDER_COLOR = "#DDDDDD"
 HIGHLIGHT_COLOR = "#F5F5F5"
 
-# Actual Data Source (as provided)
+# Actual Data Source
 CRITICAL_DATA = {
     "Engagement": ["IT Services", "IT - Services", "IT - Services", "IT - Services", 
                   "IT - Services", "IT - Services", "IT - Services", "IT - Services",
@@ -154,33 +154,40 @@ def main():
             .main {{
                 background-color: {BACKGROUND_COLOR};
                 color: {TEXT_COLOR};
+                font-family: 'FedEx Sans', Arial, sans-serif;
             }}
             
-            /* Header styling */
+            /* Header styling with split colors */
             .header-container {{
                 text-align: center;
-                margin: -50px 0 10px 0;
-                padding: 20px 0;
+                margin: -50px 0 15px 0;
+                padding: 25px 0;
                 background-color: {FEDEX_PURPLE};
             }}
             
             .main-title {{
-                font-size: 2.2rem;
+                font-size: 2.5rem;
                 font-weight: 700;
-                color: {BACKGROUND_COLOR};
                 display: inline-block;
                 vertical-align: middle;
                 margin: 0;
                 letter-spacing: 0.5px;
-                font-family: 'FedEx Sans', Arial, sans-serif;
             }}
             
-            /* Tab styling - moved down by 2px */
+            .fed-part {{
+                color: {BACKGROUND_COLOR};
+            }}
+            
+            .ex-part {{
+                color: {FEDEX_ORANGE};
+            }}
+            
+            /* Tab styling - bold text */
             .stTabs [role=tablist] {{
                 display: flex;
                 justify-content: center;
                 gap: 10px;
-                margin: 10px auto 30px;
+                margin: 15px auto 30px;
                 padding: 12px;
                 background: {BACKGROUND_COLOR};
                 max-width: 800px;
@@ -188,16 +195,15 @@ def main():
             }}
             
             .stTabs [role=tab] {{
-                padding: 10px 20px;
+                padding: 10px 24px;
                 border-radius: 4px 4px 0 0;
                 background: {BACKGROUND_COLOR};
                 color: {TEXT_COLOR};
-                font-weight: 600;
-                font-size: 0.9rem;
+                font-weight: 700;
+                font-size: 1rem;
                 border: none;
                 transition: all 0.3s ease;
                 margin: 0 5px;
-                font-family: 'FedEx Sans', Arial, sans-serif;
             }}
             
             .stTabs [role=tab]:hover {{
@@ -216,13 +222,18 @@ def main():
                 background-color: {BACKGROUND_COLOR};
                 color: {TEXT_COLOR};
                 border: 1px solid {BORDER_COLOR};
-                font-family: 'FedEx Sans', Arial, sans-serif;
             }}
             
             .dataframe th {{
                 background-color: {FEDEX_PURPLE} !important;
                 color: {BACKGROUND_COLOR} !important;
-                font-weight: 600;
+                font-weight: 700 !important;
+                font-size: 1rem !important;
+                text-align: left !important;
+            }}
+            
+            .dataframe td {{
+                font-weight: 500 !important;
             }}
             
             .dataframe tr:nth-child(even) {{
@@ -233,66 +244,63 @@ def main():
                 background-color: #EAEAEA !important;
             }}
             
-            /* Sidebar styling - removed dotted border */
+            /* Sidebar styling */
             .sidebar .sidebar-content {{
                 background-color: {BACKGROUND_COLOR};
                 border-right: none;
             }}
             
             .sidebar-title {{
-                font-size: 1.3rem;
+                font-size: 1.5rem;
                 color: {FEDEX_PURPLE};
                 font-weight: 700;
-                margin: -10px 0 20px 0;
+                margin: -10px 0 25px 0;
                 text-align: center;
-                padding-bottom: 10px;
+                padding-bottom: 12px;
                 border-bottom: 2px solid {FEDEX_ORANGE};
-                font-family: 'FedEx Sans', Arial, sans-serif;
             }}
             
-            .dropdown-section {{
-                padding: 12px 0;
-                margin: 15px 0;
-            }}
-            
-            .dropdown-section label {{
+            /* Sidebar text elements */
+            .sidebar .stSelectbox label,
+            .sidebar .stFileUploader label {{
+                font-size: 1.1rem !important;
+                font-weight: 600 !important;
                 color: {FEDEX_PURPLE} !important;
-                font-weight: 600;
-                font-family: 'FedEx Sans', Arial, sans-serif;
             }}
             
-            .stSelectbox div[data-baseweb="select"] {{
-                background-color: {BACKGROUND_COLOR} !important;
-                border-color: {BORDER_COLOR} !important;
-                color: {TEXT_COLOR} !important;
+            .sidebar .stSelectbox div[data-baseweb="select"],
+            .sidebar .stTextInput input {{
+                font-size: 1rem !important;
+                font-weight: 500 !important;
             }}
             
-            /* File uploader styling - removed dotted border */
+            /* File uploader styling */
             .file-uploader {{
                 padding: 20px;
                 border-radius: 4px;
-                margin-top: 20px;
+                margin-top: 25px;
                 text-align: center;
             }}
             
             /* Chat interface styling */
             .chat-header {{
-                font-size: 1.3rem;
+                font-size: 1.5rem;
                 color: {FEDEX_PURPLE};
                 font-weight: 700;
-                margin: 30px 0 15px 0;
+                margin: 30px 0 20px 0;
                 text-align: center;
-                font-family: 'FedEx Sans', Arial, sans-serif;
+                padding-bottom: 10px;
+                border-bottom: 2px solid {FEDEX_ORANGE};
             }}
             
             .chat-message {{
-                margin: 12px 0;
-                padding: 16px 20px;
-                border-radius: 4px;
+                margin: 15px 0;
+                padding: 18px 22px;
+                border-radius: 6px;
                 color: {BACKGROUND_COLOR};
-                font-size: 0.95rem;
+                font-size: 1rem;
                 line-height: 1.5;
-                font-family: 'FedEx Sans', Arial, sans-serif;
+                font-weight: 500;
             }}
             
             .user-message {{
@@ -310,9 +318,9 @@ def main():
                 background-color: {BACKGROUND_COLOR} !important;
                 color: {TEXT_COLOR} !important;
                 border: 1px solid {BORDER_COLOR} !important;
-                border-radius: 4px !important;
-                padding: 10px 12px !important;
-                font-family: 'FedEx Sans', Arial, sans-serif;
+                border-radius: 6px !important;
+                padding: 12px 15px !important;
+                font-size: 1rem !important;
             }}
             
             /* Button styling */
@@ -320,23 +328,26 @@ def main():
                 background-color: {FEDEX_PURPLE} !important;
                 color: {BACKGROUND_COLOR} !important;
                 border: none !important;
-                border-radius: 4px !important;
-                padding: 10px 20px !important;
-                font-weight: 600 !important;
-                font-family: 'FedEx Sans', Arial, sans-serif;
+                border-radius: 6px !important;
+                padding: 12px 24px !important;
+                font-weight: 700 !important;
+                font-size: 1rem !important;
+                transition: all 0.2s ease !important;
             }}
             
             .stButton button:hover {{
                 background-color: #3A0C6E !important;
+                transform: translateY(-1px);
             }}
         </style>
     """, unsafe_allow_html=True)
 
-    # Header
+    # Header with split colors
     st.markdown(f"""
         <div class="header-container">
             <h1 class="main-title">
-                FedEx ContractIQ
+                <span class="fed-part">Fed</span><span class="ex-part">Ex</span> 
+                <span class="fed-part">ContractIQ</span>
             </h1>
         </div>
     """, unsafe_allow_html=True)
@@ -350,40 +361,42 @@ def main():
         """, unsafe_allow_html=True)
 
         # Path Selection
-        st.markdown('<div class="dropdown-section">', unsafe_allow_html=True)
         path_options = ["Local Machine", "Network Path"]
         selected_path = st.selectbox(
             "Source Path",
             options=path_options,
             index=0
         )
-        st.markdown('</div>', unsafe_allow_html=True)
 
         # AI Model Selection
-        st.markdown('<div class="dropdown-section">', unsafe_allow_html=True)
         ai_model_options = ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"]
         selected_model = st.selectbox(
             "AI Model",
             options=ai_model_options,
             index=0
         )
-        st.markdown('</div>', unsafe_allow_html=True)
 
-        # File Uploader - removed dotted border
-        st.markdown('<div class="file-uploader">', unsafe_allow_html=True)
+        # File Uploader
         uploaded_files = st.file_uploader(
             "Upload Contract Files",
             type=["pdf"],
             accept_multiple_files=True,
             help="Upload multiple PDF contracts for analysis"
         )
-        st.markdown('</div>', unsafe_allow_html=True)
 
     # Main Content Area
     if uploaded_files:
         num_records = len(uploaded_files)
         
-        # Tabs - moved down by 2px in CSS
+        # Create dynamic sliced data based on uploaded files
+        def slice_data(data_dict, num_records):
+            return {k: v[:num_records] for k, v in data_dict.items()}
+        
+        critical_data = slice_data(CRITICAL_DATA, num_records)
+        commercial_data = slice_data(COMMERCIAL_DATA, num_records)
+        legal_data = slice_data(LEGAL_DATA, num_records)
+        
+        # Tabs
         tab1, tab2, tab3 = st.tabs([
             "Critical Data Insights", 
             "Commercial Insights", 
@@ -391,25 +404,31 @@ def main():
         ])
         
         with tab1:
-            # Only show the number of rows matching uploaded files
-            critical_df = pd.DataFrame({k: v[:num_records] for k, v in CRITICAL_DATA.items()})
-            st.dataframe(critical_df, use_container_width=True, height=600)
+            critical_df = pd.DataFrame(critical_data)
+            st.dataframe(critical_df.style.set_properties(**{
+                'font-size': '1rem',
+                'text-align': 'left'
+            }), use_container_width=True, height=600)
             
-            # Donut chart
-            st.markdown("---")
-            st.markdown("### Contract Type Distribution")
-            donut_chart = create_donut_chart(CRITICAL_DATA, num_records)
-            st.plotly_chart(donut_chart, use_container_width=True)
+            if num_records > 0:
+                st.markdown("---")
+                st.markdown("### Contract Type Distribution")
+                donut_chart = create_donut_chart(critical_data, num_records)
+                st.plotly_chart(donut_chart, use_container_width=True)
 
         with tab2:
-            # Only show the number of rows matching uploaded files
-            commercial_df = pd.DataFrame({k: v[:num_records] for k, v in COMMERCIAL_DATA.items()})
-            st.dataframe(commercial_df, use_container_width=True, height=600)
+            commercial_df = pd.DataFrame(commercial_data)
+            st.dataframe(commercial_df.style.set_properties(**{
+                'font-size': '1rem',
+                'text-align': 'left'
+            }), use_container_width=True, height=600)
 
         with tab3:
-            # Only show the number of rows matching uploaded files
-            legal_df = pd.DataFrame({k: v[:num_records] for k, v in LEGAL_DATA.items()})
-            st.dataframe(legal_df, use_container_width=True, height=600)
+            legal_df = pd.DataFrame(legal_data)
+            st.dataframe(legal_df.style.set_properties(**{
+                'font-size': '1rem',
+                'text-align': 'left'
+            }), use_container_width=True, height=600)
 
         # Chat Interface
         st.markdown("---")
