@@ -21,38 +21,69 @@ TEXT_COLOR = "#333333"
 BORDER_COLOR = "#DDDDDD"
 HIGHLIGHT_COLOR = "#F5F5F5"
 
-# Sample Data - In production, this would come from your data source
-def generate_sample_data(num_records):
-    critical_data = {
-        "Engagement": [f"IT Services {i}" for i in range(1, num_records+1)],
-        "Type of Contract": ["SOW" if i%2==0 else "EULA" for i in range(num_records)],
-        "Contract Coverage": [f"FedEx Division {i}" for i in range(1, num_records+1)],
-        "Geographical Scope": ["US" if i%2==0 else "Global" for i in range(num_records)],
-        "Contract Scope": [f"Service Type {i}" for i in range(1, num_records+1)],
-        "Effective From": ["01/01/2023" for _ in range(num_records)],
-        "Expiry Date": ["12/31/2025" for _ in range(num_records)],
-        "Status": ["Active" for _ in range(num_records)],
-        "Auto-renewal": ["Yes" if i%2==0 else "No" for i in range(num_records)]
-    }
-    
-    commercial_data = {
-        "Total Contract Value": [f"${i*100000:,.2f}" for i in range(1, num_records+1)],
-        "Payment Terms": ["Net 30" if i%2==0 else "Net 45" for i in range(num_records)],
-        "Early Payment Discount %": ["1%" if i%2==0 else "2%" for i in range(num_records)],
-        "Late Payment Penalty%": ["1.5%" for _ in range(num_records)],
-        "Volume based Discounts %": ["5%" if i%2==0 else "7%" for i in range(num_records)],
-        "Annual Price Increase %": ["3%" for _ in range(num_records)]
-    }
-    
-    legal_data = {
-        "Right to Indemnify": ["Yes" for _ in range(num_records)],
-        "Right to Assign": ["No" for _ in range(num_records)],
-        "Right to Terminate": ["Yes" for _ in range(num_records)],
-        "Governing Law": ["Tennessee" if i%2==0 else "Delaware" for i in range(num_records)],
-        "Liability Limit": ["Limited" for _ in range(num_records)]
-    }
-    
-    return critical_data, commercial_data, legal_data
+# Actual Data Source (as provided)
+CRITICAL_DATA = {
+    "Engagement": ["IT Services", "IT - Services", "IT - Services", "IT - Services", 
+                  "IT - Services", "IT - Services", "IT - Services", "IT - Services",
+                  "IT - Services", "IT-Infrastructure", "IT-Infrastructure",
+                  "IT-Infrastructure", "IT-Infrastructure"],
+    "Type of Contract": ["SOW", "SOW", "EULA", "EUSA", "SOW", "SOW", "SOW", 
+                        "EULA", "EUSA", "SOW", "EUSA", "EUSA", "EULA"],
+    "Contract Coverage": ["FedEx Enterprise", "FedEx", "FedEx Express", "FedEx Ground",
+                        "FedEx Freight", "FedEx Services", "FedEx", "FedEx Freight",
+                        "FedEx", "FedEx Enterprise", "FedEx Enterprise",
+                        "FedEx", "FedEx Enterprise"],
+    "Geographical Scope": ["US", "US", "US, EMEA", "US", "US, Canada", "US", "APAC",
+                         "US, LATAM", "Global", "US", "US, EMEA", "US, EMEA, APAC", "Global"],
+    "Contract Scope": ["Professional Services AI", "Professional Services (AI & Analytics)",
+                     "Data Management Software Licenses", "Networking Infrastructure & Support",
+                     "Hybrid Cloud Deployment & Support", "Storage Solutions & Managed Services",
+                     "IT Support & Maintenance Services", "Software Licenses (Compliance & Security)",
+                     "Global Software Agreement & Support", "Servers Procurement & Maintenance",
+                     "Cybersecurity Services (Vulnerability Mgmt)", "Managed Detection and Response (MDR)", 
+                     "Microsoft Azure Cloud Services"],
+    "Effective From": ["12/1/2024", "1/7/2024", "12/31/2022", "7/31/2024", "1/31/2025",
+                     "12/31/2023", "3/31/2024", "2/23/2025", "3/31/2025", "11/30/2024",
+                     "12/15/2024", "12/20/2024", "7/14/2024"],
+    "Expiry Date": ["3/31/2026", "6/30/2027", "12/31/2024", "4/30/2026", "8/31/2028",
+                   "9/20/2025", "5/20/2025", "4/12/2026", "8/31/2029", "6/30/2027",
+                   "11/30/2028", "10/31/2026", "1/15/2027"],
+    "Status": ["Active", "Active", "Expired", "Active", "Active", "Active", "Active",
+              "Active", "Active", "Active", "Active", "Active", "Active"],
+    "Auto-renewal": ["No", "", "Yes", "", "Yes", "No", "Yes", "Yes", "No", "", "No", "Yes", "Yes"]
+}
+
+COMMERCIAL_DATA = {
+    "Total Contract Value": ["$5,250,785", "$6,953,977", "$2,400,000", "$4,750,000",
+                           "$6,200,202", "$1,850,000", "$3,309,753", "$1,275,050",
+                           "$7,500,060", "$4,409,850", "$2,750,075", "$3,950,040",
+                           "$8,250,070"],
+    "Payment Terms": ["Net 60", "Net 60", "Net 45", "Net 60", "Net 60", "Net 45",
+                    "Net 45", "Net 30", "Net 60", "Net 60", "Net 45", "Net 45", "Net 60"],
+    "Early Payment Discount %": ["NIL", "NIL", "1.25% within 20 days", "1% within 10 days",
+                               "", "NIL", "0.2% within 15 days", "", "0.2% within 15 days",
+                               "NIL", "1.5% within 15 days", "", "0.625% within 15 days"],
+    "Late Payment Penalty%": ["1.50%", "1.50%", "1%", "1.50%", "", "1%", "1%", "",
+                             "1.50%", "", "1.25%", "", "1.50%"],
+    "Volume based Discounts %": ["5% for spend > $3M", "5% for spend > $3M", "",
+                                "8% for equipment > $1M", "7% for spend > $5M",
+                                "4% for equipment > $5 M", "", "5% over 15000 licenses",
+                                "10% for spend > $6M", "8% for spend > $2M",
+                                "6% for annual spend > $2M", "", "10% for spend > $7M"],
+    "Annual Price Increase %": ["CPI + 1.5%", "CPI + 1.5%", "", "CPI", "CPI", "",
+                               "CPI -1%", "CPI", "CPI + .6%", "CPI + 0.25%", "CPI", "", "CPI + 1%"]
+}
+
+LEGAL_DATA = {
+    "Right to Indemnify": ["Yes"] * 13,
+    "Right to Assign": ["No"] * 13,
+    "Right to Terminate": ["Yes"] * 13,
+    "Governing Law": ["Tennessee", "Tennessee", "UK", "Tennessee", "Tennessee",
+                     "Tennessee", "Singapore", "Delaware", "Tennessee", "UK",
+                     "Delaware", "Singapore", "Delaware"],
+    "Liability Limit": ["TCV/ Higher or unl fdir IP/Conf", "", "", "", "", "", 
+                       "", "", "", "", "", "", ""]
+}
 
 def create_donut_chart(data, num_records):
     contract_types = data["Type of Contract"][:num_records]
@@ -128,10 +159,9 @@ def main():
             /* Header styling */
             .header-container {{
                 text-align: center;
-                margin: -50px 0 -20px 0;
+                margin: -50px 0 10px 0;
                 padding: 20px 0;
                 background-color: {FEDEX_PURPLE};
-                border-radius: 0 0 15px 15px;
             }}
             
             .main-title {{
@@ -145,12 +175,12 @@ def main():
                 font-family: 'FedEx Sans', Arial, sans-serif;
             }}
             
-            /* Tab styling */
+            /* Tab styling - moved down by 2px */
             .stTabs [role=tablist] {{
                 display: flex;
                 justify-content: center;
                 gap: 10px;
-                margin: 0 auto 30px;
+                margin: 10px auto 30px;
                 padding: 12px;
                 background: {BACKGROUND_COLOR};
                 max-width: 800px;
@@ -203,9 +233,10 @@ def main():
                 background-color: #EAEAEA !important;
             }}
             
-            /* Sidebar styling */
+            /* Sidebar styling - removed dotted border */
             .sidebar .sidebar-content {{
                 background-color: {BACKGROUND_COLOR};
+                border-right: none;
             }}
             
             .sidebar-title {{
@@ -236,12 +267,11 @@ def main():
                 color: {TEXT_COLOR} !important;
             }}
             
-            /* File uploader styling */
+            /* File uploader styling - removed dotted border */
             .file-uploader {{
                 padding: 20px;
                 border-radius: 4px;
                 margin-top: 20px;
-                border: 2px dashed {FEDEX_PURPLE};
                 text-align: center;
             }}
             
@@ -339,7 +369,7 @@ def main():
         )
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # File Uploader
+        # File Uploader - removed dotted border
         st.markdown('<div class="file-uploader">', unsafe_allow_html=True)
         uploaded_files = st.file_uploader(
             "Upload Contract Files",
@@ -352,9 +382,8 @@ def main():
     # Main Content Area
     if uploaded_files:
         num_records = len(uploaded_files)
-        critical_data, commercial_data, legal_data = generate_sample_data(num_records)
         
-        # Tabs
+        # Tabs - moved down by 2px in CSS
         tab1, tab2, tab3 = st.tabs([
             "Critical Data Insights", 
             "Commercial Insights", 
@@ -362,22 +391,25 @@ def main():
         ])
         
         with tab1:
-            df = pd.DataFrame(critical_data)
-            st.dataframe(df, use_container_width=True, height=600)
+            # Only show the number of rows matching uploaded files
+            critical_df = pd.DataFrame({k: v[:num_records] for k, v in CRITICAL_DATA.items()})
+            st.dataframe(critical_df, use_container_width=True, height=600)
             
             # Donut chart
             st.markdown("---")
             st.markdown("### Contract Type Distribution")
-            donut_chart = create_donut_chart(critical_data, num_records)
+            donut_chart = create_donut_chart(CRITICAL_DATA, num_records)
             st.plotly_chart(donut_chart, use_container_width=True)
 
         with tab2:
-            df = pd.DataFrame(commercial_data)
-            st.dataframe(df, use_container_width=True, height=600)
+            # Only show the number of rows matching uploaded files
+            commercial_df = pd.DataFrame({k: v[:num_records] for k, v in COMMERCIAL_DATA.items()})
+            st.dataframe(commercial_df, use_container_width=True, height=600)
 
         with tab3:
-            df = pd.DataFrame(legal_data)
-            st.dataframe(df, use_container_width=True, height=600)
+            # Only show the number of rows matching uploaded files
+            legal_df = pd.DataFrame({k: v[:num_records] for k, v in LEGAL_DATA.items()})
+            st.dataframe(legal_df, use_container_width=True, height=600)
 
         # Chat Interface
         st.markdown("---")
