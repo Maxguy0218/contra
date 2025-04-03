@@ -13,112 +13,121 @@ from langchain.embeddings import HuggingFaceEmbeddings
 GEMINI_API_KEY = 'AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg'
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 
-# FedEx Colors
+# FedEx Color Scheme
 PRIMARY_COLOR = "#4D148C"  # Purple
 SECONDARY_COLOR = "#FF6200"  # Orange
 BACKGROUND_COLOR = "#FFFFFF"  # White
 TEXT_COLOR = "#333333"  # Dark Gray
 
-# Sample Data - Reduced to 5 sample contracts for demo
-SAMPLE_CONTRACTS = [
-    {
-        "Contract Name": "FedEx Express Master Agreement",
-        "Type": "Master",
-        "Effective Date": "2023-01-15",
-        "Expiration Date": "2026-01-14",
-        "Value": "$4,200,000",
-        "Status": "Active"
-    },
-    {
-        "Contract Name": "FedEx Ground Service Agreement",
-        "Type": "Service",
-        "Effective Date": "2022-06-01",
-        "Expiration Date": "2025-05-31",
-        "Value": "$3,750,000",
-        "Status": "Active"
-    },
-    {
-        "Contract Name": "FedEx Freight Transportation Contract",
-        "Type": "Transportation",
-        "Effective Date": "2023-03-10",
-        "Expiration Date": "2024-03-09",
-        "Value": "$2,100,000",
-        "Status": "Active"
-    },
-    {
-        "Contract Name": "FedEx Office Supply Agreement",
-        "Type": "Supply",
-        "Effective Date": "2021-11-01",
-        "Expiration Date": "2023-10-31",
-        "Value": "$1,500,000",
-        "Status": "Expired"
-    },
-    {
-        "Contract Name": "FedEx Technology Services Contract",
-        "Type": "Technology",
-        "Effective Date": "2023-07-01",
-        "Expiration Date": "2025-06-30",
-        "Value": "$5,800,000",
-        "Status": "Active"
+def get_base64_image(file_path):
+    with open(file_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
+
+def process_pdf(uploaded_file):
+    try:
+        with pdfplumber.open(uploaded_file) as pdf:
+            return {
+                "filename": uploaded_file.name,
+                "content": "\n".join([page.extract_text() or "" for page in pdf.pages]),
+                "pages": len(pdf.pages)
+            }
+    except Exception as e:
+        st.error(f"Failed to process PDF: {str(e)}")
+        return None
+
+def extract_contract_data(text):
+    # Simplified example - replace with actual ML model integration
+    return {
+        "Contract Type": "SOW" if "statement of work" in text.lower() else "EULA",
+        "Parties": "FedEx and Vendor",
+        "Effective Date": "2024-01-01",
+        "Term": "3 years",
+        "Value": "$1,000,000"
     }
-]
+
+def create_donut_chart(contract_types):
+    type_counts = pd.Series(contract_types).value_counts().reset_index()
+    type_counts.columns = ['Type', 'Count']
+    
+    fig = px.pie(type_counts, 
+                 values='Count', 
+                 names='Type',
+                 hole=0.4,
+                 title="Contract Type Distribution",
+                 color_discrete_sequence=[PRIMARY_COLOR, SECONDARY_COLOR])
+    
+    fig.update_traces(textposition='inside', 
+                     textinfo='percent+label',
+                     marker=dict(line=dict(color=BACKGROUND_COLOR, width=2)))
+    
+    fig.update_layout(
+        height=350,
+        margin=dict(l=20, r=20, t=50, b=20),
+        paper_bgcolor=BACKGROUND_COLOR,
+        plot_bgcolor=BACKGROUND_COLOR,
+        font=dict(color=TEXT_COLOR),
+        title_font=dict(size=18, color=PRIMARY_COLOR),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.2,
+            xanchor="center",
+            x=0.5
+        )
+    )
+    return fig
 
 def main():
-    st.set_page_config(layout="wide", page_title="FedEx ContractIQ")
+    st.set_page_config(layout="wide", page_title="ContractIQ - FedEx", page_icon="📄")
     
-    # Apply FedEx color scheme
+    # Custom CSS Injection
     st.markdown(f"""
         <style>
             /* Main styles */
-            body {{
-                color: {TEXT_COLOR};
+            .main {{
                 background-color: {BACKGROUND_COLOR};
+                color: {TEXT_COLOR};
+                font-family: 'Arial', sans-serif;
             }}
             
-            /* Header */
+            /* Header styling */
             .header {{
                 background-color: {PRIMARY_COLOR};
-                color: white;
-                padding: 1rem;
+                padding: 2rem;
+                color: {BACKGROUND_COLOR};
+                border-radius: 0 0 20px 20px;
                 margin-bottom: 2rem;
             }}
             
-            /* Tabs */
-            .stTabs [role="tablist"] {{
+            /* Tab styling */
+            .stTabs [role=tablist] {{
                 border-bottom: 2px solid {PRIMARY_COLOR};
             }}
             
-            .stTabs [role="tab"][aria-selected="true"] {{
-                color: {PRIMARY_COLOR};
-                font-weight: bold;
+            .stTabs [role=tab] {{
+                color: {TEXT_COLOR};
+                font-weight: 500;
+                padding: 0.8rem 2rem;
+                transition: all 0.2s;
+            }}
+            
+            .stTabs [role=tab][aria-selected=true] {{
+                color: {PRIMARY_COLOR} !important;
+                font-weight: 600;
                 border-bottom: 3px solid {SECONDARY_COLOR};
             }}
             
-            /* Dataframe */
-            .dataframe {{
+            /* Data table styling */
+            .stDataFrame {{
                 border: 1px solid #ddd;
+                border-radius: 8px;
+                overflow: hidden;
             }}
             
-            .dataframe th {{
-                background-color: {PRIMARY_COLOR} !important;
-                color: white !important;
-            }}
-            
-            .dataframe tr:nth-child(even) {{
-                background-color: #f9f9f9;
-            }}
-            
-            /* Sidebar */
+            /* Sidebar cleanup */
             [data-testid="stSidebar"] {{
-                background-color: {BACKGROUND_COLOR};
+                background: {BACKGROUND_COLOR};
                 border-right: 1px solid #ddd;
-            }}
-            
-            /* Buttons */
-            .stButton>button {{
-                background-color: {SECONDARY_COLOR};
-                color: white;
-                border: none;
             }}
         </style>
     """, unsafe_allow_html=True)
@@ -126,95 +135,64 @@ def main():
     # Header
     st.markdown(f"""
         <div class="header">
-            <h1 style="margin:0; padding:0;">FedEx ContractIQ</h1>
+            <h1 style="margin:0; font-size:2.2rem;">
+                <img src="data:image/svg+xml;base64,{get_base64_image('fedex-logo.svg') if os.path.exists('fedex-logo.svg') else ''}" 
+                     style="height:40px; vertical-align:middle; margin-right:15px;">
+                ContractIQ
+            </h1>
         </div>
     """, unsafe_allow_html=True)
 
     # Sidebar
     with st.sidebar:
-        st.title("Configuration")
+        st.selectbox("Data Source", ["Local Machine", "Network Path"], key="source")
+        st.selectbox("Analysis Model", ["Transportation", "Warehousing", "Customer"], key="model")
         
-        # Path Selection
-        path_options = ["Local Machine", "Network Path"]
-        selected_path = st.selectbox("Source Path", options=path_options)
-        
-        # AI Model Selection
-        ai_model_options = ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"]
-        selected_model = st.selectbox("AI Model", options=ai_model_options)
-        
-        # File Uploader
         uploaded_files = st.file_uploader(
-            "Upload Contract Files", 
-            type=["pdf"], 
-            accept_multiple_files=True
+            "Upload Contracts",
+            type=["pdf"],
+            accept_multiple_files=True,
+            help="Upload PDF contracts for analysis"
         )
 
     # Main Content
     if uploaded_files:
-        num_files = len(uploaded_files)
-        if num_files > len(SAMPLE_CONTRACTS):
-            st.warning(f"Showing first {len(SAMPLE_CONTRACTS)} sample contracts")
-            num_files = len(SAMPLE_CONTRACTS)
-
-        # Create tabs
-        tab1, tab2, tab3 = st.tabs([
-            "Critical Data Insights", 
-            "Commercial Insights", 
-            "Legal Insights"
-        ])
-
-        with tab1:
-            # Display only the number of contracts matching uploaded files
-            df = pd.DataFrame(SAMPLE_CONTRACTS[:num_files])
-            st.dataframe(df, use_container_width=True)
+        # Process files
+        with st.spinner("Analyzing contracts..."):
+            contracts = [process_pdf(f) for f in uploaded_files]
+            valid_contracts = [c for c in contracts if c is not None]
             
-            # Donut chart of contract types
-            if num_files > 0:
-                type_counts = df['Type'].value_counts().reset_index()
-                type_counts.columns = ['Type', 'Count']
-                
-                fig = px.pie(
-                    type_counts, 
-                    values='Count', 
-                    names='Type',
-                    hole=0.4,
-                    color_discrete_sequence=[PRIMARY_COLOR, SECONDARY_COLOR]
-                )
-                fig.update_layout(
-                    title="Contract Type Distribution",
-                    margin=dict(l=20, r=20, t=30, b=20)
-                )
-                st.plotly_chart(fig, use_container_width=True)
+            # Extract contract data
+            contract_data = [extract_contract_data(c["content"]) for c in valid_contracts]
+            df = pd.DataFrame(contract_data)
+            
+            # Create chart data
+            contract_types = df["Contract Type"].tolist()
+
+        # Tabs
+        tab1, tab2 = st.tabs(["Contract Overview", "Advanced Analytics"])
+        
+        with tab1:
+            # Display processed data
+            st.dataframe(
+                df,
+                use_container_width=True,
+                height=600,
+                column_config={
+                    "Value": st.column_config.NumberColumn(format="$%d")
+                }
+            )
+            
+            # Donut chart
+            st.markdown("---")
+            st.plotly_chart(create_donut_chart(contract_types), use_container_width=True)
 
         with tab2:
-            # Commercial data would go here
-            st.write("Commercial insights data would be displayed here")
+            # Add advanced analytics here
+            st.write("Advanced analytics view")
 
-        with tab3:
-            # Legal data would go here
-            st.write("Legal insights data would be displayed here")
-
-        # Chat Interface
-        st.divider()
-        st.subheader("Contract Assistant")
-
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
-
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
-
-        if prompt := st.chat_input("Ask about your contracts"):
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.markdown(prompt)
-            
-            # Simulated AI response
-            response = f"Sample response regarding {prompt}"
-            with st.chat_message("assistant"):
-                st.markdown(response)
-            st.session_state.messages.append({"role": "assistant", "content": response})
+    else:
+        st.info("Please upload contracts through the sidebar to begin analysis")
 
 if __name__ == "__main__":
     main()
