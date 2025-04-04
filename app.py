@@ -16,12 +16,8 @@ FEDEX_PURPLE = "#4D148C"
 FEDEX_ORANGE = "#FF6200"
 BACKGROUND_COLOR = "#FFFFFF"
 TEXT_COLOR = "#333333"
-BORDER_COLOR = "#DDDDDD"
-HIGHLIGHT_COLOR = "#F5F5F5"
-NAV_WIDTH = "72px"
-DRAWER_WIDTH = "300px"
 
-# Actual Data Source
+# Data Source
 CRITICAL_DATA = {
     "Engagement": ["IT Services", "IT - Services", "IT - Services", "IT - Services", 
                   "IT - Services", "IT - Services", "IT - Services", "IT - Services",
@@ -157,218 +153,123 @@ def main():
     if 'vector_store' not in st.session_state:
         st.session_state.vector_store = None
 
-    # Calculate dynamic margins based on drawer state
-    nav_width = "72px"
-    drawer_width = "300px"
-    main_margin = f"calc({nav_width} + {drawer_width})" if st.session_state.drawer_open and st.session_state.nav == 'home' else nav_width
-
     # Custom CSS
     st.markdown(f"""
         <style>
-            /* Navigation styling */
-            .nav-container {{
-                position: fixed;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                width: {nav_width};
-                background-color: {FEDEX_PURPLE};
-                z-index: 999;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding-top: 20px;
-            }}
-            
-            .nav-button {{
-                width: 100%;
-                height: 72px;
-                background: transparent;
-                border: none;
-                color: white;
-                cursor: pointer;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.2s;
-                font-size: 24px;
-            }}
-            
-            .nav-button:hover {{
-                background-color: {FEDEX_ORANGE};
-            }}
-            
-            .nav-button.active {{
-                background-color: {FEDEX_ORANGE};
-            }}
-            
-            .nav-label {{
-                font-size: 0.6rem;
-                margin-top: 4px;
-                font-weight: 500;
-            }}
-            
-            /* Configuration drawer */
-            .config-drawer {{
-                position: fixed;
-                left: {nav_width};
-                top: 0;
-                bottom: 0;
-                width: {drawer_width};
-                background: {BACKGROUND_COLOR};
-                z-index: 998;
-                box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-                padding: 20px;
-                transition: transform 0.3s ease;
-                transform: translateX({'-100%' if not st.session_state.drawer_open or st.session_state.nav != 'home' else '0'});
-                overflow-y: auto;
-            }}
-            
             /* Main content adjustment */
             .main .block-container {{
-                margin-left: {main_margin};
-                transition: margin 0.3s ease;
                 padding-top: 2rem;
-                max-width: calc(100% - {main_margin});
-            }}
-            
-            /* Toggle button styling */
-            .drawer-toggle {{
-                position: fixed;
-                left: calc({nav_width} + 10px);
-                top: 10px;
-                z-index: 999;
-                background: {FEDEX_PURPLE};
-                color: white;
-                border: none;
-                border-radius: 50%;
-                width: 32px;
-                height: 32px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: transform 0.3s ease;
-                transform: rotate({'0deg' if st.session_state.drawer_open else '180deg'});
-            }}
-            
-            .drawer-toggle:hover {{
-                background: {FEDEX_ORANGE};
             }}
             
             /* Header styling */
             .header-container {{
                 text-align: center;
-                margin: 0 0 20px {main_margin};
                 padding: 20px 0;
                 background-color: {FEDEX_PURPLE};
+                margin-bottom: 30px;
             }}
             
             .main-title {{
                 font-size: 2.5rem;
                 font-weight: 700;
-                display: inline-block;
-                vertical-align: middle;
-                margin: 0;
-                letter-spacing: 0.5px;
-                font-family: 'FedEx Sans', Arial, sans-serif;
+                color: white;
             }}
             
-            .fed-part {{
-                color: {BACKGROUND_COLOR};
+            .fed-part {{ color: white; }}
+            .ex-part {{ color: {FEDEX_ORANGE}; }}
+            
+            /* Chat message styling */
+            .user-message {{
+                background-color: {FEDEX_PURPLE};
+                color: white;
+                padding: 12px;
+                border-radius: 8px;
+                margin: 8px 0;
             }}
             
-            .ex-part {{
-                color: {FEDEX_ORANGE};
+            .assistant-message {{
+                background-color: {FEDEX_ORANGE};
+                color: white;
+                padding: 12px;
+                border-radius: 8px;
+                margin: 8px 0;
             }}
-            
-            /* Rest of your existing CSS styles... */
         </style>
     """, unsafe_allow_html=True)
 
-    # Navigation panel
-    st.markdown(f"""
-        <div class="nav-container">
-            <button class="nav-button {'active' if st.session_state.nav == 'home' else ''}" onclick="setNav('home')">
-                🏠<div class="nav-label">Home</div>
-            </button>
-            <button class="nav-button {'active' if st.session_state.nav == 'tools' else ''}" onclick="setNav('tools')">
-                ⚙️<div class="nav-label">Tools</div>
-            </button>
-            <button class="nav-button {'active' if st.session_state.nav == 'analytics' else ''}" onclick="setNav('analytics')">
-                📊<div class="nav-label">Analytics</div>
-            </button>
-        </div>
-        
-        <script>
-        function setNav(value) {{
-            Streamlit.setComponentValue(value);
-        }}
-        function toggleDrawer() {{
-            Streamlit.setComponentValue(!{str(st.session_state.drawer_open).lower()});
-        }}
-        </script>
-    """, unsafe_allow_html=True)
-
-    # Configuration drawer (only visible on home page)
-    if st.session_state.nav == 'home':
+    # Navigation sidebar
+    with st.sidebar:
         st.markdown(f"""
-            <div class="config-drawer">
-                <h3 style="color: {FEDEX_PURPLE}; margin-bottom: 20px;">Configuration</h3>
-                <div id="config-content"></div>
-                <button class="drawer-toggle" onclick="toggleDrawer()">›</button>
-            </div>
+            <style>
+                .sidebar .sidebar-content {{
+                    width: 80px;
+                    background-color: {FEDEX_PURPLE};
+                }}
+                .nav-btn {{
+                    width: 100%;
+                    margin: 10px 0;
+                    padding: 15px 0;
+                    color: white !important;
+                    border-radius: 5px;
+                    transition: all 0.3s;
+                }}
+                .nav-btn:hover {{
+                    background-color: {FEDEX_ORANGE} !important;
+                }}
+                .nav-btn.active {{
+                    background-color: {FEDEX_ORANGE} !important;
+                }}
+            </style>
         """, unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button("🏠", key="home_btn", help="Home"):
+                st.session_state.nav = 'home'
+                st.session_state.drawer_open = True
+        with col2:
+            if st.button("⚙️", key="tools_btn", help="Tools"):
+                st.session_state.nav = 'tools'
+                st.session_state.drawer_open = False
+        with col3:
+            if st.button("📊", key="analytics_btn", help="Analytics"):
+                st.session_state.nav = 'analytics'
+                st.session_state.drawer_open = False
 
-        # Drawer content
-        with st.container():
-            st.markdown('<div id="config-content">', unsafe_allow_html=True)
-            col1, col2 = st.columns(2)
-            with col1:
-                selected_path = st.selectbox(
-                    "Source Path",
-                    options=["Local Machine", "Network Path"],
-                    index=0
-                )
-            with col2:
-                selected_model = st.selectbox(
-                    "AI Model",
-                    options=["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"],
-                    index=0
-                )
-
+    # Configuration drawer (only on home page)
+    if st.session_state.nav == 'home' and st.session_state.drawer_open:
+        with st.sidebar.expander("⚙️ CONFIGURATION", expanded=True):
+            selected_path = st.selectbox(
+                "Source Path",
+                ["Local Machine", "Network Path"],
+                index=0
+            )
+            selected_model = st.selectbox(
+                "AI Model",
+                ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"],
+                index=0
+            )
             uploaded_files = st.file_uploader(
                 "Upload Contract Files",
                 type=["pdf"],
-                accept_multiple_files=True,
-                help="Upload multiple PDF contracts for analysis"
+                accept_multiple_files=True
             )
-            st.markdown('</div>', unsafe_allow_html=True)
 
-    # Handle navigation and drawer state
+    # Main content area
+    st.markdown("""
+        <div class="header-container">
+            <h1 class="main-title">
+                <span class="fed-part">Fed</span><span class="ex-part">Ex</span> 
+                <span class="fed-part">ContractIQ</span>
+            </h1>
+        </div>
+    """, unsafe_allow_html=True)
+
     if st.session_state.nav == 'home':
-        st.session_state.drawer_open = True
-    else:
-        st.session_state.drawer_open = False
-
-    # Main content sections
-    if st.session_state.nav == 'home':
-        # Header
-        st.markdown(f"""
-            <div class="header-container">
-                <h1 class="main-title">
-                    <span class="fed-part">Fed</span><span class="ex-part">Ex</span> 
-                    <span class="fed-part">ContractIQ</span>
-                </h1>
-            </div>
-        """, unsafe_allow_html=True)
-
-        # Main content (only shown if files are uploaded)
-        if uploaded_files:
+        if 'uploaded_files' in locals() and uploaded_files:
             num_records = len(uploaded_files)
             
-            # Create dynamic sliced data based on uploaded files
+            # Create dynamic sliced data
             def slice_data(data_dict, num_records):
                 return {k: v[:num_records] for k, v in data_dict.items() if len(v) >= num_records}
             
@@ -386,10 +287,7 @@ def main():
             with tab1:
                 if critical_data:
                     critical_df = pd.DataFrame(critical_data)
-                    st.dataframe(critical_df.style.set_properties(**{
-                        'font-size': '1rem',
-                        'text-align': 'left'
-                    }), use_container_width=True, height=600)
+                    st.dataframe(critical_df, use_container_width=True, height=600)
                     
                     if num_records > 0:
                         st.markdown("---")
@@ -402,26 +300,20 @@ def main():
             with tab2:
                 if commercial_data:
                     commercial_df = pd.DataFrame(commercial_data)
-                    st.dataframe(commercial_df.style.set_properties(**{
-                        'font-size': '1rem',
-                        'text-align': 'left'
-                    }), use_container_width=True, height=600)
+                    st.dataframe(commercial_df, use_container_width=True, height=600)
                 else:
                     st.warning("No commercial data available for the selected contracts")
 
             with tab3:
                 if legal_data:
                     legal_df = pd.DataFrame(legal_data)
-                    st.dataframe(legal_df.style.set_properties(**{
-                        'font-size': '1rem',
-                        'text-align': 'left'
-                    }), use_container_width=True, height=600)
+                    st.dataframe(legal_df, use_container_width=True, height=600)
                 else:
                     st.warning("No legal data available for the selected contracts")
 
             # Chat Interface
             st.markdown("---")
-            st.markdown('<div class="chat-header">Document Assistant</div>', unsafe_allow_html=True)
+            st.markdown("## Document Assistant")
             
             if st.session_state.vector_store is None:
                 with st.spinner("Processing documents..."):
@@ -442,18 +334,18 @@ def main():
             for role, text in st.session_state.chat_history:
                 div_class = "user-message" if role == "user" else "assistant-message"
                 st.markdown(f"""
-                    <div class="chat-message {div_class}">
+                    <div class="{div_class}">
                         <b>{role.title()}:</b> {text}
                     </div>
                 """, unsafe_allow_html=True)
 
     elif st.session_state.nav == 'tools':
-        st.markdown(f"<h2 style='margin-left: {main_margin}'>Tools Section</h2>", unsafe_allow_html=True)
-        st.markdown(f"<div style='margin-left: {main_margin}'>This is tools</div>", unsafe_allow_html=True)
+        st.title("Tools Section")
+        st.write("This is tools")
 
     elif st.session_state.nav == 'analytics':
-        st.markdown(f"<h2 style='margin-left: {main_margin}'>Analytics Section</h2>", unsafe_allow_html=True)
-        st.markdown(f"<div style='margin-left: {main_margin}'>Analytics functionality coming soon...</div>", unsafe_allow_html=True)
+        st.title("Analytics Section")
+        st.write("Analytics functionality coming soon...")
 
 if __name__ == "__main__":
     main()
