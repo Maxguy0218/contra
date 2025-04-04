@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os
-import base64
 import pdfplumber
 import google.generativeai as genai
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -20,6 +18,8 @@ BACKGROUND_COLOR = "#FFFFFF"
 TEXT_COLOR = "#333333"
 BORDER_COLOR = "#DDDDDD"
 HIGHLIGHT_COLOR = "#F5F5F5"
+NAV_WIDTH = "72px"
+MAIN_MARGIN = "88px"
 
 # Actual Data Source
 CRITICAL_DATA = {
@@ -145,23 +145,67 @@ def get_answer(question, vector_store):
         return f"Error: {str(e)}"
 
 def main():
-    st.set_page_config(layout="wide", page_title="FedEx ContractIQ", page_icon="📄")
+    st.set_page_config(layout="wide", page_title="FedEx ContractIQ")
     
-    # Custom CSS with FedEx styling
+    # Custom CSS with navigation and styling
     st.markdown(f"""
         <style>
-            /* Main container styling */
-            .main {{
-                background-color: {BACKGROUND_COLOR};
-                color: {TEXT_COLOR};
-                font-family: 'FedEx Sans', Arial, sans-serif;
+            /* Navigation styling */
+            .nav-container {{
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: {NAV_WIDTH};
+                background-color: {FEDEX_PURPLE};
+                z-index: 999;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding-top: 20px;
+            }}
+            
+            .nav-button {{
+                width: 100%;
+                height: 72px;
+                background: transparent;
+                border: none;
+                color: white;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+                font-size: 24px;
+            }}
+            
+            .nav-button:hover {{
+                background-color: {FEDEX_ORANGE};
+            }}
+            
+            .nav-button.active {{
+                background-color: {FEDEX_ORANGE};
+            }}
+            
+            .nav-label {{
+                font-size: 0.6rem;
+                margin-top: 4px;
+                font-weight: 500;
+            }}
+            
+            /* Main content adjustment */
+            .main .block-container {{
+                margin-left: {MAIN_MARGIN};
+                padding-top: 2rem;
+                max-width: calc(100% - {MAIN_MARGIN});
             }}
             
             /* Header styling with split colors */
             .header-container {{
                 text-align: center;
-                margin: -50px 0 15px 0;
-                padding: 25px 0;
+                margin: 0 0 20px {MAIN_MARGIN};
+                padding: 20px 0;
                 background-color: {FEDEX_PURPLE};
             }}
             
@@ -172,6 +216,7 @@ def main():
                 vertical-align: middle;
                 margin: 0;
                 letter-spacing: 0.5px;
+                font-family: 'FedEx Sans', Arial, sans-serif;
             }}
             
             .fed-part {{
@@ -187,7 +232,7 @@ def main():
                 display: flex;
                 justify-content: center;
                 gap: 10px;
-                margin: 15px auto 30px;
+                margin: 20px auto 30px;
                 padding: 12px;
                 background: {BACKGROUND_COLOR};
                 max-width: 800px;
@@ -244,42 +289,11 @@ def main():
                 background-color: #EAEAEA !important;
             }}
             
-            /* Sidebar styling */
-            .sidebar .sidebar-content {{
-                background-color: {BACKGROUND_COLOR};
-                border-right: none;
-            }}
-            
-            .sidebar-title {{
-                font-size: 1.5rem;
-                color: {FEDEX_PURPLE};
-                font-weight: 700;
-                margin: -10px 0 25px 0;
-                text-align: center;
-                padding-bottom: 12px;
-                border-bottom: 2px solid {FEDEX_ORANGE};
-            }}
-            
-            /* Sidebar text elements */
-            .sidebar .stSelectbox label,
-            .sidebar .stFileUploader label {{
-                font-size: 1.1rem !important;
-                font-weight: 600 !important;
-                color: {FEDEX_PURPLE} !important;
-            }}
-            
-            .sidebar .stSelectbox div[data-baseweb="select"],
-            .sidebar .stTextInput input {{
-                font-size: 1rem !important;
-                font-weight: 500 !important;
-            }}
-            
-            /* File uploader styling */
-            .file-uploader {{
+            /* Configuration panel styling */
+            .config-container {{
+                margin-left: {MAIN_MARGIN};
                 padding: 20px;
-                border-radius: 4px;
-                margin-top: 25px;
-                text-align: center;
+                background-color: {BACKGROUND_COLOR};
             }}
             
             /* Chat interface styling */
@@ -287,7 +301,7 @@ def main():
                 font-size: 1.5rem;
                 color: {FEDEX_PURPLE};
                 font-weight: 700;
-                margin: 30px 0 20px 0;
+                margin: 30px 0 20px {MAIN_MARGIN};
                 text-align: center;
                 padding-bottom: 10px;
                 border-bottom: 2px solid {FEDEX_ORANGE};
@@ -305,11 +319,13 @@ def main():
             
             .user-message {{
                 background-color: {FEDEX_PURPLE};
-                margin-left: 20%;
+                margin-left: {MAIN_MARGIN};
+                margin-right: 20%;
             }}
             
             .assistant-message {{
                 background-color: {FEDEX_ORANGE};
+                margin-left: {MAIN_MARGIN};
                 margin-right: 20%;
             }}
             
@@ -321,145 +337,165 @@ def main():
                 border-radius: 6px !important;
                 padding: 12px 15px !important;
                 font-size: 1rem !important;
-            }}
-            
-            /* Button styling */
-            .stButton button {{
-                background-color: {FEDEX_PURPLE} !important;
-                color: {BACKGROUND_COLOR} !important;
-                border: none !important;
-                border-radius: 6px !important;
-                padding: 12px 24px !important;
-                font-weight: 700 !important;
-                font-size: 1rem !important;
-                transition: all 0.2s ease !important;
-            }}
-            
-            .stButton button:hover {{
-                background-color: #3A0C6E !important;
-                transform: translateY(-1px);
+                margin-left: {MAIN_MARGIN};
+                width: calc(100% - {MAIN_MARGIN} - 20px) !important;
             }}
         </style>
     """, unsafe_allow_html=True)
 
-    # Header with split colors
+    # Navigation panel
     st.markdown(f"""
-        <div class="header-container">
-            <h1 class="main-title">
-                <span class="fed-part">Fed</span><span class="ex-part">Ex</span> 
-                <span class="fed-part">ContractIQ</span>
-            </h1>
+        <div class="nav-container">
+            <button class="nav-button {'active' if st.session_state.get('nav', 'home') == 'home' else ''}" onclick="setNav('home')">
+                🏠<div class="nav-label">Home</div>
+            </button>
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'tools' else ''}" onclick="setNav('tools')">
+                ⚙️<div class="nav-label">Tools</div>
+            </button>
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'analytics' else ''}" onclick="setNav('analytics')">
+                📊<div class="nav-label">Analytics</div>
+            </button>
         </div>
+        
+        <script>
+        function setNav(value) {{
+            Streamlit.setComponentValue(value);
+        }}
+        </script>
     """, unsafe_allow_html=True)
 
-    # Sidebar configuration
-    with st.sidebar:
+    # Handle navigation
+    nav_value = st.session_state.get('nav', 'home')
+    if nav_value == 'home':
+        # Main content
         st.markdown(f"""
-            <div class="sidebar-title">
-                Configuration Panel
+            <div class="header-container">
+                <h1 class="main-title">
+                    <span class="fed-part">Fed</span><span class="ex-part">Ex</span> 
+                    <span class="fed-part">ContractIQ</span>
+                </h1>
             </div>
         """, unsafe_allow_html=True)
 
-        # Path Selection
-        path_options = ["Local Machine", "Network Path"]
-        selected_path = st.selectbox(
-            "Source Path",
-            options=path_options,
-            index=0
-        )
+        # Configuration panel (formerly sidebar content)
+        with st.container():
+            st.markdown("### Configuration", unsafe_allow_html=True)
+            col1, col2 = st.columns(2)
+            with col1:
+                path_options = ["Local Machine", "Network Path"]
+                selected_path = st.selectbox(
+                    "Source Path",
+                    options=path_options,
+                    index=0
+                )
+            with col2:
+                ai_model_options = ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"]
+                selected_model = st.selectbox(
+                    "AI Model",
+                    options=ai_model_options,
+                    index=0
+                )
 
-        # AI Model Selection
-        ai_model_options = ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"]
-        selected_model = st.selectbox(
-            "AI Model",
-            options=ai_model_options,
-            index=0
-        )
+            uploaded_files = st.file_uploader(
+                "Upload Contract Files",
+                type=["pdf"],
+                accept_multiple_files=True,
+                help="Upload multiple PDF contracts for analysis"
+            )
 
-        # File Uploader
-        uploaded_files = st.file_uploader(
-            "Upload Contract Files",
-            type=["pdf"],
-            accept_multiple_files=True,
-            help="Upload multiple PDF contracts for analysis"
-        )
-
-    # Main Content Area
-    if uploaded_files:
-        num_records = len(uploaded_files)
-        
-        # Create dynamic sliced data based on uploaded files
-        def slice_data(data_dict, num_records):
-            return {k: v[:num_records] for k, v in data_dict.items()}
-        
-        critical_data = slice_data(CRITICAL_DATA, num_records)
-        commercial_data = slice_data(COMMERCIAL_DATA, num_records)
-        legal_data = slice_data(LEGAL_DATA, num_records)
-        
-        # Tabs
-        tab1, tab2, tab3 = st.tabs([
-            "Critical Data Insights", 
-            "Commercial Insights", 
-            "Legal Insights"
-        ])
-        
-        with tab1:
-            critical_df = pd.DataFrame(critical_data)
-            st.dataframe(critical_df.style.set_properties(**{
-                'font-size': '1rem',
-                'text-align': 'left'
-            }), use_container_width=True, height=600)
+        # Main functionality
+        if uploaded_files:
+            num_records = len(uploaded_files)
             
-            if num_records > 0:
-                st.markdown("---")
-                st.markdown("### Contract Type Distribution")
-                donut_chart = create_donut_chart(critical_data, num_records)
-                st.plotly_chart(donut_chart, use_container_width=True)
+            # Create dynamic sliced data based on uploaded files
+            def slice_data(data_dict, num_records):
+                return {k: v[:num_records] for k, v in data_dict.items() if len(v) >= num_records}
+            
+            critical_data = slice_data(CRITICAL_DATA, num_records)
+            commercial_data = slice_data(COMMERCIAL_DATA, num_records)
+            legal_data = slice_data(LEGAL_DATA, num_records)
+            
+            # Tabs
+            tab1, tab2, tab3 = st.tabs([
+                "Critical Data Insights", 
+                "Commercial Insights", 
+                "Legal Insights"
+            ])
+            
+            with tab1:
+                if critical_data:
+                    critical_df = pd.DataFrame(critical_data)
+                    st.dataframe(critical_df.style.set_properties(**{
+                        'font-size': '1rem',
+                        'text-align': 'left'
+                    }), use_container_width=True, height=600)
+                    
+                    if num_records > 0:
+                        st.markdown("---")
+                        st.markdown("### Contract Type Distribution")
+                        donut_chart = create_donut_chart(critical_data, num_records)
+                        st.plotly_chart(donut_chart, use_container_width=True)
+                else:
+                    st.warning("No critical data available for the selected contracts")
 
-        with tab2:
-            commercial_df = pd.DataFrame(commercial_data)
-            st.dataframe(commercial_df.style.set_properties(**{
-                'font-size': '1rem',
-                'text-align': 'left'
-            }), use_container_width=True, height=600)
+            with tab2:
+                if commercial_data:
+                    commercial_df = pd.DataFrame(commercial_data)
+                    st.dataframe(commercial_df.style.set_properties(**{
+                        'font-size': '1rem',
+                        'text-align': 'left'
+                    }), use_container_width=True, height=600)
+                else:
+                    st.warning("No commercial data available for the selected contracts")
 
-        with tab3:
-            legal_df = pd.DataFrame(legal_data)
-            st.dataframe(legal_df.style.set_properties(**{
-                'font-size': '1rem',
-                'text-align': 'left'
-            }), use_container_width=True, height=600)
+            with tab3:
+                if legal_data:
+                    legal_df = pd.DataFrame(legal_data)
+                    st.dataframe(legal_df.style.set_properties(**{
+                        'font-size': '1rem',
+                        'text-align': 'left'
+                    }), use_container_width=True, height=600)
+                else:
+                    st.warning("No legal data available for the selected contracts")
 
-        # Chat Interface
-        st.markdown("---")
-        st.markdown('<div class="chat-header">Document Assistant</div>', unsafe_allow_html=True)
-        
-        if "chat_history" not in st.session_state:
-            st.session_state.chat_history = []
+            # Chat Interface
+            st.markdown("---")
+            st.markdown('<div class="chat-header">Document Assistant</div>', unsafe_allow_html=True)
+            
+            if "chat_history" not in st.session_state:
+                st.session_state.chat_history = []
 
-        # Process documents for AI
-        if "vector_store" not in st.session_state:
-            with st.spinner("Processing documents..."):
-                all_text = [process_pdf(f) for f in uploaded_files]
-                st.session_state.vector_store = create_vector_store(all_text)
+            if "vector_store" not in st.session_state:
+                with st.spinner("Processing documents..."):
+                    all_text = [process_pdf(f) for f in uploaded_files]
+                    if any(all_text):
+                        st.session_state.vector_store = create_vector_store(all_text)
+                    else:
+                        st.error("No text could be extracted from the uploaded documents")
 
-        # Chat input
-        question = st.text_input("Ask a question about your contracts:", key="chat_input")
-        if question and st.session_state.vector_store:
-            with st.spinner("Generating answer..."):
-                response = get_answer(question, st.session_state.vector_store)
-                st.session_state.chat_history.append(("user", question))
-                st.session_state.chat_history.append(("assistant", response))
-                st.experimental_rerun()
+            question = st.text_input("Ask a question about your contracts:", key="chat_input")
+            if question and st.session_state.get('vector_store'):
+                with st.spinner("Generating answer..."):
+                    response = get_answer(question, st.session_state.vector_store)
+                    st.session_state.chat_history.append(("user", question))
+                    st.session_state.chat_history.append(("assistant", response))
+                    st.experimental_rerun()
 
-        # Display chat history
-        for role, text in st.session_state.chat_history:
-            div_class = "user-message" if role == "user" else "assistant-message"
-            st.markdown(f"""
-                <div class="chat-message {div_class}">
-                    <b>{role.title()}:</b> {text}
-                </div>
-            """, unsafe_allow_html=True)
+            for role, text in st.session_state.chat_history:
+                div_class = "user-message" if role == "user" else "assistant-message"
+                st.markdown(f"""
+                    <div class="chat-message {div_class}">
+                        <b>{role.title()}:</b> {text}
+                    </div>
+                """, unsafe_allow_html=True)
+
+    elif nav_value == 'tools':
+        st.markdown(f"<h2 style='margin-left: {MAIN_MARGIN}'>Tools Section</h2>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-left: {MAIN_MARGIN}'>Tools functionality coming soon...</div>", unsafe_allow_html=True)
+
+    elif nav_value == 'analytics':
+        st.markdown(f"<h2 style='margin-left: {MAIN_MARGIN}'>Analytics Section</h2>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-left: {MAIN_MARGIN}'>Analytics functionality coming soon...</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
