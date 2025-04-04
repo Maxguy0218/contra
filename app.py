@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os
-import base64
 import pdfplumber
 import google.generativeai as genai
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -13,7 +11,17 @@ from langchain.embeddings import HuggingFaceEmbeddings
 GEMINI_API_KEY = 'AIzaSyAm_Fx8efZ2ELCwL0ZzZXMDMbrF6StdKsg'
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 
-# Complete dataset definitions
+# FedEx Color Scheme
+FEDEX_PURPLE = "#4D148C"
+FEDEX_ORANGE = "#FF6200"
+BACKGROUND_COLOR = "#FFFFFF"
+TEXT_COLOR = "#333333"
+BORDER_COLOR = "#DDDDDD"
+HIGHLIGHT_COLOR = "#F5F5F5"
+NAV_WIDTH = "72px"
+MAIN_MARGIN = "88px"
+
+# Actual Data Source
 CRITICAL_DATA = {
     "Engagement": ["IT Services", "IT - Services", "IT - Services", "IT - Services", 
                   "IT - Services", "IT - Services", "IT - Services", "IT - Services",
@@ -77,9 +85,38 @@ LEGAL_DATA = {
                        "", "", "", "", "", "", ""]
 }
 
-def get_base64_image(file_path):
-    with open(file_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
+def create_donut_chart(data, num_records):
+    contract_types = data["Type of Contract"][:num_records]
+    type_counts = pd.Series(contract_types).value_counts().reset_index()
+    type_counts.columns = ['Type', 'Count']
+    
+    fig = px.pie(type_counts, 
+                 values='Count', 
+                 names='Type',
+                 hole=0.4,
+                 title="Contract Type Distribution",
+                 color_discrete_sequence=[FEDEX_PURPLE, FEDEX_ORANGE])
+    
+    fig.update_traces(textposition='inside', 
+                     textinfo='percent+label',
+                     marker=dict(line=dict(color=BACKGROUND_COLOR, width=2)))
+    
+    fig.update_layout(
+        height=350,
+        margin=dict(l=20, r=20, t=50, b=20),
+        paper_bgcolor=BACKGROUND_COLOR,
+        plot_bgcolor=BACKGROUND_COLOR,
+        font=dict(color=TEXT_COLOR),
+        title_font=dict(size=18, color=FEDEX_PURPLE),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.2,
+            xanchor="center",
+            x=0.5
+        )
+    )
+    return fig
 
 def process_pdf(uploaded_file):
     try:
@@ -107,363 +144,358 @@ def get_answer(question, vector_store):
     except Exception as e:
         return f"Error: {str(e)}"
 
-def create_donut_chart(data, num_files):
-    contract_types = data["Type of Contract"][:num_files]
-    type_counts = pd.Series(contract_types).value_counts().reset_index()
-    type_counts.columns = ['Type', 'Count']
-    
-    fig = px.pie(type_counts, 
-                 values='Count', 
-                 names='Type',
-                 hole=0.4,
-                 title="Contract Type Distribution",
-                 color_discrete_sequence=px.colors.sequential.Oranges)
-    
-    fig.update_traces(textposition='inside', 
-                     textinfo='percent+label',
-                     marker=dict(line=dict(color='#1a1a1a', width=2)))
-    
-    fig.update_layout(
-        height=350,
-        margin=dict(l=20, r=20, t=50, b=20),
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='white'),
-        title_font=dict(size=18, color='#FF6B35'),
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=-0.2,
-            xanchor="center",
-            x=0.5
-        )
-    )
-    return fig
-
 def main():
-    st.set_page_config(layout="wide", page_title="ContractIQ", page_icon="📄")
+    st.set_page_config(layout="wide", page_title="FedEx ContractIQ")
     
-    # Custom CSS with enhanced styling
-    st.markdown("""
+    # Custom CSS with navigation and styling
+    st.markdown(f"""
         <style>
-            /* Main container styling */
-            .main {
-                background-color: #1a1a1a;
+            /* Navigation styling */
+            .nav-container {{
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: {NAV_WIDTH};
+                background-color: {FEDEX_PURPLE};
+                z-index: 999;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding-top: 20px;
+            }}
+            
+            .nav-button {{
+                width: 100%;
+                height: 72px;
+                background: transparent;
+                border: none;
                 color: white;
-            }
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+                font-size: 24px;
+            }}
             
-            /* Header styling */
-            .header-container {
+            .nav-button:hover {{
+                background-color: {FEDEX_ORANGE};
+            }}
+            
+            .nav-button.active {{
+                background-color: {FEDEX_ORANGE};
+            }}
+            
+            .nav-label {{
+                font-size: 0.6rem;
+                margin-top: 4px;
+                font-weight: 500;
+            }}
+            
+            /* Main content adjustment */
+            .main .block-container {{
+                margin-left: {MAIN_MARGIN};
+                padding-top: 2rem;
+                max-width: calc(100% - {MAIN_MARGIN});
+            }}
+            
+            /* Header styling with split colors */
+            .header-container {{
                 text-align: center;
-                margin: -50px 0 -20px 0;
+                margin: 0 0 20px {MAIN_MARGIN};
                 padding: 20px 0;
-                background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
-                border-radius: 0 0 15px 15px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            }
+                background-color: {FEDEX_PURPLE};
+            }}
             
-            .main-title {
+            .main-title {{
                 font-size: 2.5rem;
-                font-weight: 800;
-                color: #FF6B35;
+                font-weight: 700;
                 display: inline-block;
                 vertical-align: middle;
                 margin: 0;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
                 letter-spacing: 0.5px;
-            }
+                font-family: 'FedEx Sans', Arial, sans-serif;
+            }}
             
-            /* Tab styling */
-            .stTabs [role=tablist] {
+            .fed-part {{
+                color: {BACKGROUND_COLOR};
+            }}
+            
+            .ex-part {{
+                color: {FEDEX_ORANGE};
+            }}
+            
+            /* Tab styling - bold text */
+            .stTabs [role=tablist] {{
                 display: flex;
                 justify-content: center;
                 gap: 10px;
-                margin: 0 auto 30px;
+                margin: 20px auto 30px;
                 padding: 12px;
-                background: #2d3436;
-                border-radius: 12px;
+                background: {BACKGROUND_COLOR};
                 max-width: 800px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            }
+                border-bottom: 2px solid {FEDEX_PURPLE};
+            }}
             
-            .stTabs [role=tab] {
-                padding: 12px 24px;
-                border-radius: 8px;
-                background: #3a3a3a;
-                color: #ffffff;
-                font-weight: 600;
-                font-size: 0.9rem;
+            .stTabs [role=tab] {{
+                padding: 10px 24px;
+                border-radius: 4px 4px 0 0;
+                background: {BACKGROUND_COLOR};
+                color: {TEXT_COLOR};
+                font-weight: 700;
+                font-size: 1rem;
                 border: none;
                 transition: all 0.3s ease;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                 margin: 0 5px;
-            }
+            }}
             
-            .stTabs [role=tab]:hover {
-                background: #FF6B35;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(255,107,53,0.3);
-            }
+            .stTabs [role=tab]:hover {{
+                color: {FEDEX_PURPLE};
+                background-color: {HIGHLIGHT_COLOR};
+            }}
             
-            .stTabs [role=tab][aria-selected=true] {
-                background: linear-gradient(135deg, #FF6B35, #FF8C42);
-                color: white;
-                box-shadow: 0 4px 8px rgba(255,107,53,0.4);
-            }
+            .stTabs [role=tab][aria-selected=true] {{
+                color: {BACKGROUND_COLOR};
+                background-color: {FEDEX_PURPLE};
+                border-bottom: 3px solid {FEDEX_ORANGE};
+            }}
             
             /* Dataframe styling */
-            .dataframe {
-                background-color: #2d3436;
-                color: white !important;
-                border-radius: 12px;
-                overflow: hidden;
-                border: 1px solid #444;
-            }
+            .dataframe {{
+                background-color: {BACKGROUND_COLOR};
+                color: {TEXT_COLOR};
+                border: 1px solid {BORDER_COLOR};
+            }}
             
-            .dataframe th {
-                background-color: #FF6B35 !important;
-                color: white !important;
-                font-weight: 600;
-            }
+            .dataframe th {{
+                background-color: {FEDEX_PURPLE} !important;
+                color: {BACKGROUND_COLOR} !important;
+                font-weight: 700 !important;
+                font-size: 1rem !important;
+                text-align: left !important;
+            }}
             
-            .dataframe tr:nth-child(even) {
-                background-color: #3a3a3a;
-            }
+            .dataframe td {{
+                font-weight: 500 !important;
+            }}
             
-            .dataframe tr:hover {
-                background-color: #444 !important;
-            }
+            .dataframe tr:nth-child(even) {{
+                background-color: {HIGHLIGHT_COLOR};
+            }}
             
-            /* Sidebar styling */
-            .sidebar .sidebar-content {
-                background: linear-gradient(180deg, #2d3436 0%, #1a1a1a 100%);
-                border-right: 1px solid #444;
-            }
+            .dataframe tr:hover {{
+                background-color: #EAEAEA !important;
+            }}
             
-            .sidebar-title {
-                font-size: 1.5rem;
-                color: #FF6B35;
-                font-weight: 700;
-                margin: -10px 0 20px 0;
-                text-align: center;
-                padding-bottom: 10px;
-                border-bottom: 2px solid #FF6B35;
-            }
-            
-            .dropdown-section {
-                background: #3a3a3a;
-                padding: 18px;
-                border-radius: 10px;
-                margin: 20px 0;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                border: 1px solid #444;
-            }
-            
-            .dropdown-section label {
-                color: #FF6B35 !important;
-                font-weight: 600;
-            }
-            
-            .stSelectbox div[data-baseweb="select"] {
-                background-color: #2d3436 !important;
-                border-color: #444 !important;
-                color: white !important;
-            }
-            
-            /* File uploader styling */
-            .file-uploader {
-                background: #3a3a3a;
+            /* Configuration panel styling */
+            .config-container {{
+                margin-left: {MAIN_MARGIN};
                 padding: 20px;
-                border-radius: 10px;
-                margin-top: 25px;
-                border: 1px dashed #FF6B35;
-                text-align: center;
-            }
-            
-            .file-uploader:hover {
-                border: 1px dashed #FF8C42;
-            }
+                background-color: {BACKGROUND_COLOR};
+            }}
             
             /* Chat interface styling */
-            .chat-header {
+            .chat-header {{
                 font-size: 1.5rem;
-                color: #FF6B35;
+                color: {FEDEX_PURPLE};
                 font-weight: 700;
-                margin: 30px 0 15px 0;
+                margin: 30px 0 20px {MAIN_MARGIN};
                 text-align: center;
-            }
+                padding-bottom: 10px;
+                border-bottom: 2px solid {FEDEX_ORANGE};
+            }}
             
-            .chat-message {
-                margin: 12px 0;
-                padding: 16px 20px;
-                border-radius: 12px;
-                color: white;
-                font-size: 0.95rem;
+            .chat-message {{
+                margin: 15px 0;
+                padding: 18px 22px;
+                border-radius: 6px;
+                color: {BACKGROUND_COLOR};
+                font-size: 1rem;
                 line-height: 1.5;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            }
+                font-weight: 500;
+            }}
             
-            .user-message {
-                background: linear-gradient(135deg, #FF6B35, #FF8C42);
-                margin-left: 20%;
-                border-bottom-right-radius: 4px;
-            }
-            
-            .assistant-message {
-                background: linear-gradient(135deg, #2d3436, #3a3a3a);
+            .user-message {{
+                background-color: {FEDEX_PURPLE};
+                margin-left: {MAIN_MARGIN};
                 margin-right: 20%;
-                border-bottom-left-radius: 4px;
-                border: 1px solid #444;
-            }
+            }}
+            
+            .assistant-message {{
+                background-color: {FEDEX_ORANGE};
+                margin-left: {MAIN_MARGIN};
+                margin-right: 20%;
+            }}
             
             /* Input field styling */
-            .stTextInput input {
-                background-color: #2d3436 !important;
-                color: white !important;
-                border: 1px solid #444 !important;
-                border-radius: 8px !important;
-                padding: 12px !important;
-            }
-            
-            /* Button styling */
-            .stButton button {
-                background: linear-gradient(135deg, #FF6B35, #FF8C42) !important;
-                color: white !important;
-                border: none !important;
-                border-radius: 8px !important;
-                padding: 10px 20px !important;
-                font-weight: 600 !important;
-                transition: all 0.3s ease !important;
-            }
-            
-            .stButton button:hover {
-                transform: translateY(-2px) !important;
-                box-shadow: 0 4px 8px rgba(255,107,53,0.4) !important;
-            }
+            .stTextInput input {{
+                background-color: {BACKGROUND_COLOR} !important;
+                color: {TEXT_COLOR} !important;
+                border: 1px solid {BORDER_COLOR} !important;
+                border-radius: 6px !important;
+                padding: 12px 15px !important;
+                font-size: 1rem !important;
+                margin-left: {MAIN_MARGIN};
+                width: calc(100% - {MAIN_MARGIN} - 20px) !important;
+            }}
         </style>
     """, unsafe_allow_html=True)
 
-    # Header with logo
-    logo_base64 = get_base64_image("logo.svg") if os.path.exists("logo.svg") else ""
+    # Navigation panel
     st.markdown(f"""
-        <div class="header-container">
-            <h1 class="main-title">
-                <img src="data:image/svg+xml;base64,{logo_base64}" style="height:50px; vertical-align: middle; margin-right:15px;">
-                ContractIQ
-            </h1>
+        <div class="nav-container">
+            <button class="nav-button {'active' if st.session_state.get('nav', 'home') == 'home' else ''}" onclick="setNav('home')">
+                🏠<div class="nav-label">Home</div>
+            </button>
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'tools' else ''}" onclick="setNav('tools')">
+                ⚙️<div class="nav-label">Tools</div>
+            </button>
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'analytics' else ''}" onclick="setNav('analytics')">
+                📊<div class="nav-label">Analytics</div>
+            </button>
         </div>
+        
+        <script>
+        function setNav(value) {{
+            Streamlit.setComponentValue(value);
+        }}
+        </script>
     """, unsafe_allow_html=True)
 
-    # Sidebar configuration
-    with st.sidebar:
+    # Handle navigation
+    nav_value = st.session_state.get('nav', 'home')
+    if nav_value == 'home':
+        # Main content
         st.markdown(f"""
-            <div class="sidebar-title">
-                <img src="data:image/svg+xml;base64,{logo_base64}" style="height:35px; vertical-align:middle; margin-right:10px;">
-                Configuration Panel
+            <div class="header-container">
+                <h1 class="main-title">
+                    <span class="fed-part">Fed</span><span class="ex-part">Ex</span> 
+                    <span class="fed-part">ContractIQ</span>
+                </h1>
             </div>
         """, unsafe_allow_html=True)
 
-        # Path Selection
-        st.markdown('<div class="dropdown-section">', unsafe_allow_html=True)
-        path_options = ["Local Machine", "Network Path"]
-        selected_path = st.selectbox(
-            "📁 Source Path",
-            options=path_options,
-            index=0
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
+        # Configuration panel (formerly sidebar content)
+        with st.container():
+            st.markdown("### Configuration", unsafe_allow_html=True)
+            col1, col2 = st.columns(2)
+            with col1:
+                path_options = ["Local Machine", "Network Path"]
+                selected_path = st.selectbox(
+                    "Source Path",
+                    options=path_options,
+                    index=0
+                )
+            with col2:
+                ai_model_options = ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"]
+                selected_model = st.selectbox(
+                    "AI Model",
+                    options=ai_model_options,
+                    index=0
+                )
 
-        # AI Model Selection
-        st.markdown('<div class="dropdown-section">', unsafe_allow_html=True)
-        ai_model_options = ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"]
-        selected_model = st.selectbox(
-            "🧠 AI Model",
-            options=ai_model_options,
-            index=0
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
+            uploaded_files = st.file_uploader(
+                "Upload Contract Files",
+                type=["pdf"],
+                accept_multiple_files=True,
+                help="Upload multiple PDF contracts for analysis"
+            )
 
-        # File Uploader
-        st.markdown('<div class="file-uploader">', unsafe_allow_html=True)
-        uploaded_files = st.file_uploader(
-            "📤 Upload Contract Files",
-            type=["pdf"],
-            accept_multiple_files=True,
-            help="Drag and drop multiple PDF contracts here"
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # Main Content Area
-    if uploaded_files:
-        # Centered Tabs with icons
-        tab1, tab2, tab3 = st.tabs([
-            "📊 Critical Data Insights", 
-            "💰 Commercial Insights", 
-            "⚖️ Legal Insights"
-        ])
-        
-        num_files = min(len(uploaded_files), 13)
-        
-        with tab1:
-            df = pd.DataFrame({k: v[:num_files] for k, v in CRITICAL_DATA.items()})
-            st.dataframe(df.style.set_properties(**{
-                'background-color': '#2d3436',
-                'color': 'white',
-                'border': '1px solid #444'
-            }), use_container_width=True, height=600)
+        # Main functionality
+        if uploaded_files:
+            num_records = len(uploaded_files)
             
-            # Donut chart only shown in Critical Data Insights tab
+            # Create dynamic sliced data based on uploaded files
+            def slice_data(data_dict, num_records):
+                return {k: v[:num_records] for k, v in data_dict.items() if len(v) >= num_records}
+            
+            critical_data = slice_data(CRITICAL_DATA, num_records)
+            commercial_data = slice_data(COMMERCIAL_DATA, num_records)
+            legal_data = slice_data(LEGAL_DATA, num_records)
+            
+            # Tabs
+            tab1, tab2, tab3 = st.tabs([
+                "Critical Data Insights", 
+                "Commercial Insights", 
+                "Legal Insights"
+            ])
+            
+            with tab1:
+                if critical_data:
+                    critical_df = pd.DataFrame(critical_data)
+                    st.dataframe(critical_df.style.set_properties(**{
+                        'font-size': '1rem',
+                        'text-align': 'left'
+                    }), use_container_width=True, height=600)
+                    
+                    if num_records > 0:
+                        st.markdown("---")
+                        st.markdown("### Contract Type Distribution")
+                        donut_chart = create_donut_chart(critical_data, num_records)
+                        st.plotly_chart(donut_chart, use_container_width=True)
+                else:
+                    st.warning("No critical data available for the selected contracts")
+
+            with tab2:
+                if commercial_data:
+                    commercial_df = pd.DataFrame(commercial_data)
+                    st.dataframe(commercial_df.style.set_properties(**{
+                        'font-size': '1rem',
+                        'text-align': 'left'
+                    }), use_container_width=True, height=600)
+                else:
+                    st.warning("No commercial data available for the selected contracts")
+
+            with tab3:
+                if legal_data:
+                    legal_df = pd.DataFrame(legal_data)
+                    st.dataframe(legal_df.style.set_properties(**{
+                        'font-size': '1rem',
+                        'text-align': 'left'
+                    }), use_container_width=True, height=600)
+                else:
+                    st.warning("No legal data available for the selected contracts")
+
+            # Chat Interface
             st.markdown("---")
-            st.markdown("### Contract Type Distribution")
-            donut_chart = create_donut_chart(CRITICAL_DATA, num_files)
-            st.plotly_chart(donut_chart, use_container_width=True)
+            st.markdown('<div class="chat-header">Document Assistant</div>', unsafe_allow_html=True)
+            
+            if "chat_history" not in st.session_state:
+                st.session_state.chat_history = []
 
-        with tab2:
-            df = pd.DataFrame({k: v[:num_files] for k, v in COMMERCIAL_DATA.items()})
-            st.dataframe(df.style.set_properties(**{
-                'background-color': '#2d3436',
-                'color': 'white',
-                'border': '1px solid #444'
-            }), use_container_width=True, height=600)
+            if "vector_store" not in st.session_state:
+                with st.spinner("Processing documents..."):
+                    all_text = [process_pdf(f) for f in uploaded_files]
+                    if any(all_text):
+                        st.session_state.vector_store = create_vector_store(all_text)
+                    else:
+                        st.error("No text could be extracted from the uploaded documents")
 
-        with tab3:
-            df = pd.DataFrame({k: v[:num_files] for k, v in LEGAL_DATA.items()})
-            st.dataframe(df.style.set_properties(**{
-                'background-color': '#2d3436',
-                'color': 'white',
-                'border': '1px solid #444'
-            }), use_container_width=True, height=600)
+            question = st.text_input("Ask a question about your contracts:", key="chat_input")
+            if question and st.session_state.get('vector_store'):
+                with st.spinner("Generating answer..."):
+                    response = get_answer(question, st.session_state.vector_store)
+                    st.session_state.chat_history.append(("user", question))
+                    st.session_state.chat_history.append(("assistant", response))
+                    st.experimental_rerun()
 
-        # Chat Interface
-        st.markdown("---")
-        st.markdown('<div class="chat-header">💬 Contract Assistant</div>', unsafe_allow_html=True)
-        
-        if "chat_history" not in st.session_state:
-            st.session_state.chat_history = []
+            for role, text in st.session_state.chat_history:
+                div_class = "user-message" if role == "user" else "assistant-message"
+                st.markdown(f"""
+                    <div class="chat-message {div_class}">
+                        <b>{role.title()}:</b> {text}
+                    </div>
+                """, unsafe_allow_html=True)
 
-        # Process documents for AI
-        if "vector_store" not in st.session_state:
-            with st.spinner("🔍 Processing documents..."):
-                all_text = [process_pdf(f) for f in uploaded_files]
-                st.session_state.vector_store = create_vector_store(all_text)
+    elif nav_value == 'tools':
+        st.markdown(f"<h2 style='margin-left: {MAIN_MARGIN}'>Tools Section</h2>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-left: {MAIN_MARGIN}'>Tools functionality coming soon...</div>", unsafe_allow_html=True)
 
-        # Chat input
-        question = st.text_input("Ask a question about your contracts:", key="chat_input")
-        if question and st.session_state.vector_store:
-            with st.spinner("🤖 Generating answer..."):
-                response = get_answer(question, st.session_state.vector_store)
-                st.session_state.chat_history.append(("user", question))
-                st.session_state.chat_history.append(("assistant", response))
-                st.experimental_rerun()
-
-        # Display chat history
-        for role, text in st.session_state.chat_history:
-            div_class = "user-message" if role == "user" else "assistant-message"
-            st.markdown(f"""
-                <div class="chat-message {div_class}">
-                    <b>{role.title()}:</b> {text}
-                </div>
-            """, unsafe_allow_html=True)
+    elif nav_value == 'analytics':
+        st.markdown(f"<h2 style='margin-left: {MAIN_MARGIN}'>Analytics Section</h2>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-left: {MAIN_MARGIN}'>Analytics functionality coming soon...</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
