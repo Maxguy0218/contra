@@ -18,8 +18,6 @@ BACKGROUND_COLOR = "#FFFFFF"
 TEXT_COLOR = "#333333"
 BORDER_COLOR = "#DDDDDD"
 HIGHLIGHT_COLOR = "#F5F5F5"
-NAV_WIDTH = "72px"
-MAIN_MARGIN = "88px"
 
 # Actual Data Source
 CRITICAL_DATA = {
@@ -147,64 +145,12 @@ def get_answer(question, vector_store):
 def main():
     st.set_page_config(layout="wide", page_title="FedEx ContractIQ")
     
-    # Custom CSS with navigation and styling
+    # Custom CSS with updated styling
     st.markdown(f"""
         <style>
-            /* Navigation styling */
-            .nav-container {{
-                position: fixed;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                width: {NAV_WIDTH};
-                background-color: {FEDEX_PURPLE};
-                z-index: 999;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding-top: 20px;
-            }}
-            
-            .nav-button {{
-                width: 100%;
-                height: 72px;
-                background: transparent;
-                border: none;
-                color: white;
-                cursor: pointer;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.2s;
-                font-size: 24px;
-            }}
-            
-            .nav-button:hover {{
-                background-color: {FEDEX_ORANGE};
-            }}
-            
-            .nav-button.active {{
-                background-color: {FEDEX_ORANGE};
-            }}
-            
-            .nav-label {{
-                font-size: 0.6rem;
-                margin-top: 4px;
-                font-weight: 500;
-            }}
-            
-            /* Main content adjustment */
-            .main .block-container {{
-                margin-left: {MAIN_MARGIN};
-                padding-top: 2rem;
-                max-width: calc(100% - {MAIN_MARGIN});
-            }}
-            
             /* Header styling with split colors */
             .header-container {{
                 text-align: center;
-                margin: 0 0 20px {MAIN_MARGIN};
                 padding: 20px 0;
                 background-color: {FEDEX_PURPLE};
             }}
@@ -289,19 +235,12 @@ def main():
                 background-color: #EAEAEA !important;
             }}
             
-            /* Configuration panel styling */
-            .config-container {{
-                margin-left: {MAIN_MARGIN};
-                padding: 20px;
-                background-color: {BACKGROUND_COLOR};
-            }}
-            
             /* Chat interface styling */
             .chat-header {{
                 font-size: 1.5rem;
                 color: {FEDEX_PURPLE};
                 font-weight: 700;
-                margin: 30px 0 20px {MAIN_MARGIN};
+                margin: 30px 0 20px;
                 text-align: center;
                 padding-bottom: 10px;
                 border-bottom: 2px solid {FEDEX_ORANGE};
@@ -319,13 +258,11 @@ def main():
             
             .user-message {{
                 background-color: {FEDEX_PURPLE};
-                margin-left: {MAIN_MARGIN};
                 margin-right: 20%;
             }}
             
             .assistant-message {{
                 background-color: {FEDEX_ORANGE};
-                margin-left: {MAIN_MARGIN};
                 margin-right: 20%;
             }}
             
@@ -337,36 +274,17 @@ def main():
                 border-radius: 6px !important;
                 padding: 12px 15px !important;
                 font-size: 1rem !important;
-                margin-left: {MAIN_MARGIN};
-                width: calc(100% - {MAIN_MARGIN} - 20px) !important;
+                width: 100% !important;
             }}
         </style>
     """, unsafe_allow_html=True)
 
-    # Navigation panel
-    st.markdown(f"""
-        <div class="nav-container">
-            <button class="nav-button {'active' if st.session_state.get('nav', 'home') == 'home' else ''}" onclick="setNav('home')">
-                🏠<div class="nav-label">Home</div>
-            </button>
-            <button class="nav-button {'active' if st.session_state.get('nav') == 'tools' else ''}" onclick="setNav('tools')">
-                ⚙️<div class="nav-label">Tools</div>
-            </button>
-            <button class="nav-button {'active' if st.session_state.get('nav') == 'analytics' else ''}" onclick="setNav('analytics')">
-                📊<div class="nav-label">Analytics</div>
-            </button>
-        </div>
-        
-        <script>
-        function setNav(value) {{
-            Streamlit.setComponentValue(value);
-        }}
-        </script>
-    """, unsafe_allow_html=True)
+    # Sidebar navigation
+    st.sidebar.title("Navigation")
+    nav_options = ["Home", "Tools", "Analytics"]
+    nav_value = st.sidebar.selectbox("Select a page", nav_options, index=0)
 
-    nav_value = st.session_state.get('nav', 'home')
-
-    if nav_value == 'home':
+    if nav_value == "Home":
         # Header
         st.markdown(f"""
             <div class="header-container">
@@ -494,12 +412,13 @@ def main():
                     </div>
                 """, unsafe_allow_html=True)
     
-    elif nav_value == 'tools':
-        st.markdown(f"<div style='margin-left: {MAIN_MARGIN}'>This is tools</div>", unsafe_allow_html=True)
+    elif nav_value == "Tools":
+        st.markdown("<h2>Tools Section</h2>", unsafe_allow_html=True)
+        st.write("This is tools")
     
-    elif nav_value == 'analytics':
-        st.markdown(f"<h2 style='margin-left: {MAIN_MARGIN}'>Analytics Section</h2>", unsafe_allow_html=True)
-        st.markdown(f"<div style='margin-left: {MAIN_MARGIN}'>Analytics functionality coming soon...</div>", unsafe_allow_html=True)
+    elif nav_value == "Analytics":
+        st.markdown("<h2>Analytics Section</h2>", unsafe_allow_html=True)
+        st.write("Analytics functionality coming soon...")
 
 if __name__ == "__main__":
     main()
