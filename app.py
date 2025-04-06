@@ -16,8 +16,12 @@ FEDEX_PURPLE = "#4D148C"
 FEDEX_ORANGE = "#FF6200"
 BACKGROUND_COLOR = "#FFFFFF"
 TEXT_COLOR = "#333333"
+BORDER_COLOR = "#DDDDDD"
+HIGHLIGHT_COLOR = "#F5F5F5"
+NAV_WIDTH = "72px"
+MAIN_MARGIN = "88px"
 
-# Data Source
+# Actual Data Source
 CRITICAL_DATA = {
     "Engagement": ["IT Services", "IT - Services", "IT - Services", "IT - Services", 
                   "IT - Services", "IT - Services", "IT - Services", "IT - Services",
@@ -143,133 +147,272 @@ def get_answer(question, vector_store):
 def main():
     st.set_page_config(layout="wide", page_title="FedEx ContractIQ")
     
-    # Initialize session state
-    if 'nav' not in st.session_state:
-        st.session_state.nav = 'home'
-    if 'drawer_open' not in st.session_state:
-        st.session_state.drawer_open = True
-    if 'chat_history' not in st.session_state:
-        st.session_state.chat_history = []
-    if 'vector_store' not in st.session_state:
-        st.session_state.vector_store = None
-
-    # Custom CSS
+    # Custom CSS with navigation and styling
     st.markdown(f"""
         <style>
-            /* Main content adjustment */
-            .main .block-container {{
-                padding-top: 2rem;
+            /* Navigation styling */
+            .nav-container {{
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: {NAV_WIDTH};
+                background-color: {FEDEX_PURPLE};
+                z-index: 999;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding-top: 20px;
             }}
             
-            /* Header styling */
+            .nav-button {{
+                width: 100%;
+                height: 72px;
+                background: transparent;
+                border: none;
+                color: white;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+                font-size: 24px;
+            }}
+            
+            .nav-button:hover {{
+                background-color: {FEDEX_ORANGE};
+            }}
+            
+            .nav-button.active {{
+                background-color: {FEDEX_ORANGE};
+            }}
+            
+            .nav-label {{
+                font-size: 0.6rem;
+                margin-top: 4px;
+                font-weight: 500;
+            }}
+            
+            /* Main content adjustment */
+            .main .block-container {{
+                margin-left: {MAIN_MARGIN};
+                padding-top: 2rem;
+                max-width: calc(100% - {MAIN_MARGIN});
+            }}
+            
+            /* Header styling with split colors */
             .header-container {{
                 text-align: center;
+                margin: 0 0 20px {MAIN_MARGIN};
                 padding: 20px 0;
                 background-color: {FEDEX_PURPLE};
-                margin-bottom: 30px;
             }}
             
             .main-title {{
                 font-size: 2.5rem;
                 font-weight: 700;
-                color: white;
+                display: inline-block;
+                vertical-align: middle;
+                margin: 0;
+                letter-spacing: 0.5px;
+                font-family: 'FedEx Sans', Arial, sans-serif;
             }}
             
-            .fed-part {{ color: white; }}
-            .ex-part {{ color: {FEDEX_ORANGE}; }}
+            .fed-part {{
+                color: {BACKGROUND_COLOR};
+            }}
             
-            /* Chat message styling */
+            .ex-part {{
+                color: {FEDEX_ORANGE};
+            }}
+            
+            /* Tab styling - bold text */
+            .stTabs [role=tablist] {{
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin: 20px auto 30px;
+                padding: 12px;
+                background: {BACKGROUND_COLOR};
+                max-width: 800px;
+                border-bottom: 2px solid {FEDEX_PURPLE};
+            }}
+            
+            .stTabs [role=tab] {{
+                padding: 10px 24px;
+                border-radius: 4px 4px 0 0;
+                background: {BACKGROUND_COLOR};
+                color: {TEXT_COLOR};
+                font-weight: 700;
+                font-size: 1rem;
+                border: none;
+                transition: all 0.3s ease;
+                margin: 0 5px;
+            }}
+            
+            .stTabs [role=tab]:hover {{
+                color: {FEDEX_PURPLE};
+                background-color: {HIGHLIGHT_COLOR};
+            }}
+            
+            .stTabs [role=tab][aria-selected=true] {{
+                color: {BACKGROUND_COLOR};
+                background-color: {FEDEX_PURPLE};
+                border-bottom: 3px solid {FEDEX_ORANGE};
+            }}
+            
+            /* Dataframe styling */
+            .dataframe {{
+                background-color: {BACKGROUND_COLOR};
+                color: {TEXT_COLOR};
+                border: 1px solid {BORDER_COLOR};
+            }}
+            
+            .dataframe th {{
+                background-color: {FEDEX_PURPLE} !important;
+                color: {BACKGROUND_COLOR} !important;
+                font-weight: 700 !important;
+                font-size: 1rem !important;
+                text-align: left !important;
+            }}
+            
+            .dataframe td {{
+                font-weight: 500 !important;
+            }}
+            
+            .dataframe tr:nth-child(even) {{
+                background-color: {HIGHLIGHT_COLOR};
+            }}
+            
+            .dataframe tr:hover {{
+                background-color: #EAEAEA !important;
+            }}
+            
+            /* Configuration panel styling */
+            .config-container {{
+                margin-left: {MAIN_MARGIN};
+                padding: 20px;
+                background-color: {BACKGROUND_COLOR};
+            }}
+            
+            /* Chat interface styling */
+            .chat-header {{
+                font-size: 1.5rem;
+                color: {FEDEX_PURPLE};
+                font-weight: 700;
+                margin: 30px 0 20px {MAIN_MARGIN};
+                text-align: center;
+                padding-bottom: 10px;
+                border-bottom: 2px solid {FEDEX_ORANGE};
+            }}
+            
+            .chat-message {{
+                margin: 15px 0;
+                padding: 18px 22px;
+                border-radius: 6px;
+                color: {BACKGROUND_COLOR};
+                font-size: 1rem;
+                line-height: 1.5;
+                font-weight: 500;
+            }}
+            
             .user-message {{
                 background-color: {FEDEX_PURPLE};
-                color: white;
-                padding: 12px;
-                border-radius: 8px;
-                margin: 8px 0;
+                margin-left: {MAIN_MARGIN};
+                margin-right: 20%;
             }}
             
             .assistant-message {{
                 background-color: {FEDEX_ORANGE};
-                color: white;
-                padding: 12px;
-                border-radius: 8px;
-                margin: 8px 0;
+                margin-left: {MAIN_MARGIN};
+                margin-right: 20%;
+            }}
+            
+            /* Input field styling */
+            .stTextInput input {{
+                background-color: {BACKGROUND_COLOR} !important;
+                color: {TEXT_COLOR} !important;
+                border: 1px solid {BORDER_COLOR} !important;
+                border-radius: 6px !important;
+                padding: 12px 15px !important;
+                font-size: 1rem !important;
+                margin-left: {MAIN_MARGIN};
+                width: calc(100% - {MAIN_MARGIN} - 20px) !important;
             }}
         </style>
     """, unsafe_allow_html=True)
 
-    # Navigation sidebar
-    with st.sidebar:
+    # Navigation panel
+    st.markdown(f"""
+        <div class="nav-container">
+            <button class="nav-button {'active' if st.session_state.get('nav', 'home') == 'home' else ''}" onclick="setNav('home')">
+                🏠<div class="nav-label">Home</div>
+            </button>
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'tools' else ''}" onclick="setNav('tools')">
+                ⚙️<div class="nav-label">Tools</div>
+            </button>
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'analytics' else ''}" onclick="setNav('analytics')">
+                📊<div class="nav-label">Analytics</div>
+            </button>
+        </div>
+        
+        <script>
+        function setNav(value) {{
+            Streamlit.setComponentValue(value);
+        }}
+        </script>
+    """, unsafe_allow_html=True)
+
+    nav_value = st.session_state.get('nav', 'home')
+
+    if nav_value == 'home':
+        # Header
         st.markdown(f"""
-            <style>
-                .sidebar .sidebar-content {{
-                    width: 80px;
-                    background-color: {FEDEX_PURPLE};
-                }}
-                .nav-btn {{
-                    width: 100%;
-                    margin: 10px 0;
-                    padding: 15px 0;
-                    color: white !important;
-                    border-radius: 5px;
-                    transition: all 0.3s;
-                }}
-                .nav-btn:hover {{
-                    background-color: {FEDEX_ORANGE} !important;
-                }}
-                .nav-btn.active {{
-                    background-color: {FEDEX_ORANGE} !important;
-                }}
-            </style>
+            <div class="header-container">
+                <h1 class="main-title">
+                    <span class="fed-part">Fed</span><span class="ex-part">Ex</span> 
+                    <span class="fed-part">ContractIQ</span>
+                </h1>
+            </div>
         """, unsafe_allow_html=True)
         
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            if st.button("🏠", key="home_btn", help="Home"):
-                st.session_state.nav = 'home'
-                st.session_state.drawer_open = True
-        with col2:
-            if st.button("⚙️", key="tools_btn", help="Tools"):
-                st.session_state.nav = 'tools'
-                st.session_state.drawer_open = False
-        with col3:
-            if st.button("📊", key="analytics_btn", help="Analytics"):
-                st.session_state.nav = 'analytics'
-                st.session_state.drawer_open = False
-
-    # Configuration drawer (only on home page)
-    if st.session_state.nav == 'home' and st.session_state.drawer_open:
-        with st.sidebar.expander("⚙️ CONFIGURATION", expanded=True):
-            selected_path = st.selectbox(
-                "Source Path",
-                ["Local Machine", "Network Path"],
-                index=0
-            )
-            selected_model = st.selectbox(
-                "AI Model",
-                ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"],
-                index=0
-            )
+        # Configuration expander
+        with st.expander("Configuration", expanded=False):
+            col1, col2 = st.columns(2)
+            with col1:
+                path_options = ["Local Machine", "Network Path"]
+                selected_path = st.selectbox(
+                    "Source Path",
+                    options=path_options,
+                    index=0
+                )
+                st.session_state['selected_path'] = selected_path
+            with col2:
+                ai_model_options = ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"]
+                selected_model = st.selectbox(
+                    "AI Model",
+                    options=ai_model_options,
+                    index=0
+                )
+                st.session_state['selected_model'] = selected_model
+            
             uploaded_files = st.file_uploader(
                 "Upload Contract Files",
                 type=["pdf"],
-                accept_multiple_files=True
+                accept_multiple_files=True,
+                help="Upload multiple PDF contracts for analysis"
             )
-
-    # Main content area
-    st.markdown("""
-        <div class="header-container">
-            <h1 class="main-title">
-                <span class="fed-part">Fed</span><span class="ex-part">Ex</span> 
-                <span class="fed-part">ContractIQ</span>
-            </h1>
-        </div>
-    """, unsafe_allow_html=True)
-
-    if st.session_state.nav == 'home':
-        if 'uploaded_files' in locals() and uploaded_files:
+            if uploaded_files:
+                st.session_state['uploaded_files'] = uploaded_files
+        
+        # Retrieve from session state
+        uploaded_files = st.session_state.get('uploaded_files', None)
+        
+        if uploaded_files:
             num_records = len(uploaded_files)
             
-            # Create dynamic sliced data
+            # Create dynamic sliced data based on uploaded files
             def slice_data(data_dict, num_records):
                 return {k: v[:num_records] for k, v in data_dict.items() if len(v) >= num_records}
             
@@ -287,7 +430,10 @@ def main():
             with tab1:
                 if critical_data:
                     critical_df = pd.DataFrame(critical_data)
-                    st.dataframe(critical_df, use_container_width=True, height=600)
+                    st.dataframe(critical_df.style.set_properties(**{
+                        'font-size': '1rem',
+                        'text-align': 'left'
+                    }), use_container_width=True, height=600)
                     
                     if num_records > 0:
                         st.markdown("---")
@@ -296,56 +442,64 @@ def main():
                         st.plotly_chart(donut_chart, use_container_width=True)
                 else:
                     st.warning("No critical data available for the selected contracts")
-
+            
             with tab2:
                 if commercial_data:
                     commercial_df = pd.DataFrame(commercial_data)
-                    st.dataframe(commercial_df, use_container_width=True, height=600)
+                    st.dataframe(commercial_df.style.set_properties(**{
+                        'font-size': '1rem',
+                        'text-align': 'left'
+                    }), use_container_width=True, height=600)
                 else:
                     st.warning("No commercial data available for the selected contracts")
-
+            
             with tab3:
                 if legal_data:
                     legal_df = pd.DataFrame(legal_data)
-                    st.dataframe(legal_df, use_container_width=True, height=600)
+                    st.dataframe(legal_df.style.set_properties(**{
+                        'font-size': '1rem',
+                        'text-align': 'left'
+                    }), use_container_width=True, height=600)
                 else:
                     st.warning("No legal data available for the selected contracts")
-
+            
             # Chat Interface
             st.markdown("---")
-            st.markdown("## Document Assistant")
+            st.markdown('<div class="chat-header">Document Assistant</div>', unsafe_allow_html=True)
             
-            if st.session_state.vector_store is None:
+            if "chat_history" not in st.session_state:
+                st.session_state.chat_history = []
+            
+            if "vector_store" not in st.session_state:
                 with st.spinner("Processing documents..."):
                     all_text = [process_pdf(f) for f in uploaded_files]
                     if any(all_text):
                         st.session_state.vector_store = create_vector_store(all_text)
                     else:
                         st.error("No text could be extracted from the uploaded documents")
-
+            
             question = st.text_input("Ask a question about your contracts:", key="chat_input")
-            if question and st.session_state.vector_store:
+            if question and st.session_state.get('vector_store'):
                 with st.spinner("Generating answer..."):
                     response = get_answer(question, st.session_state.vector_store)
                     st.session_state.chat_history.append(("user", question))
                     st.session_state.chat_history.append(("assistant", response))
                     st.experimental_rerun()
-
+            
             for role, text in st.session_state.chat_history:
                 div_class = "user-message" if role == "user" else "assistant-message"
                 st.markdown(f"""
-                    <div class="{div_class}">
+                    <div class="chat-message {div_class}">
                         <b>{role.title()}:</b> {text}
                     </div>
                 """, unsafe_allow_html=True)
-
-    elif st.session_state.nav == 'tools':
-        st.title("Tools Section")
-        st.write("This is tools")
-
-    elif st.session_state.nav == 'analytics':
-        st.title("Analytics Section")
-        st.write("Analytics functionality coming soon...")
+    
+    elif nav_value == 'tools':
+        st.markdown(f"<div style='margin-left: {MAIN_MARGIN}'>This is tools</div>", unsafe_allow_html=True)
+    
+    elif nav_value == 'analytics':
+        st.markdown(f"<h2 style='margin-left: {MAIN_MARGIN}'>Analytics Section</h2>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-left: {MAIN_MARGIN}'>Analytics functionality coming soon...</div>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
