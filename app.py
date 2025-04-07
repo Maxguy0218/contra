@@ -9,7 +9,7 @@ FEDEX_ORANGE = "#FF6200"
 BACKGROUND_COLOR = "#FFFFFF"
 TEXT_COLOR = "#333333"
 
-# Data Sources
+# Data Sources (unchanged from original)
 CRITICAL_DATA = {
     "Engagement": ["IT - Services", "IT - Services", "IT - Services", "IT - Services", 
                   "IT - Services", "IT - Services", "IT - Services", "IT - Services",
@@ -143,7 +143,7 @@ def main():
     st.markdown(f"""
         <style>
             #MainMenu {{visibility: hidden;}}
-            header {{visibility: hidden;}}
+            header {{display: none;}}  /* Changed from visibility: hidden */
             .stDeployButton {{display:none;}}
             footer {{visibility: hidden;}}
             
@@ -152,7 +152,7 @@ def main():
                 font-size: 24px;
                 font-weight: bold;
                 margin: 0;
-                padding: 10px 0 5px 0;
+                padding: 0;
                 line-height: 1;
             }}
             .app-title span:first-child {{
@@ -167,7 +167,7 @@ def main():
                 display: flex;
                 gap: 10px;
                 margin: 0;
-                padding: 10px 0 5px 0;
+                padding: 0;
             }}
             
             /* Custom button styling */
@@ -193,39 +193,47 @@ def main():
                 background: #f0f0f0 !important;
                 font-weight: bold !important;
             }}
+            
+            /* Remove default streamlit spacing */
+            .stApp {{
+                margin-top: -2rem;
+            }}
+            .block-container {{
+                padding-top: 0;
+            }}
         </style>
     """, unsafe_allow_html=True)
 
-    # Create header row
-    col1, col2 = st.columns([3, 5])
-    with col1:
+    # Create header row with tight spacing
+    header_cols = st.columns([3, 5])
+    with header_cols[0]:
         st.markdown(
             '<div class="app-title"><span>Contract</span><span>IQ</span></div>',
             unsafe_allow_html=True
         )
     
-    with col2:
-        # Create navigation buttons
-        cols = st.columns(4)
-        with cols[0]:
+    with header_cols[1]:
+        # Navigation buttons
+        btn_cols = st.columns(4)
+        with btn_cols[0]:
             home_btn = st.button(
                 "Home",
                 key="home_btn",
                 type="primary" if st.session_state.current_page == "Home" else "secondary"
             )
-        with cols[1]:
+        with btn_cols[1]:
             history_btn = st.button(
                 "History",
                 key="history_btn",
                 type="primary" if st.session_state.current_page == "History" else "secondary"
             )
-        with cols[2]:
+        with btn_cols[2]:
             playbook_btn = st.button(
                 "Playbook",
                 key="playbook_btn",
                 type="primary" if st.session_state.current_page == "Playbook" else "secondary"
             )
-        with cols[3]:
+        with btn_cols[3]:
             settings_btn = st.button(
                 "Settings",
                 key="settings_btn",
