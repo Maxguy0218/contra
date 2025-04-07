@@ -119,7 +119,7 @@ def create_geo_bar_chart(df):
     fig = px.bar(df,
                  y='Geographical Scope',
                  x='Total Contract Value',
-                 color='Type of Contract',
+                 color='Nature of Contract',
                  orientation='h',
                  color_discrete_sequence=[FEDEX_PURPLE, FEDEX_ORANGE, "#333333"],
                  title="Contract Value by Geography & Type")
