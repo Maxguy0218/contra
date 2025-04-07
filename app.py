@@ -301,11 +301,6 @@ def home_page():
                     </div>
                 """, unsafe_allow_html=True)
 
-def other_page(title):
-    st.markdown(f"# {title}")
-    st.write(f"Placeholder content for {title} page")
-    st.image("https://via.placeholder.com/800x400.png?text=Coming+Soon", use_column_width=True)
-
 def main():
     st.set_page_config(layout="wide", page_title="ContractIQ", page_icon="📄")
     
@@ -313,6 +308,11 @@ def main():
     if 'current_page' not in st.session_state:
         st.session_state.current_page = "Home"
     
+    # Handle query parameters for navigation
+    query_params = st.experimental_get_query_params()
+    if 'page' in query_params:
+        st.session_state.current_page = query_params['page'][0]
+
     # Remove Streamlit header and footer
     st.markdown("""
         <style>
@@ -355,6 +355,7 @@ def main():
                 padding: 10px;
                 border-radius: 5px;
                 transition: all 0.3s;
+                text-decoration: none;
             }}
             
             .nav-item:hover {{
@@ -396,31 +397,19 @@ def main():
                 <span style="color:{FEDEX_ORANGE}">IQ</span>
             </div>
             <div class="nav-menu">
-                <div class="nav-item {'active-nav' if st.session_state.current_page == 'Home' else ''}" 
-                     onclick="window.parent.postMessage('Home', '*')">Home</div>
-                <div class="nav-item {'active-nav' if st.session_state.current_page == 'History' else ''}" 
-                     onclick="window.parent.postMessage('History', '*')">History</div>
-                <div class="nav-item {'active-nav' if st.session_state.current_page == 'Playbook' else ''}" 
-                     onclick="window.parent.postMessage('Playbook', '*')">Playbook</div>
-                <div class="nav-item {'active-nav' if st.session_state.current_page == 'Settings' else ''}" 
-                     onclick="window.parent.postMessage('Settings', '*')">Settings</div>
-                <div class="nav-item {'active-nav' if st.session_state.current_page == 'Contact' else ''}" 
-                     onclick="window.parent.postMessage('Contact', '*')">Contact Us</div>
+                <a class="nav-item {'active-nav' if st.session_state.current_page == 'Home' else ''}" 
+                   href="?page=Home">Home</a>
+                <a class="nav-item {'active-nav' if st.session_state.current_page == 'History' else ''}" 
+                   href="?page=History">History</a>
+                <a class="nav-item {'active-nav' if st.session_state.current_page == 'Playbook' else ''}" 
+                   href="?page=Playbook">Playbook</a>
+                <a class="nav-item {'active-nav' if st.session_state.current_page == 'Settings' else ''}" 
+                   href="?page=Settings">Settings</a>
+                <a class="nav-item {'active-nav' if st.session_state.current_page == 'Contact' else ''}" 
+                   href="?page=Contact">Contact Us</a>
             </div>
         </div>
-        <script>
-            window.addEventListener('message', function(event) {{
-                if (['Home','History','Playbook','Settings','Contact'].includes(event.data)) {{
-                    Streamlit.setComponentValue(event.data);
-                }}
-            }});
-        </script>
     """, unsafe_allow_html=True)
-
-    # Handle navigation
-    if 'component_value' in st.session_state:
-        st.session_state.current_page = st.session_state.component_value
-        st.experimental_rerun()
 
     # Main Content
     st.markdown('<div class="main-content">', unsafe_allow_html=True)
@@ -428,7 +417,10 @@ def main():
     if st.session_state.current_page == "Home":
         home_page()
     else:
-        other_page(st.session_state.current_page)
+        st.markdown(f"# {st.session_state.current_page}")
+        st.write(f"This is the {st.session_state.current_page} page content")
+        st.image("https://via.placeholder.com/800x400.png?text=Coming+Soon", 
+                 use_column_width=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
 
