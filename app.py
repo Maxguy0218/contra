@@ -9,7 +9,128 @@ FEDEX_ORANGE = "#FF6200"
 BACKGROUND_COLOR = "#FFFFFF"
 TEXT_COLOR = "#333333"
 
-# ... [Keep all your data sources and helper functions identical] ...
+# Data Sources
+CRITICAL_DATA = {
+    "Engagement": ["IT - Services", "IT - Services", "IT - Services", "IT - Services", 
+                  "IT - Services", "IT - Services", "IT - Services", "IT - Services",
+                  "IT - Services", "IT-Infrastructure", "IT-Infrastructure",
+                  "IT-Infrastructure", "IT-Infrastructure"],
+    "Type of Contract": ["SOW", "SOW", "EULA", "EUSA", "SOW", "SOW", "SOW", 
+                        "EULA", "EUSA", "SOW", "EUSA", "EUSA", "EULA"],
+    "Contract Coverage": ["FedEx Enterprise", "FedEx", "FedEx Express", "FedEx Ground",
+                        "FedEx Freight", "FedEx Services", "FedEx", "FedEx Freight",
+                        "FedEx", "FedEx Enterprise", "FedEx Enterprise",
+                        "FedEx", "FedEx Enterprise"],
+    "Geographical Scope": ["US", "US", "US, EMEA", "US", "US, Canada", "US", "APAC",
+                         "US, LATAM", "Global", "US", "US, EMEA", "US, EMEA, APAC", "Global"],
+    "Contract Scope": ["Professional Services AI", "Professional Services (AI & Analytics)",
+                     "Data Management Software Licenses", "Networking Infrastructure & Support",
+                     "Hybrid Cloud Deployment & Support", "Storage Solutions & Managed Services",
+                     "IT Support & Maintenance Services", "Software Licenses (Compliance & Security)",
+                     "Global Software Agreement & Support", "Servers Procurement & Maintenance",
+                     "Cybersecurity Services (Vulnerability Mgmt)", "Managed Detection and Response (MDR)", 
+                     "Microsoft Azure Cloud Services"],
+    "Effective From": ["12/1/2024", "1/7/2024", "12/31/2022", "7/31/2024", "1/31/2025",
+                     "12/31/2023", "3/31/2024", "2/23/2025", "3/31/2025", "11/30/2024",
+                     "12/15/2024", "12/20/2024", "7/14/2024"],
+    "Expiry Date": ["3/31/2026", "6/30/2027", "12/31/2024", "4/30/2026", "8/31/2028",
+                   "9/20/2025", "5/20/2025", "4/12/2026", "8/31/2029", "6/30/2027",
+                   "11/30/2028", "10/31/2026", "1/15/2027"],
+    "Status": ["Active", "Active", "Expired", "Active", "Active", "Active", "Active",
+              "Active", "Active", "Active", "Active", "Active", "Active"],
+    "Auto-renewal": ["No", "", "Yes", "", "Yes", "No", "Yes", "Yes", "No", "", "No", "Yes", "Yes"]
+}
+
+COMMERCIAL_DATA = {
+    "Total Contract Value": ["$5,250,785", "$6,953,977", "$2,400,000", "$4,750,000",
+                           "$6,200,202", "$1,850,000", "$3,309,753", "$1,275,050",
+                           "$7,500,060", "$4,409,850", "$2,750,075", "$3,950,040",
+                           "$8,250,070"],
+    "Payment Terms": ["Net 60", "Net 60", "Net 45", "Net 60", "Net 60", "Net 45",
+                    "Net 45", "Net 30", "Net 60", "Net 60", "Net 45", "Net 45", "Net 60"],
+    "Early Payment Discount %": ["NIL", "NIL", "1.25% within 20 days", "1% within 10 days",
+                               "", "NIL", "0.2% within 15 days", "", "0.2% within 15 days",
+                               "NIL", "1.5% within 15 days", "", "0.625% within 15 days"],
+    "Late Payment Penalty%": ["1.50%", "1.50%", "1%", "1.50%", "", "1%", "1%", "",
+                             "1.50%", "", "1.25%", "", "1.50%"],
+    "Volume based Discounts %": ["5% for spend > $3M", "5% for spend > $3M", "",
+                                "8% for equipment > $1M", "7% for spend > $5M",
+                                "4% for equipment > $5 M", "", "5% over 15000 licenses",
+                                "10% for spend > $6M", "8% for spend > $2M",
+                                "6% for annual spend > $2M", "", "10% for spend > $7M"],
+    "Annual Price Increase %": ["CPI + 1.5%", "CPI + 1.5%", "", "CPI", "CPI", "",
+                               "CPI -1%", "CPI", "CPI + .6%", "CPI + 0.25%", "CPI", "", "CPI + 1%"]
+}
+
+LEGAL_DATA = {
+    "Right to Indemnify": ["Yes"] * 13,
+    "Right to Assign": ["No"] * 13,
+    "Right to Terminate": ["Yes"] * 13,
+    "Governing Law": ["Tennessee", "Tennessee", "UK", "Tennessee", "Tennessee",
+                     "Tennessee", "Singapore", "Delaware", "Tennessee", "UK",
+                     "Delaware", "Singapore", "Delaware"],
+    "Liability Limit": ["TCV/ Higher or unl fdir IP/Conf", "", "", "", "", "", 
+                       "", "", "", "", "", "", ""]
+}
+
+def create_donut_chart(data, num_records):
+    contract_types = data["Type of Contract"][:num_records]
+    type_counts = pd.Series(contract_types).value_counts().reset_index()
+    type_counts.columns = ['Type', 'Count']
+    
+    fig = px.pie(type_counts, 
+                 values='Count', 
+                 names='Type',
+                 hole=0.4,
+                 title="Contract Type Distribution",
+                 color_discrete_sequence=[FEDEX_PURPLE, FEDEX_ORANGE, "#333333"])
+    
+    fig.update_traces(textposition='inside', 
+                     textinfo='percent+label',
+                     marker=dict(line=dict(color=BACKGROUND_COLOR, width=2)))
+    
+    fig.update_layout(
+        height=400,
+        margin=dict(l=20, r=20, t=50, b=20),
+        paper_bgcolor=BACKGROUND_COLOR,
+        plot_bgcolor=BACKGROUND_COLOR,
+        font=dict(color=TEXT_COLOR),
+        title_font=dict(size=18, color=FEDEX_PURPLE),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.2,
+            xanchor="center",
+            x=0.5
+        )
+    )
+    return fig
+
+def create_geo_bar_chart(df):
+    fig = px.bar(df,
+                 y='Geographical Scope',
+                 x='Total Contract Value',
+                 color='Engagement',
+                 orientation='h',
+                 color_discrete_sequence=px.colors.qualitative.Vivid,
+                 title="Contract Value by Geography & Engagement")
+    
+    fig.update_layout(
+        height=400,
+        margin=dict(l=20, r=20, t=50, b=20),
+        paper_bgcolor=BACKGROUND_COLOR,
+        plot_bgcolor=BACKGROUND_COLOR,
+        font=dict(color=TEXT_COLOR),
+        title_font=dict(size=18, color=FEDEX_PURPLE),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.3,
+            xanchor="center",
+            x=0.5
+        )
+    )
+    return fig
 
 def main():
     st.set_page_config(layout="wide", page_title="ContractIQ", page_icon="📄")
@@ -18,82 +139,74 @@ def main():
     if 'current_page' not in st.session_state:
         st.session_state.current_page = "Home"
 
-    # Remove Streamlit default headers/footers and add custom styling
-    st.markdown(f"""
+    # Remove Streamlit default headers/footers
+    st.markdown("""
         <style>
-            #MainMenu {{visibility: hidden;}}
-            header {{visibility: hidden;}}
-            .stDeployButton {{display:none;}}
-            footer {{visibility: hidden;}}
+            #MainMenu {visibility: hidden;}
+            header {visibility: hidden;}
+            .stDeployButton {display:none;}
+            footer {visibility: hidden;}
             
             /* Custom header container */
-            .header-container {{
+            .header-container {
                 position: fixed;
                 top: 0;
                 left: 0;
                 right: 0;
                 height: 70px;
-                background: {FEDEX_PURPLE};
+                background: #4D148C;
                 z-index: 1001;
                 display: flex;
-                align-items: flex-start;
-                padding: 8px 20px 0;
+                align-items: center;
+                padding: 0 20px;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            }}
+            }
             
             /* Title styling */
-            .app-title {{
+            .app-title {
                 font-size: 24px;
                 font-weight: bold;
-                margin: 0;
-                padding: 0;
-                line-height: 1;
-                transform: translateY(2px);
-            }}
-            .app-title span:first-child {{
+                margin-right: auto;
+            }
+            .app-title span:first-child {
                 color: white;
-            }}
-            .app-title span:last-child {{
-                color: {FEDEX_ORANGE};
-            }}
+            }
+            .app-title span:last-child {
+                color: #FF6200;
+            }
             
             /* Navigation buttons container */
-            .nav-buttons {{
+            .nav-buttons {
                 display: flex;
                 gap: 10px;
-                margin: 0;
-                padding: 0;
-                transform: translateY(2px);
-            }}
+            }
             
             /* Custom button styling */
-            .nav-btn {{
+            .nav-btn {
                 color: white !important;
                 background: none !important;
                 border: none !important;
-                padding: 6px 14px !important;
-                margin: 0 !important;
-                line-height: 1 !important;
-                height: 34px;
-                display: flex;
-                align-items: center;
+                padding: 8px 16px !important;
                 border-radius: 4px !important;
                 transition: all 0.3s !important;
-            }}
-            .nav-btn:hover {{
-                background: {FEDEX_ORANGE} !important;
-            }}
+            }
+            .nav-btn:hover {
+                background: #FF6200 !important;
+            }
+            .nav-btn:active {
+                background: #FF6200 !important;
+            }
             
             /* Active button state */
-            .nav-btn.active {{
-                background: {FEDEX_ORANGE} !important;
+            .nav-btn.active {
+                background: #FF6200 !important;
                 font-weight: bold !important;
-            }}
+            }
             
             /* Main content spacing */
-            .main-content {{
-                padding-top: 85px;
-            }}
+            .main-content {
+                padding-top: 90px;
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -142,7 +255,7 @@ def main():
                 )
         
         # Add the fixed header container
-        st.markdown('<div class="header-container"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="header-container", ></div>', unsafe_allow_html=True)
 
     # Handle navigation
     if home_btn:
@@ -192,11 +305,11 @@ def main():
                 legal_data = slice_data(LEGAL_DATA, num_records)
                 
                 # Create combined dataframe for visualization
-                combined_df = pd.DataFrame({
+                combined_df = pd.DataFrame(
                     **critical_data,
                     **{'Total Contract Value': [float(x.replace('$', '').replace(',', '')) 
                        for x in commercial_data['Total Contract Value']]}
-                })
+                )
                 
                 # Permanent Graphs Section
                 st.markdown("## Contract Analytics Overview")
