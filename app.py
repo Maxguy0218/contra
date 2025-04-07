@@ -146,105 +146,126 @@ def main():
             header {visibility: hidden;}
             .stDeployButton {display:none;}
             footer {visibility: hidden;}
-            .st-emotion-cache-6qob1r {padding-top: 0;}
-            [data-testid="nav-Home"],
-            [data-testid="nav-History"],
-            [data-testid="nav-Playbook"],
-            [data-testid="nav-Settings"] {
-                display: none;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-
-    # Custom CSS for header
-    st.markdown(f"""
-        <style>
-            .header {{
+            
+            /* Custom header container */
+            .header-container {
                 position: fixed;
                 top: 0;
                 left: 0;
                 right: 0;
                 height: 70px;
-                background: {FEDEX_PURPLE};
-                color: white;
+                background: #4D148C;
                 z-index: 1001;
                 display: flex;
-                justify-content: space-between;
                 align-items: center;
                 padding: 0 20px;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            }}
+            }
             
-            .nav-menu {{
-                display: flex;
-                gap: 15px;
-                align-items: center;
-            }}
-            
-            .nav-btn {{
-                color: white;
-                cursor: pointer;
-                padding: 8px 12px;
-                border-radius: 5px;
-                transition: all 0.3s;
-                background: none;
-                border: none;
-                font-size: 14px;
-                white-space: nowrap;
-            }}
-            
-            .nav-btn:hover {{
-                background: {FEDEX_ORANGE};
-            }}
-            
-            .active-nav {{
-                background: {FEDEX_ORANGE};
+            /* Title styling */
+            .app-title {
+                font-size: 24px;
                 font-weight: bold;
-            }}
+                margin-right: auto;
+            }
+            .app-title span:first-child {
+                color: white;
+            }
+            .app-title span:last-child {
+                color: #FF6200;
+            }
             
-            .main-content {{
+            /* Navigation buttons container */
+            .nav-buttons {
+                display: flex;
+                gap: 10px;
+            }
+            
+            /* Custom button styling */
+            .nav-btn {
+                color: white !important;
+                background: none !important;
+                border: none !important;
+                padding: 8px 16px !important;
+                border-radius: 4px !important;
+                transition: all 0.3s !important;
+            }
+            .nav-btn:hover {
+                background: #FF6200 !important;
+            }
+            .nav-btn:active {
+                background: #FF6200 !important;
+            }
+            
+            /* Active button state */
+            .nav-btn.active {
+                background: #FF6200 !important;
+                font-weight: bold !important;
+            }
+            
+            /* Main content spacing */
+            .main-content {
                 padding-top: 90px;
-            }}
+            }
         </style>
     """, unsafe_allow_html=True)
 
-    # Hidden navigation buttons (handles the actual navigation logic)
-    st.button("Home", key="nav-Home", on_click=lambda: st.session_state.update({"current_page": "Home"}))
-    st.button("History", key="nav-History", on_click=lambda: st.session_state.update({"current_page": "History"}))
-    st.button("Playbook", key="nav-Playbook", on_click=lambda: st.session_state.update({"current_page": "Playbook"}))
-    st.button("Settings", key="nav-Settings", on_click=lambda: st.session_state.update({"current_page": "Settings"}))
+    # Create header container
+    header = st.container()
+    with header:
+        # Create columns for title and navigation
+        col1, col2 = st.columns([3, 2])
+        
+        with col1:
+            st.markdown(
+                '<div class="app-title"><span>Contract</span><span>IQ</span></div>',
+                unsafe_allow_html=True
+            )
+        
+        with col2:
+            # Create navigation buttons
+            cols = st.columns(4)
+            with cols[0]:
+                home_btn = st.button(
+                    "Home",
+                    key="home_btn",
+                    help="Go to Home page",
+                    type="primary" if st.session_state.current_page == "Home" else "secondary"
+                )
+            with cols[1]:
+                history_btn = st.button(
+                    "History",
+                    key="history_btn",
+                    help="Go to History page",
+                    type="primary" if st.session_state.current_page == "History" else "secondary"
+                )
+            with cols[2]:
+                playbook_btn = st.button(
+                    "Playbook",
+                    key="playbook_btn",
+                    help="Go to Playbook page",
+                    type="primary" if st.session_state.current_page == "Playbook" else "secondary"
+                )
+            with cols[3]:
+                settings_btn = st.button(
+                    "Settings",
+                    key="settings_btn",
+                    help="Go to Settings page",
+                    type="primary" if st.session_state.current_page == "Settings" else "secondary"
+                )
+        
+        # Add the fixed header container
+        st.markdown('<div class="header-container"></div>', unsafe_allow_html=True)
 
-    # Custom Header with functional navigation
-    st.markdown(f"""
-        <div class="header">
-            <div style="font-size: 24px; font-weight: bold;">
-                <span style="color:white">Contract</span>
-                <span style="color:{FEDEX_ORANGE}">IQ</span>
-            </div>
-            <div class="nav-menu">
-                <button class="nav-btn {'active-nav' if st.session_state.current_page == 'Home' else ''}" 
-                        onclick="document.querySelector('button[data-testid=\"nav-Home\"]').click()">Home</button>
-                <button class="nav-btn {'active-nav' if st.session_state.current_page == 'History' else ''}" 
-                        onclick="document.querySelector('button[data-testid=\"nav-History\"]').click()">History</button>
-                <button class="nav-btn {'active-nav' if st.session_state.current_page == 'Playbook' else ''}" 
-                        onclick="document.querySelector('button[data-testid=\"nav-Playbook\"]').click()">Playbook</button>
-                <button class="nav-btn {'active-nav' if st.session_state.current_page == 'Settings' else ''}" 
-                        onclick="document.querySelector('button[data-testid=\"nav-Settings\"]').click()">Settings</button>
-            </div>
-        </div>
-        <script>
-            // Force Streamlit to update when buttons are clicked
-            function updateStreamlit() {{
-                setTimeout(() => {{
-                    const event = new Event('streamlit:update');
-                    window.dispatchEvent(event);
-                }}, 100);
-            }}
-            document.querySelectorAll('.nav-btn').forEach(btn => {{
-                btn.addEventListener('click', updateStreamlit);
-            }});
-        </script>
-    """, unsafe_allow_html=True)
+    # Handle navigation
+    if home_btn:
+        st.session_state.current_page = "Home"
+    if history_btn:
+        st.session_state.current_page = "History"
+    if playbook_btn:
+        st.session_state.current_page = "Playbook"
+    if settings_btn:
+        st.session_state.current_page = "Settings"
 
     # Main content
     st.markdown('<div class="main-content">', unsafe_allow_html=True)
@@ -288,7 +309,7 @@ def main():
                     **critical_data,
                     **{'Total Contract Value': [float(x.replace('$', '').replace(',', '')) 
                        for x in commercial_data['Total Contract Value']]}
-                })
+                )
                 
                 # Permanent Graphs Section
                 st.markdown("## Contract Analytics Overview")
