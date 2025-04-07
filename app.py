@@ -220,14 +220,53 @@ def home_page():
             with tab1:
                 if critical_data:
                     # Create two columns for charts
-                    col_chart1, col_chart2 = st.columns([1, 1])
+                    col_chart1, col_chart2, col_chart3 = st.columns([1, 1, 1])
                     
                     with col_chart1:
+                        if num_records > 0:
+                            # New vertical bar chart for IT Spends by Engagement
+                            fig_spends = px.bar(combined_df,
+                                              x='Engagement',
+                                              y='Total Contract Value',
+                                              color='Contract Coverage',
+                                              title="IT Spends by Engagement",
+                                              labels={
+                                                  'Engagement': 'Engagement Type',
+                                                  'Total Contract Value': 'IT Spends ($)',
+                                                  'Contract Coverage': 'Entities'
+                                              },
+                                              color_discrete_sequence=px.colors.qualitative.Vivid)
+                            
+                            # Add total values on top of bars
+                            fig_spends.update_traces(texttemplate='%{y:$,.0f}', 
+                                                  textposition='outside',
+                                                  marker=dict(line=dict(color=BACKGROUND_COLOR, width=1)))
+                            
+                            fig_spends.update_layout(
+                                height=400,
+                                margin=dict(l=20, r=20, t=50, b=20),
+                                paper_bgcolor=BACKGROUND_COLOR,
+                                plot_bgcolor=BACKGROUND_COLOR,
+                                font=dict(color=TEXT_COLOR),
+                                title_font=dict(size=18, color=FEDEX_PURPLE),
+                                legend=dict(
+                                    orientation="h",
+                                    yanchor="bottom",
+                                    y=-0.3,
+                                    xanchor="center",
+                                    x=0.5
+                                ),
+                                xaxis_title="Engagement Type",
+                                yaxis_title="IT Spends ($)"
+                            )
+                            st.plotly_chart(fig_spends, use_container_width=True)
+                    
+                    with col_chart2:
                         if num_records > 0:
                             donut_chart = create_donut_chart(critical_data, num_records)
                             st.plotly_chart(donut_chart, use_container_width=True)
                     
-                    with col_chart2:
+                    with col_chart3:
                         if num_records > 0:
                             bar_chart = create_geo_bar_chart(combined_df)
                             st.plotly_chart(bar_chart, use_container_width=True)
