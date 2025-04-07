@@ -92,14 +92,14 @@ def create_donut_chart(data, num_records):
                  names='Type',
                  hole=0.4,
                  title="Contract Type Distribution",
-                 color_discrete_sequence=[FEDEX_PURPLE, FEDEX_ORANGE])
+                 color_discrete_sequence=[FEDEX_PURPLE, FEDEX_ORANGE, "#333333"])
     
     fig.update_traces(textposition='inside', 
                      textinfo='percent+label',
                      marker=dict(line=dict(color=BACKGROUND_COLOR, width=2)))
     
     fig.update_layout(
-        height=350,
+        height=400,
         margin=dict(l=20, r=20, t=50, b=20),
         paper_bgcolor=BACKGROUND_COLOR,
         plot_bgcolor=BACKGROUND_COLOR,
@@ -109,6 +109,32 @@ def create_donut_chart(data, num_records):
             orientation="h",
             yanchor="bottom",
             y=-0.2,
+            xanchor="center",
+            x=0.5
+        )
+    )
+    return fig
+
+def create_geo_bar_chart(df):
+    fig = px.bar(df,
+                 y='Geographical Scope',
+                 x='Total Contract Value',
+                 color='Type of Contract',
+                 orientation='h',
+                 color_discrete_sequence=[FEDEX_PURPLE, FEDEX_ORANGE, "#333333"],
+                 title="Contract Value by Geography & Type")
+    
+    fig.update_layout(
+        height=400,
+        margin=dict(l=20, r=20, t=50, b=20),
+        paper_bgcolor=BACKGROUND_COLOR,
+        plot_bgcolor=BACKGROUND_COLOR,
+        font=dict(color=TEXT_COLOR),
+        title_font=dict(size=18, color=FEDEX_PURPLE),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.3,
             xanchor="center",
             x=0.5
         )
@@ -181,6 +207,13 @@ def home_page():
             commercial_data = slice_data(COMMERCIAL_DATA, num_records)
             legal_data = slice_data(LEGAL_DATA, num_records)
             
+            # Create combined dataframe for visualization
+            combined_df = pd.DataFrame({
+                **critical_data,
+                **{'Total Contract Value': [float(x.replace('$', '').replace(',', '')) 
+                   for x in commercial_data['Total Contract Value']]}
+            })
+            
             tab1, tab2, tab3 = st.tabs([
                 "Critical Data Insights", 
                 "Commercial Insights", 
@@ -189,19 +222,27 @@ def home_page():
             
             with tab1:
                 if critical_data:
-                    # Show chart first
-                    if num_records > 0:
-                        st.markdown("### Contract Type Distribution")
-                        donut_chart = create_donut_chart(critical_data, num_records)
-                        st.plotly_chart(donut_chart, use_container_width=True)
-                        st.markdown("---")
+                    # Create two columns for charts
+                    col_chart1, col_chart2 = st.columns([1, 1])
+                    
+                    with col_chart1:
+                        if num_records > 0:
+                            donut_chart = create_donut_chart(critical_data, num_records)
+                            st.plotly_chart(donut_chart, use_container_width=True)
+                    
+                    with col_chart2:
+                        if num_records > 0:
+                            bar_chart = create_geo_bar_chart(combined_df)
+                            st.plotly_chart(bar_chart, use_container_width=True)
+                    
+                    st.markdown("---")
                     
                     # Show table with exact number of records
                     critical_df = pd.DataFrame(critical_data)
                     st.dataframe(
                         critical_df, 
                         use_container_width=True,
-                        height=40 + 35 * num_records,  # Dynamic height based on rows
+                        height=40 + 35 * num_records,
                         hide_index=True
                     )
                 else:
@@ -310,7 +351,7 @@ def main():
                 top: 0;
                 left: 0;
                 right: 0;
-                height: 80px;
+                height: 70px;
                 background: white;
                 z-index: 999;
                 display: flex;
@@ -333,7 +374,7 @@ def main():
             .nav-container {{
                 position: fixed;
                 left: 0;
-                top: 80px;
+                top: 70px;
                 bottom: 0;
                 width: {NAV_WIDTH};
                 background-color: {FEDEX_PURPLE};
@@ -374,10 +415,8 @@ def main():
             }}
             
             /* Configuration panel styling */
-            .config-panel {{
-                margin-top: 80px;
-                padding: 20px;
-                background: white;
+            .stExpander {{
+                margin-top: 70px !important;
                 z-index: 997;
                 position: relative;
             }}
@@ -406,7 +445,7 @@ def main():
             
             /* Ensure content starts below header */
             .stApp {{
-                padding-top: 80px !important;
+                padding-top: 70px !important;
             }}
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
