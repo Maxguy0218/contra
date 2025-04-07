@@ -277,7 +277,7 @@ def main():
                 legal_data = slice_data(LEGAL_DATA, num_records)
                 
                 # Create combined dataframe for visualization
-                combined_df = pd.DataFrame({
+                combined_df = pd.DataFrame(
                     **critical_data,
                     **{'Total Contract Value': [float(x.replace('$', '').replace(',', '')) 
                        for x in commercial_data['Total Contract Value']]}
