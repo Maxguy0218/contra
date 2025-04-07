@@ -210,7 +210,6 @@ def home_page(uploaded_files):
                 response = get_answer(question, st.session_state.vector_store)
                 st.session_state.chat_history.append(("user", question))
                 st.session_state.chat_history.append(("assistant", response))
-                st.experimental_rerun()
         
         for role, text in st.session_state.chat_history:
             div_class = "user-message" if role == "user" else "assistant-message"
@@ -369,10 +368,19 @@ def main():
     if 'uploaded_files' not in st.session_state:
         st.session_state.uploaded_files = None
 
+    # Handle page navigation from URL parameters
+    query_params = st.experimental_get_query_params()
+    if 'toggle_menu' in query_params:
+        st.session_state.menu_open = not st.session_state.menu_open
+        st.experimental_set_query_params()
+    elif 'page' in query_params:
+        st.session_state.current_page = query_params['page'][0]
+        st.experimental_set_query_params()
+
     # Header with menu button
     st.markdown(f"""
         <div class="header">
-            <button class="menu-button" onclick="toggleMenu()">☰</button>
+            <button class="menu-button" onclick="window.location.href='?toggle_menu=true'">☰</button>
             <h1 class="header-title">
                 <span style="color: {FEDEX_PURPLE}">Contract</span>
                 <span style="color: {FEDEX_ORANGE}">IQ</span>
@@ -380,28 +388,15 @@ def main():
         </div>
         
         <div class="sidebar {'sidebar-open' if st.session_state.menu_open else ''}">
-            <button class="nav-button {'active' if st.session_state.current_page == 'Home' else ''}" onclick="setPage('Home')">🏠 Home</button>
-            <button class="nav-button {'active' if st.session_state.current_page == 'Tools' else ''}" onclick="setPage('Tools')">🛠️ Tools</button>
-            <button class="nav-button {'active' if st.session_state.current_page == 'Analytics' else ''}" onclick="setPage('Analytics')">📊 Analytics</button>
+            <button class="nav-button {'active' if st.session_state.current_page == 'Home' else ''}" onclick="window.location.href='?page=Home'">🏠 Home</button>
+            <button class="nav-button {'active' if st.session_state.current_page == 'Tools' else ''}" onclick="window.location.href='?page=Tools'">🛠️ Tools</button>
+            <button class="nav-button {'active' if st.session_state.current_page == 'Analytics' else ''}" onclick="window.location.href='?page=Analytics'">📊 Analytics</button>
         </div>
-        
-        <script>
-            function toggleMenu() {{
-                Streamlit.setComponentValue('toggle_menu');
-            }}
-            function setPage(page) {{
-                Streamlit.setComponentValue(page);
-            }}
-        </script>
     """, unsafe_allow_html=True)
 
     # Configuration panel
-    with st.container():
-        st.markdown("""
-            <div class="config-panel">
-                <button onclick="toggleConfig()" style="background: none; border: none; padding: 5px; cursor: pointer;">⚙️</button>
-            </div>
-        """, unsafe_allow_html=True)
+    if st.button("⚙️", key="config_button"):
+        st.session_state.config_open = not st.session_state.config_open
 
     if st.session_state.config_open:
         with st.expander("CONFIGURATION", expanded=True):
@@ -414,17 +409,6 @@ def main():
             uploaded_files = st.file_uploader("Upload Contracts", type=["pdf"], accept_multiple_files=True)
             if uploaded_files:
                 st.session_state.uploaded_files = uploaded_files
-
-    # Handle JavaScript interactions
-    if 'nav' in st.session_state:
-        if st.session_state.nav == 'toggle_menu':
-            st.session_state.menu_open = not st.session_state.menu_open
-        elif st.session_state.nav == 'toggle_config':
-            st.session_state.config_open = not st.session_state.config_open
-        else:
-            st.session_state.current_page = st.session_state.nav
-        st.session_state.nav = None
-        st.experimental_rerun()
 
     # Main content
     st.markdown('<div class="main-content">', unsafe_allow_html=True)
