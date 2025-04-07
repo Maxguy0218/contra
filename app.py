@@ -119,10 +119,10 @@ def create_geo_bar_chart(df):
     fig = px.bar(df,
                  y='Geographical Scope',
                  x='Total Contract Value',
-                 color='Engagement',  # Using Engagement for color now
+                 color='Type of Contract',
                  orientation='h',
-                 color_discrete_sequence=px.colors.qualitative.Vivid,
-                 title="Contract Value by Geography & Engagement")
+                 color_discrete_sequence=[FEDEX_PURPLE, FEDEX_ORANGE, "#333333"],
+                 title="Contract Value by Geography & Type")
     
     fig.update_layout(
         height=400,
@@ -215,9 +215,9 @@ def home_page():
             })
             
             tab1, tab2, tab3 = st.tabs([
-                "📊 **Critical Data Insights**", 
-                "💸 **Commercial Insights**", 
-                "⚖️ **Legal Insights**"
+                "Critical Data Insights", 
+                "Commercial Insights", 
+                "Legal Insights"
             ])
             
             with tab1:
@@ -303,13 +303,19 @@ def home_page():
                     </div>
                 """, unsafe_allow_html=True)
 
-def commercial_page():
-    st.markdown("## Commercial Insights Dashboard")
-    st.write("Commercial data analysis and insights would appear here")
-
-def legal_page():
-    st.markdown("## Legal Insights Dashboard")
-    st.write("Legal contract analysis and insights would appear here")
+def tools_page():
+    st.markdown("## Tools Dashboard")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Document Analysis Tools")
+        st.write("- Contract Comparator")
+        st.write("- Clause Library")
+        st.write("- Risk Assessor")
+    with col2:
+        st.subheader("Workflow Automation")
+        st.write("- Automated Renewal Tracker")
+        st.write("- Compliance Checker")
+        st.write("- Obligation Manager")
 
 def analytics_page():
     st.markdown("## Advanced Analytics")
@@ -339,21 +345,41 @@ def main():
     # Custom CSS with fixed header and working navigation
     st.markdown(f"""
         <style>
-            /* Collapsible Navigation */
+            /* Fixed header styling */
+            .header-container {{
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 70px;
+                background: white;
+                z-index: 999;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }}
+            
+            .header-title {{
+                font-size: 2.8rem;
+                font-weight: 700;
+                margin: 0;
+                text-align: center;
+            }}
+            
+            .contract-part {{ color: {FEDEX_PURPLE}; }}
+            .iq-part {{ color: {FEDEX_ORANGE}; }}
+            
+            /* Navigation menu */
             .nav-container {{
                 position: fixed;
                 left: 0;
-                top: 0;
+                top: 70px;
                 bottom: 0;
                 width: {NAV_WIDTH};
-                background: {FEDEX_PURPLE};
-                z-index: 999;
-                transition: 0.3s;
-                overflow-x: hidden;
-            }}
-            
-            .nav-container:hover {{
-                width: 80px;
+                background-color: {FEDEX_PURPLE};
+                z-index: 998;
+                padding-top: 20px;
             }}
             
             .nav-button {{
@@ -363,15 +389,19 @@ def main():
                 border: none;
                 color: rgba(255,255,255,0.8);
                 cursor: pointer;
-                transition: 0.2s;
+                transition: all 0.2s;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
             }}
             
             .nav-button:hover {{
-                background: {FEDEX_ORANGE};
+                background-color: {FEDEX_ORANGE};
                 color: white !important;
+            }}
+            
+            .nav-button.active {{
+                background-color: {FEDEX_ORANGE};
             }}
             
             .nav-icon {{
@@ -379,36 +409,16 @@ def main():
                 margin-bottom: 5px;
             }}
             
-            /* Centered Tabs */
-            .stTabs [data-baseweb="tab-list"] {{
-                justify-content: center;
-            }}
-            
-            .stTabs [data-baseweb="tab"] {{
-                padding: 12px 24px;
-                margin: 0 8px;
-                border-radius: 8px;
-                background: {FEDEX_PURPLE}15;
-                transition: 0.3s;
-                font-weight: 600;
-            }}
-            
-            .stTabs [data-baseweb="tab"]:hover {{
-                background: {FEDEX_PURPLE}30;
-                transform: translateY(-2px);
-            }}
-            
-            .stTabs [aria-selected="true"] {{
-                background: {FEDEX_PURPLE} !important;
-                color: white !important;
-                box-shadow: 0 4px 12px {FEDEX_PURPLE}40;
-            }}
-            
-            /* Main Content */
             .main-content {{
                 margin-left: {NAV_WIDTH};
-                padding: 20px;
-                transition: 0.3s;
+                padding-top: 80px;
+            }}
+            
+            /* Configuration panel styling */
+            .stExpander {{
+                margin-top: 70px !important;
+                z-index: 997;
+                position: relative;
             }}
             
             /* Chat message styling */
@@ -427,6 +437,16 @@ def main():
                 border-radius: 8px;
                 margin: 8px 0;
             }}
+            
+            /* Adjust the main content area */
+            .stApp > div:first-child {{
+                padding-top: 0 !important;
+            }}
+            
+            /* Ensure content starts below header */
+            .stApp {{
+                padding-top: 70px !important;
+            }}
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     """, unsafe_allow_html=True)
@@ -444,26 +464,27 @@ def main():
     # Navigation
     st.markdown(f"""
         <div class="nav-container">
-            <button class="nav-button" onclick="window.parent.postMessage('home', '*')">
+            <button class="nav-button {'active' if st.session_state.get('nav', 'home') == 'home' else ''}" 
+                onclick="window.parent.postMessage('home', '*')">
                 <i class="fas fa-home nav-icon"></i>
                 <span>Home</span>
             </button>
-            <button class="nav-button" onclick="window.parent.postMessage('commercial', '*')">
-                <i class="fas fa-chart-line nav-icon"></i>
-                <span>Commercial</span>
+            <div style="height: 20px"></div>
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'tools' else ''}" 
+                onclick="window.parent.postMessage('tools', '*')">
+                <i class="fas fa-tools nav-icon"></i>
+                <span>Tools</span>
             </button>
-            <button class="nav-button" onclick="window.parent.postMessage('legal', '*')">
-                <i class="fas fa-balance-scale nav-icon"></i>
-                <span>Legal</span>
-            </button>
-            <button class="nav-button" onclick="window.parent.postMessage('analytics', '*')">
-                <i class="fas fa-brain nav-icon"></i>
+            <div style="height: 20px"></div>
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'analytics' else ''}" 
+                onclick="window.parent.postMessage('analytics', '*')">
+                <i class="fas fa-chart-bar nav-icon"></i>
                 <span>Analytics</span>
             </button>
         </div>
         <script>
             window.addEventListener('message', function(event) {{
-                if (['home','commercial','legal','analytics'].includes(event.data)) {{
+                if (['home','tools','analytics'].includes(event.data)) {{
                     Streamlit.setComponentValue(event.data);
                 }}
             }});
@@ -478,10 +499,8 @@ def main():
     
     if nav_value == 'home':
         home_page()
-    elif nav_value == 'commercial':
-        commercial_page()
-    elif nav_value == 'legal':
-        legal_page()
+    elif nav_value == 'tools':
+        tools_page()
     elif nav_value == 'analytics':
         analytics_page()
     
