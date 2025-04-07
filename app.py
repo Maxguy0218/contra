@@ -16,7 +16,7 @@ FEDEX_PURPLE = "#4D148C"
 FEDEX_ORANGE = "#FF6200"
 BACKGROUND_COLOR = "#FFFFFF"
 TEXT_COLOR = "#333333"
-NAV_WIDTH = "250px"
+NAV_WIDTH = "60px"
 
 # Data Sources
 CRITICAL_DATA = {
@@ -145,7 +145,28 @@ def get_answer(question, vector_store):
     except Exception as e:
         return f"Error: {str(e)}"
 
-def home_page(uploaded_files):
+def home_page():
+    with st.expander("⚙️ CONFIGURATION", expanded=False):
+        col1, col2 = st.columns(2)
+        with col1:
+            selected_path = st.selectbox(
+                "Source Path",
+                ["Local Machine", "Network Path"],
+                index=0
+            )
+        with col2:
+            selected_model = st.selectbox(
+                "AI Model",
+                ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"],
+                index=0
+            )
+        
+        uploaded_files = st.file_uploader(
+            "Upload Contract Files",
+            type=["pdf"],
+            accept_multiple_files=True
+        )
+
     if uploaded_files:
         num_records = len(uploaded_files)
         
@@ -210,17 +231,18 @@ def home_page(uploaded_files):
                 response = get_answer(question, st.session_state.vector_store)
                 st.session_state.chat_history.append(("user", question))
                 st.session_state.chat_history.append(("assistant", response))
+                st.experimental_rerun()
         
         for role, text in st.session_state.chat_history:
             div_class = "user-message" if role == "user" else "assistant-message"
             st.markdown(f"""
-                <div style="background-color: {FEDEX_PURPLE if role == 'user' else FEDEX_ORANGE}; color: white; padding: 12px; border-radius: 8px; margin: 8px 0;">
+                <div class="{div_class}">
                     <b>{role.title()}:</b> {text}
                 </div>
             """, unsafe_allow_html=True)
 
 def tools_page():
-    st.header("Tools Dashboard")
+    st.markdown("## Tools Dashboard")
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Document Analysis Tools")
@@ -234,7 +256,7 @@ def tools_page():
         st.write("- Obligation Manager")
 
 def analytics_page():
-    st.header("Advanced Analytics")
+    st.markdown("## Advanced Analytics")
     st.subheader("Contract Portfolio Health")
     data = pd.DataFrame({
         'Metric': ['Risk Score', 'Compliance %', 'Renewal Density', 'Value Concentration'],
@@ -257,167 +279,149 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # Custom CSS
+    # Custom CSS with fixed header and working navigation
     st.markdown(f"""
         <style>
-            /* Fixed header */
-            .header {{
+            /* Fixed header styling */
+            .header-container {{
                 position: fixed;
                 top: 0;
                 left: 0;
                 right: 0;
                 height: 80px;
-                background: {BACKGROUND_COLOR};
-                z-index: 1000;
+                background: white;
+                z-index: 999;
                 display: flex;
+                justify-content: center;
                 align-items: center;
-                padding: 0 20px;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             }}
             
             .header-title {{
-                font-size: 2.5rem;
+                font-size: 2.8rem;
                 font-weight: 700;
-                margin: 0 20px;
-                flex-grow: 1;
+                margin: 0;
                 text-align: center;
             }}
             
-            /* Sidebar */
-            .sidebar {{
+            .contract-part {{ color: {FEDEX_PURPLE}; }}
+            .iq-part {{ color: {FEDEX_ORANGE}; }}
+            
+            /* Navigation menu */
+            .nav-container {{
                 position: fixed;
-                top: 80px;
                 left: 0;
+                top: 80px;
                 bottom: 0;
                 width: {NAV_WIDTH};
-                background: {FEDEX_PURPLE};
-                z-index: 999;
-                transition: 0.3s;
-                transform: translateX(-100%);
-            }}
-            
-            .sidebar-open {{
-                transform: translateX(0);
-            }}
-            
-            /* Menu button */
-            .menu-button {{
-                background: {FEDEX_PURPLE};
-                color: white;
-                border: none;
-                padding: 10px;
-                border-radius: 5px;
-                cursor: pointer;
-                z-index: 1001;
-            }}
-            
-            /* Main content */
-            .main-content {{
-                margin-top: 80px;
-                padding: 20px;
-                transition: 0.3s;
-            }}
-            
-            .sidebar-open + .main-content {{
-                margin-left: {NAV_WIDTH};
-            }}
-            
-            /* Configuration panel */
-            .config-panel {{
-                position: fixed;
-                top: 90px;
-                right: 20px;
+                background-color: {FEDEX_PURPLE};
                 z-index: 998;
-                background: {BACKGROUND_COLOR};
-                padding: 10px;
-                border-radius: 8px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                padding-top: 20px;
             }}
             
-            /* Navigation buttons */
             .nav-button {{
-                display: block;
                 width: 100%;
-                padding: 15px;
+                padding: 15px 0;
                 background: transparent;
                 border: none;
-                color: white;
-                text-align: left;
+                color: rgba(255,255,255,0.8);
                 cursor: pointer;
-                transition: 0.2s;
+                transition: all 0.2s;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }}
             
             .nav-button:hover {{
-                background: {FEDEX_ORANGE};
+                background-color: {FEDEX_ORANGE};
+                color: white !important;
             }}
             
             .nav-button.active {{
-                background: {FEDEX_ORANGE};
-                font-weight: bold;
+                background-color: {FEDEX_ORANGE};
+            }}
+            
+            .nav-icon {{
+                font-size: 20px;
+                margin-bottom: 5px;
+            }}
+            
+            .main-content {{
+                margin-left: {NAV_WIDTH};
+                padding: 100px 20px 20px 20px;
+            }}
+            
+            /* Chat message styling */
+            .user-message {{
+                background-color: {FEDEX_PURPLE};
+                color: white;
+                padding: 12px;
+                border-radius: 8px;
+                margin: 8px 0;
+            }}
+            
+            .assistant-message {{
+                background-color: {FEDEX_ORANGE};
+                color: white;
+                padding: 12px;
+                border-radius: 8px;
+                margin: 8px 0;
             }}
         </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     """, unsafe_allow_html=True)
 
-    # Initialize session state
-    if 'menu_open' not in st.session_state:
-        st.session_state.menu_open = False
-    if 'current_page' not in st.session_state:
-        st.session_state.current_page = 'Home'
-    if 'config_open' not in st.session_state:
-        st.session_state.config_open = False
-    if 'uploaded_files' not in st.session_state:
-        st.session_state.uploaded_files = None
-
-    # Handle page navigation from URL parameters
-    query_params = st.experimental_get_query_params()
-    if 'toggle_menu' in query_params:
-        st.session_state.menu_open = not st.session_state.menu_open
-        st.experimental_set_query_params()
-    elif 'page' in query_params:
-        st.session_state.current_page = query_params['page'][0]
-        st.experimental_set_query_params()
-
-    # Header with menu button
-    st.markdown(f"""
-        <div class="header">
-            <button class="menu-button" onclick="window.location.href='?toggle_menu=true'">☰</button>
+    # Header
+    st.markdown("""
+        <div class="header-container">
             <h1 class="header-title">
-                <span style="color: {FEDEX_PURPLE}">Contract</span>
-                <span style="color: {FEDEX_ORANGE}">IQ</span>
+                <span class="contract-part">Contract</span>
+                <span class="iq-part">IQ</span>
             </h1>
         </div>
-        
-        <div class="sidebar {'sidebar-open' if st.session_state.menu_open else ''}">
-            <button class="nav-button {'active' if st.session_state.current_page == 'Home' else ''}" onclick="window.location.href='?page=Home'">🏠 Home</button>
-            <button class="nav-button {'active' if st.session_state.current_page == 'Tools' else ''}" onclick="window.location.href='?page=Tools'">🛠️ Tools</button>
-            <button class="nav-button {'active' if st.session_state.current_page == 'Analytics' else ''}" onclick="window.location.href='?page=Analytics'">📊 Analytics</button>
-        </div>
     """, unsafe_allow_html=True)
 
-    # Configuration panel
-    if st.button("⚙️", key="config_button"):
-        st.session_state.config_open = not st.session_state.config_open
+    # Navigation
+    st.markdown(f"""
+        <div class="nav-container">
+            <button class="nav-button {'active' if st.session_state.get('nav', 'home') == 'home' else ''}" 
+                onclick="window.parent.postMessage('home', '*')">
+                <i class="fas fa-home nav-icon"></i>
+                <span>Home</span>
+            </button>
+            <div style="height: 20px"></div>
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'tools' else ''}" 
+                onclick="window.parent.postMessage('tools', '*')">
+                <i class="fas fa-tools nav-icon"></i>
+                <span>Tools</span>
+            </button>
+            <div style="height: 20px"></div>
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'analytics' else ''}" 
+                onclick="window.parent.postMessage('analytics', '*')">
+                <i class="fas fa-chart-bar nav-icon"></i>
+                <span>Analytics</span>
+            </button>
+        </div>
+        <script>
+            window.addEventListener('message', function(event) {{
+                if (['home','tools','analytics'].includes(event.data)) {{
+                    Streamlit.setComponentValue(event.data);
+                }}
+            }});
+        </script>
+    """, unsafe_allow_html=True)
 
-    if st.session_state.config_open:
-        with st.expander("CONFIGURATION", expanded=True):
-            col1, col2 = st.columns(2)
-            with col1:
-                selected_path = st.selectbox("Source Path", ["Local Machine", "Network Path"])
-            with col2:
-                selected_model = st.selectbox("AI Model", ["Transportation", "Warehousing", "Customer Contracts"])
-            
-            uploaded_files = st.file_uploader("Upload Contracts", type=["pdf"], accept_multiple_files=True)
-            if uploaded_files:
-                st.session_state.uploaded_files = uploaded_files
-
+    # Handle navigation
+    nav_value = st.session_state.get('nav', 'home')
+    
     # Main content
     st.markdown('<div class="main-content">', unsafe_allow_html=True)
     
-    if st.session_state.current_page == 'Home':
-        home_page(st.session_state.uploaded_files if st.session_state.uploaded_files else [])
-    elif st.session_state.current_page == 'Tools':
+    if nav_value == 'home':
+        home_page()
+    elif nav_value == 'tools':
         tools_page()
-    elif st.session_state.current_page == 'Analytics':
+    elif nav_value == 'analytics':
         analytics_page()
     
     st.markdown('</div>', unsafe_allow_html=True)
