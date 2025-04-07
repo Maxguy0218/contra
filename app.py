@@ -212,6 +212,46 @@ def home_page():
                    for x in commercial_data['Total Contract Value']]}
             })
             
+            # Permanent Graphs Section
+            st.markdown("## Contract Analytics Overview")
+            col1, col2, col3 = st.columns([1,1,1])
+            
+            with col1:
+                donut_chart = create_donut_chart(critical_data, num_records)
+                st.plotly_chart(donut_chart, use_container_width=True)
+                
+            with col2:
+                total_values = combined_df.groupby('Engagement')['Total Contract Value'].sum().reset_index()
+                fig_spends = px.bar(combined_df,
+                                  x='Engagement',
+                                  y='Total Contract Value',
+                                  color='Contract Coverage',
+                                  title="IT Spends by Engagement",
+                                  labels={'Engagement': 'Engagement Type', 'Total Contract Value': 'IT Spends ($)'},
+                                  color_discrete_sequence=px.colors.qualitative.Vivid)
+                fig_spends.add_trace(go.Scatter( 
+                    x=total_values['Engagement'],
+                    y=total_values['Total Contract Value'],
+                    text=total_values['Total Contract Value'].apply(lambda x: f"${x:,.0f}"),
+                    mode='text',
+                    textposition='top center',
+                    showlegend=False,
+                    textfont=dict(size=12, color=TEXT_COLOR)
+                )
+                fig_spends.update_layout(
+                    height=400,
+                    margin=dict(l=20, r=20, t=50, b=20),
+                    title_font=dict(size=18, color=FEDEX_PURPLE),
+                    legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5)
+                )
+                st.plotly_chart(fig_spends, use_container_width=True)
+                
+            with col3:
+                bar_chart = create_geo_bar_chart(combined_df)
+                st.plotly_chart(bar_chart, use_container_width=True)
+
+            # Tabs Section
+            st.markdown("---")
             tab1, tab2, tab3 = st.tabs([
                 "📊 Critical Data Insights", 
                 "💸 Commercial Insights", 
@@ -219,106 +259,16 @@ def home_page():
             ])
             
             with tab1:
-                if critical_data:
-                    # Create two columns for charts
-                    col_chart1, col_chart2, col_chart3 = st.columns([1, 1, 1])
-                    
-                    with col_chart1:
-                        if num_records > 0:
-                            total_values = combined_df.groupby('Engagement')['Total Contract Value'].sum().reset_index()
-                            # New vertical bar chart for IT Spends by Engagement
-                            fig_spends = px.bar(combined_df,
-                                              x='Engagement',
-                                              y='Total Contract Value',
-                                              color='Contract Coverage',
-                                              title="IT Spends by Engagement",
-                                              labels={
-                                                  'Engagement': 'Engagement Type',
-                                                  'Total Contract Value': 'IT Spends ($)',
-                                                  'Contract Coverage': 'Entities'
-                                              },
-                                              color_discrete_sequence=px.colors.qualitative.Vivid)
-                            
-                            # Add total values on top of bars
-                            fig_spends.add_trace(go.Scatter( 
-                                x=total_values['Engagement'],
-                                y=total_values['Total Contract Value'],
-                                text=total_values['Total Contract Value'].apply(lambda x: f"${x:,.0f}"),
-                                mode='text',
-                                textposition='top center',
-                                showlegend=False,
-                                textfont=dict(
-                                size=12,
-                                color=TEXT_COLOR
-                                )
-                            ))
-                            fig_spends.update_traces(marker=dict(line=dict(color=BACKGROUND_COLOR, width=1)))
-                            
-                            fig_spends.update_layout(
-                                height=400,
-                                margin=dict(l=20, r=20, t=50, b=20),
-                                paper_bgcolor=BACKGROUND_COLOR,
-                                plot_bgcolor=BACKGROUND_COLOR,
-                                font=dict(color=TEXT_COLOR),
-                                title_font=dict(size=18, color=FEDEX_PURPLE),
-                                legend=dict(
-                                    orientation="h",
-                                    yanchor="bottom",
-                                    y=-0.3,
-                                    xanchor="center",
-                                    x=0.5
-                                ),
-                                xaxis_title="Engagement Type",
-                                yaxis_title="IT Spends ($)"
-                            )
-                            st.plotly_chart(fig_spends, use_container_width=True)
-                    
-                    with col_chart2:
-                        if num_records > 0:
-                            donut_chart = create_donut_chart(critical_data, num_records)
-                            st.plotly_chart(donut_chart, use_container_width=True)
-                    
-                    with col_chart3:
-                        if num_records > 0:
-                            bar_chart = create_geo_bar_chart(combined_df)
-                            st.plotly_chart(bar_chart, use_container_width=True)
-                    
-                    st.markdown("---")
-                    
-                    # Show table with exact number of records
-                    critical_df = pd.DataFrame(critical_data)
-                    st.dataframe(
-                        critical_df, 
-                        use_container_width=True,
-                        height=40 + 35 * num_records,
-                        hide_index=True
-                    )
-                else:
-                    st.warning("No critical data available for the selected contracts")
-
+                critical_df = pd.DataFrame(critical_data)
+                st.dataframe(critical_df, use_container_width=True, height=400)
+                
             with tab2:
-                if commercial_data:
-                    commercial_df = pd.DataFrame(commercial_data)
-                    st.dataframe(
-                        commercial_df, 
-                        use_container_width=True,
-                        height=40 + 35 * num_records,
-                        hide_index=True
-                    )
-                else:
-                    st.warning("No commercial data available for the selected contracts")
-
+                commercial_df = pd.DataFrame(commercial_data)
+                st.dataframe(commercial_df, use_container_width=True, height=400)
+                
             with tab3:
-                if legal_data:
-                    legal_df = pd.DataFrame(legal_data)
-                    st.dataframe(
-                        legal_df, 
-                        use_container_width=True,
-                        height=40 + 35 * num_records,
-                        hide_index=True
-                    )
-                else:
-                    st.warning("No legal data available for the selected contracts")
+                legal_df = pd.DataFrame(legal_data)
+                st.dataframe(legal_df, use_container_width=True, height=400)
 
             # Chat Interface
             st.markdown("---")
@@ -351,41 +301,18 @@ def home_page():
                     </div>
                 """, unsafe_allow_html=True)
 
-def tools_page():
-    st.markdown("## Tools Dashboard")
-    st.write("This is the tools page content")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.subheader("Document Analysis Tools")
-        st.write("- Contract Comparator")
-        st.write("- Clause Library")
-        st.write("- Risk Assessor")
-    with col2:
-        st.subheader("Workflow Automation")
-        st.write("- Automated Renewal Tracker")
-        st.write("- Compliance Checker")
-        st.write("- Obligation Manager")
-
-def analytics_page():
-    st.markdown("## Advanced Analytics")
-    st.subheader("Contract Portfolio Health")
-    data = pd.DataFrame({
-        'Metric': ['Risk Score', 'Compliance %', 'Renewal Density', 'Value Concentration'],
-        'Value': [65, 88, 42, 78]
-    })
-    fig = px.bar(data, x='Metric', y='Value', color='Metric',
-                 color_discrete_sequence=[FEDEX_PURPLE, FEDEX_ORANGE, "#333333", "#666666"])
-    st.plotly_chart(fig, use_container_width=True)
+def other_page(title):
+    st.markdown(f"# {title}")
+    st.write(f"Placeholder content for {title} page")
+    st.image("https://via.placeholder.com/800x400.png?text=Coming+Soon", use_column_width=True)
 
 def main():
     st.set_page_config(layout="wide", page_title="ContractIQ", page_icon="📄")
     
     # Initialize session state
-    if 'menu_open' not in st.session_state:
-        st.session_state.menu_open = False
     if 'current_page' not in st.session_state:
         st.session_state.current_page = "Home"
-
+    
     # Remove Streamlit header and footer
     st.markdown("""
         <style>
@@ -393,13 +320,13 @@ def main():
             header {visibility: hidden;}
             .stDeployButton {display:none;}
             footer {visibility: hidden;}
+            .st-emotion-cache-6qob1r {padding-top: 0;}
         </style>
     """, unsafe_allow_html=True)
 
     # Custom CSS
     st.markdown(f"""
         <style>
-            /* Fixed Header */
             .header {{
                 position: fixed;
                 top: 0;
@@ -410,70 +337,39 @@ def main():
                 color: white;
                 z-index: 1001;
                 display: flex;
+                justify-content: space-between;
                 align-items: center;
                 padding: 0 20px;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             }}
             
-            /* Collapsible Menu */
-            .sidebar {{
-                position: fixed;
-                left: -250px;
-                top: 70px;
-                bottom: 0;
-                width: 250px;
-                background: {FEDEX_PURPLE};
-                z-index: 1000;
-                transition: 0.3s;
-                padding-top: 20px;
+            .nav-menu {{
+                display: flex;
+                gap: 30px;
+                align-items: center;
             }}
             
-            .sidebar-open {{
-                left: 0;
-            }}
-            
-            .menu-button {{
-                width: 100%;
-                padding: 15px 25px;
-                background: transparent;
-                border: none;
+            .nav-item {{
                 color: white;
                 cursor: pointer;
-                text-align: left;
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                transition: 0.2s;
+                padding: 10px;
+                border-radius: 5px;
+                transition: all 0.3s;
             }}
             
-            .menu-button:hover {{
+            .nav-item:hover {{
                 background: {FEDEX_ORANGE};
             }}
             
-            .menu-icon {{
-                font-size: 20px;
+            .active-nav {{
+                background: {FEDEX_ORANGE};
+                font-weight: bold;
             }}
             
-            /* Toggle Button */
-            .toggle-button {{
-                position: fixed;
-                left: 20px;
-                top: 20px;
-                z-index: 1002;
-                background: transparent;
-                border: none;
-                color: white;
-                font-size: 24px;
-                cursor: pointer;
-            }}
-            
-            /* Main Content */
             .main-content {{
-                padding: 90px 20px 20px 20px;
-                transition: 0.3s;
+                padding-top: 90px;
             }}
             
-            /* Chat message styling */
             .user-message {{
                 background-color: {FEDEX_PURPLE};
                 color: white;
@@ -490,55 +386,40 @@ def main():
                 margin: 8px 0;
             }}
         </style>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     """, unsafe_allow_html=True)
 
     # Header
     st.markdown(f"""
         <div class="header">
-            <button class="toggle-button" onclick="window.parent.postMessage('ToggleMenu', '*')">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div style="margin-left: 20px">
+            <div style="font-size: 24px; font-weight: bold;">
                 <span style="color:white">Contract</span>
                 <span style="color:{FEDEX_ORANGE}">IQ</span>
             </div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    # Navigation Menu
-    st.markdown(f"""
-        <div class="sidebar {'sidebar-open' if st.session_state.menu_open else ''}">
-            <button class="menu-button" onclick="window.parent.postMessage('Home', '*')">
-                <i class="fas fa-home menu-icon"></i>
-                <span>Home</span>
-            </button>
-            <button class="menu-button" onclick="window.parent.postMessage('Tools', '*')">
-                <i class="fas fa-tools menu-icon"></i>
-                <span>Tools</span>
-            </button>
-            <button class="menu-button" onclick="window.parent.postMessage('Analytics', '*')">
-                <i class="fas fa-chart-bar menu-icon"></i>
-                <span>Analytics</span>
-            </button>
+            <div class="nav-menu">
+                <div class="nav-item {'active-nav' if st.session_state.current_page == 'Home' else ''}" 
+                     onclick="window.parent.postMessage('Home', '*')">Home</div>
+                <div class="nav-item {'active-nav' if st.session_state.current_page == 'History' else ''}" 
+                     onclick="window.parent.postMessage('History', '*')">History</div>
+                <div class="nav-item {'active-nav' if st.session_state.current_page == 'Playbook' else ''}" 
+                     onclick="window.parent.postMessage('Playbook', '*')">Playbook</div>
+                <div class="nav-item {'active-nav' if st.session_state.current_page == 'Settings' else ''}" 
+                     onclick="window.parent.postMessage('Settings', '*')">Settings</div>
+                <div class="nav-item {'active-nav' if st.session_state.current_page == 'Contact' else ''}" 
+                     onclick="window.parent.postMessage('Contact', '*')">Contact Us</div>
+            </div>
         </div>
         <script>
             window.addEventListener('message', function(event) {{
-                if (['Home','Tools','Analytics','ToggleMenu'].includes(event.data)) {{
+                if (['Home','History','Playbook','Settings','Contact'].includes(event.data)) {{
                     Streamlit.setComponentValue(event.data);
                 }}
             }});
         </script>
     """, unsafe_allow_html=True)
 
-    # Handle navigation and menu toggle
+    # Handle navigation
     if 'component_value' in st.session_state:
-        if st.session_state.component_value == 'ToggleMenu':
-            st.session_state.menu_open = not st.session_state.menu_open
-        else:
-            st.session_state.current_page = st.session_state.component_value
-            st.session_state.menu_open = False
-        st.session_state.component_value = None
+        st.session_state.current_page = st.session_state.component_value
         st.experimental_rerun()
 
     # Main Content
@@ -546,10 +427,8 @@ def main():
     
     if st.session_state.current_page == "Home":
         home_page()
-    elif st.session_state.current_page == "Tools":
-        tools_page()
-    elif st.session_state.current_page == "Analytics":
-        analytics_page()
+    else:
+        other_page(st.session_state.current_page)
     
     st.markdown('</div>', unsafe_allow_html=True)
 
