@@ -146,7 +146,8 @@ def get_answer(question, vector_store):
         return f"Error: {str(e)}"
 
 def home_page():
-    with st.expander("⚙️ CONFIGURATION", expanded=False):
+    # Configuration panel moved to the top
+    with st.expander("⚙️ CONFIGURATION", expanded=True):
         col1, col2 = st.columns(2)
         with col1:
             selected_path = st.selectbox(
@@ -366,6 +367,13 @@ def main():
                 padding: 12px;
                 border-radius: 8px;
                 margin: 8px 0;
+            }}
+            
+            /* Configuration panel styling */
+            .stExpander {{
+                margin-top: 80px !important;
+                z-index: 997;
+                position: relative;
             }}
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
