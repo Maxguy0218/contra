@@ -146,111 +146,129 @@ def get_answer(question, vector_store):
         return f"Error: {str(e)}"
 
 def home_page():
-    # Configuration panel moved to top, just below header
-    st.markdown('<div class="config-container">', unsafe_allow_html=True)
-    with st.expander("⚙️ CONFIGURATION", expanded=True):
-        col1, col2 = st.columns(2)
-        with col1:
-            selected_path = st.selectbox(
-                "Source Path",
-                ["Local Machine", "Network Path"],
-                index=0
+    # Main content container with proper spacing
+    with st.container():
+        # Configuration panel at the very top
+        with st.expander("⚙️ CONFIGURATION", expanded=True):
+            col1, col2 = st.columns(2)
+            with col1:
+                selected_path = st.selectbox(
+                    "Source Path",
+                    ["Local Machine", "Network Path"],
+                    index=0
+                )
+            with col2:
+                selected_model = st.selectbox(
+                    "AI Model",
+                    ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"],
+                    index=0
+                )
+            
+            uploaded_files = st.file_uploader(
+                "Upload Contract Files",
+                type=["pdf"],
+                accept_multiple_files=True
             )
-        with col2:
-            selected_model = st.selectbox(
-                "AI Model",
-                ["Transportation & Logistics", "Warehousing & Storage", "Customer Contracts"],
-                index=0
-            )
-        
-        uploaded_files = st.file_uploader(
-            "Upload Contract Files",
-            type=["pdf"],
-            accept_multiple_files=True
-        )
-    st.markdown('</div>', unsafe_allow_html=True)
 
-    if uploaded_files:
-        num_records = len(uploaded_files)
-        
-        def slice_data(data_dict, num_records):
-            return {k: v[:num_records] for k, v in data_dict.items() if len(v) >= num_records}
-        
-        critical_data = slice_data(CRITICAL_DATA, num_records)
-        commercial_data = slice_data(COMMERCIAL_DATA, num_records)
-        legal_data = slice_data(LEGAL_DATA, num_records)
-        
-        tab1, tab2, tab3 = st.tabs([
-            "Critical Data Insights", 
-            "Commercial Insights", 
-            "Legal Insights"
-        ])
-        
-        with tab1:
-            if critical_data:
-                critical_df = pd.DataFrame(critical_data)
-                st.dataframe(critical_df, use_container_width=True, height=600)
-                
-                if num_records > 0:
-                    st.markdown("---")
-                    st.markdown("### Contract Type Distribution")
-                    donut_chart = create_donut_chart(critical_data, num_records)
-                    st.plotly_chart(donut_chart, use_container_width=True)
-            else:
-                st.warning("No critical data available for the selected contracts")
-
-        with tab2:
-            if commercial_data:
-                commercial_df = pd.DataFrame(commercial_data)
-                st.dataframe(commercial_df, use_container_width=True, height=600)
-            else:
-                st.warning("No commercial data available for the selected contracts")
-
-        with tab3:
-            if legal_data:
-                legal_df = pd.DataFrame(legal_data)
-                st.dataframe(legal_df, use_container_width=True, height=600)
-            else:
-                st.warning("No legal data available for the selected contracts")
-
-        # Chat Interface
-        st.markdown("---")
-        st.markdown("## Document Assistant")
-        
-        if "chat_history" not in st.session_state:
-            st.session_state.chat_history = []
-        
-        if "vector_store" not in st.session_state:
-            with st.spinner("Processing documents..."):
-                all_text = [process_pdf(f) for f in uploaded_files]
-                if any(all_text):
-                    st.session_state.vector_store = create_vector_store(all_text)
+        # Rest of the content
+        if uploaded_files:
+            num_records = len(uploaded_files)
+            
+            def slice_data(data_dict, num_records):
+                return {k: v[:num_records] for k, v in data_dict.items() if len(v) >= num_records}
+            
+            critical_data = slice_data(CRITICAL_DATA, num_records)
+            commercial_data = slice_data(COMMERCIAL_DATA, num_records)
+            legal_data = slice_data(LEGAL_DATA, num_records)
+            
+            tab1, tab2, tab3 = st.tabs([
+                "Critical Data Insights", 
+                "Commercial Insights", 
+                "Legal Insights"
+            ])
+            
+            with tab1:
+                if critical_data:
+                    critical_df = pd.DataFrame(critical_data)
+                    st.dataframe(critical_df, use_container_width=True, height=600)
+                    
+                    if num_records > 0:
+                        st.markdown("---")
+                        st.markdown("### Contract Type Distribution")
+                        donut_chart = create_donut_chart(critical_data, num_records)
+                        st.plotly_chart(donut_chart, use_container_width=True)
                 else:
-                    st.error("No text could be extracted from the uploaded documents")
-        
-        question = st.text_input("Ask a question about your contracts:", key="chat_input")
-        if question and st.session_state.get('vector_store'):
-            with st.spinner("Generating answer..."):
-                response = get_answer(question, st.session_state.vector_store)
-                st.session_state.chat_history.append(("user", question))
-                st.session_state.chat_history.append(("assistant", response))
-                st.experimental_rerun()
-        
-        for role, text in st.session_state.chat_history:
-            div_class = "user-message" if role == "user" else "assistant-message"
-            st.markdown(f"""
-                <div class="{div_class}">
-                    <b>{role.title()}:</b> {text}
-                </div>
-            """, unsafe_allow_html=True)
+                    st.warning("No critical data available for the selected contracts")
+
+            with tab2:
+                if commercial_data:
+                    commercial_df = pd.DataFrame(commercial_data)
+                    st.dataframe(commercial_df, use_container_width=True, height=600)
+                else:
+                    st.warning("No commercial data available for the selected contracts")
+
+            with tab3:
+                if legal_data:
+                    legal_df = pd.DataFrame(legal_data)
+                    st.dataframe(legal_df, use_container_width=True, height=600)
+                else:
+                    st.warning("No legal data available for the selected contracts")
+
+            # Chat Interface
+            st.markdown("---")
+            st.markdown("## Document Assistant")
+            
+            if "chat_history" not in st.session_state:
+                st.session_state.chat_history = []
+            
+            if "vector_store" not in st.session_state:
+                with st.spinner("Processing documents..."):
+                    all_text = [process_pdf(f) for f in uploaded_files]
+                    if any(all_text):
+                        st.session_state.vector_store = create_vector_store(all_text)
+                    else:
+                        st.error("No text could be extracted from the uploaded documents")
+            
+            question = st.text_input("Ask a question about your contracts:", key="chat_input")
+            if question and st.session_state.get('vector_store'):
+                with st.spinner("Generating answer..."):
+                    response = get_answer(question, st.session_state.vector_store)
+                    st.session_state.chat_history.append(("user", question))
+                    st.session_state.chat_history.append(("assistant", response))
+                    st.experimental_rerun()
+            
+            for role, text in st.session_state.chat_history:
+                div_class = "user-message" if role == "user" else "assistant-message"
+                st.markdown(f"""
+                    <div class="{div_class}">
+                        <b>{role.title()}:</b> {text}
+                    </div>
+                """, unsafe_allow_html=True)
 
 def tools_page():
-    st.markdown("## This is the Tools Page")
-    st.write("Welcome to the Tools section!")
+    st.markdown("## Tools Dashboard")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Document Analysis Tools")
+        st.write("- Contract Comparator")
+        st.write("- Clause Library")
+        st.write("- Risk Assessor")
+    with col2:
+        st.subheader("Workflow Automation")
+        st.write("- Automated Renewal Tracker")
+        st.write("- Compliance Checker")
+        st.write("- Obligation Manager")
 
 def analytics_page():
-    st.markdown("## This is the Analytics Page")
-    st.write("Welcome to the Analytics section!")
+    st.markdown("## Advanced Analytics")
+    st.subheader("Contract Portfolio Health")
+    data = pd.DataFrame({
+        'Metric': ['Risk Score', 'Compliance %', 'Renewal Density', 'Value Concentration'],
+        'Value': [65, 88, 42, 78]
+    })
+    fig = px.bar(data, x='Metric', y='Value', color='Metric',
+                 color_discrete_sequence=[FEDEX_PURPLE, FEDEX_ORANGE, "#333333", "#666666"])
+    st.plotly_chart(fig, use_container_width=True)
 
 def main():
     st.set_page_config(layout="wide", page_title="ContractIQ", page_icon="📄")
@@ -262,6 +280,7 @@ def main():
             header {visibility: hidden;}
             .stDeployButton {display:none;}
             footer {visibility: hidden;}
+            .stApp {margin-top: 0px !important;}
         </style>
     """, unsafe_allow_html=True)
 
@@ -293,17 +312,6 @@ def main():
             .contract-part {{ color: {FEDEX_PURPLE}; }}
             .iq-part {{ color: {FEDEX_ORANGE}; }}
             
-            /* Configuration container */
-            .config-container {{
-                position: fixed;
-                top: 80px;
-                left: {NAV_WIDTH};
-                right: 0;
-                z-index: 998;
-                background: white;
-                padding: 10px 20px 0 20px;
-            }}
-            
             /* Navigation menu */
             .nav-container {{
                 position: fixed;
@@ -312,7 +320,7 @@ def main():
                 bottom: 0;
                 width: {NAV_WIDTH};
                 background-color: {FEDEX_PURPLE};
-                z-index: 997;
+                z-index: 998;
                 padding-top: 20px;
             }}
             
@@ -324,7 +332,7 @@ def main():
                 color: rgba(255,255,255,0.8);
                 cursor: pointer;
                 transition: all 0.2s;
-拿起                display: flex;
+                display: flex;
                 flex-direction: column;
                 align-items: center;
             }}
@@ -345,7 +353,16 @@ def main():
             
             .main-content {{
                 margin-left: {NAV_WIDTH};
-                padding: 220px 20px 20px 20px;  /* Increased top padding to accommodate config panel */
+                padding-top: 80px;
+            }}
+            
+            /* Configuration panel styling */
+            .config-panel {{
+                margin-top: 80px;
+                padding: 20px;
+                background: white;
+                z-index: 997;
+                position: relative;
             }}
             
             /* Chat message styling */
@@ -364,6 +381,16 @@ def main():
                 border-radius: 8px;
                 margin: 8px 0;
             }}
+            
+            /* Adjust the main content area */
+            .stApp > div:first-child {{
+                padding-top: 0 !important;
+            }}
+            
+            /* Ensure content starts below header */
+            .stApp {{
+                padding-top: 80px !important;
+            }}
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     """, unsafe_allow_html=True)
@@ -379,24 +406,21 @@ def main():
     """, unsafe_allow_html=True)
 
     # Navigation
-    if "page" not in st.session_state:
-        st.session_state.page = "home"
-
     st.markdown(f"""
         <div class="nav-container">
-            <button class="nav-button {'active' if st.session_state.page == 'home' else ''}" 
+            <button class="nav-button {'active' if st.session_state.get('nav', 'home') == 'home' else ''}" 
                 onclick="window.parent.postMessage('home', '*')">
                 <i class="fas fa-home nav-icon"></i>
                 <span>Home</span>
             </button>
             <div style="height: 20px"></div>
-            <button class="nav-button {'active' if st.session_state.page == 'tools' else ''}" 
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'tools' else ''}" 
                 onclick="window.parent.postMessage('tools', '*')">
                 <i class="fas fa-tools nav-icon"></i>
                 <span>Tools</span>
             </button>
             <div style="height: 20px"></div>
-            <button class="nav-button {'active' if st.session_state.page == 'analytics' else ''}" 
+            <button class="nav-button {'active' if st.session_state.get('nav') == 'analytics' else ''}" 
                 onclick="window.parent.postMessage('analytics', '*')">
                 <i class="fas fa-chart-bar nav-icon"></i>
                 <span>Analytics</span>
@@ -412,21 +436,16 @@ def main():
     """, unsafe_allow_html=True)
 
     # Handle navigation
-    def nav_callback():
-        new_page = st.session_state.get('nav_value')
-        if new_page:
-            st.session_state.page = new_page
-
-    st.text_input("nav_value", label_visibility="hidden", key="nav_value", on_change=nav_callback)
-
+    nav_value = st.session_state.get('nav', 'home')
+    
     # Main content
     st.markdown('<div class="main-content">', unsafe_allow_html=True)
     
-    if st.session_state.page == 'home':
+    if nav_value == 'home':
         home_page()
-    elif st.session_state.page == 'tools':
+    elif nav_value == 'tools':
         tools_page()
-    elif st.session_state.page == 'analytics':
+    elif nav_value == 'analytics':
         analytics_page()
     
     st.markdown('</div>', unsafe_allow_html=True)
