@@ -1,3 +1,4 @@
+import plotly.graph_objects as go
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -239,7 +240,7 @@ def home_page():
                                               color_discrete_sequence=px.colors.qualitative.Vivid)
                             
                             # Add total values on top of bars
-                            fig_spends.add_trace(go.Scatter(
+                            fig_spends.add_trace(go.Scatter( 
                                 x=total_values['Engagement'],
                                 y=total_values['Total Contract Value'],
                                 text=total_values['Total Contract Value'].apply(lambda x: f"${x:,.0f}"),
