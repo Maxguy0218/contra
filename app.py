@@ -224,6 +224,7 @@ def home_page():
                     
                     with col_chart1:
                         if num_records > 0:
+                            total_values = combined_df.groupby('Engagement')['Total Contract Value'].sum().reset_index()
                             # New vertical bar chart for IT Spends by Engagement
                             fig_spends = px.bar(combined_df,
                                               x='Engagement',
@@ -238,9 +239,19 @@ def home_page():
                                               color_discrete_sequence=px.colors.qualitative.Vivid)
                             
                             # Add total values on top of bars
-                            fig_spends.update_traces(texttemplate='%{y:$,.0f}', 
-                                                  textposition='outside',
-                                                  marker=dict(line=dict(color=BACKGROUND_COLOR, width=1)))
+                            fig_spends.add_trace(go.Scatter(
+                                x=total_values['Engagement'],
+                                y=total_values['Total Contract Value'],
+                                text=total_values['Total Contract Value'].apply(lambda x: f"${x:,.0f}"),
+                                mode='text',
+                                textposition='top center',
+                                showlegend=False,
+                                textfont=dict(
+                                size=12,
+                                color=TEXT_COLOR
+                                )
+                            ))
+                            fig_spends.update_traces(marker=dict(line=dict(color=BACKGROUND_COLOR, width=1)))
                             
                             fig_spends.update_layout(
                                 height=400,
