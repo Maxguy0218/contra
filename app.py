@@ -19,7 +19,7 @@ TEXT_COLOR = "#333333"
 
 # Data Sources
 CRITICAL_DATA = {
-    "Engagement": ["IT Services", "IT - Services", "IT - Services", "IT - Services", 
+    "Engagement": ["IT - Services", "IT - Services", "IT - Services", "IT - Services", 
                   "IT - Services", "IT - Services", "IT - Services", "IT - Services",
                   "IT - Services", "IT-Infrastructure", "IT-Infrastructure",
                   "IT-Infrastructure", "IT-Infrastructure"],
