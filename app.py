@@ -237,7 +237,7 @@ def home_page():
                     textposition='top center',
                     showlegend=False,
                     textfont=dict(size=12, color=TEXT_COLOR)
-                )
+                ))
                 fig_spends.update_layout(
                     height=400,
                     margin=dict(l=20, r=20, t=50, b=20),
